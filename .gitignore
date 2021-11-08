@@ -1,10 +1,8 @@
 .idea/
 *.iml
 *.iws
- 
-.classpath
-.project
-
-# Maven
 log/
 target/
+.classpath
+.project
+/bin/
