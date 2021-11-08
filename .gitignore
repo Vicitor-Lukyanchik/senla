@@ -1,4 +1,5 @@
-# Intellij
+.classpath
+.project
 .idea/
 *.iml
 *.iws
