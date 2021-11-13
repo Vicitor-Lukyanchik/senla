@@ -25,15 +25,15 @@ public class Application {
         hotelAdminister.addService(service1);
         hotelAdminister.addService(service2);
 
-        System.out.println(hotelAdminister.toString());
+        System.out.println(hotelAdminister);
 
         hotelAdminister.putInRoom(room5);
         hotelAdminister.changeRoomCost(room1, 20);
         hotelAdminister.changeRoomStatus(room3);
-        System.out.println(hotelAdminister.toString());
-        
+        System.out.println(hotelAdminister);
+
         hotelAdminister.evictFromRoom(room5);
         hotelAdminister.changeServiceCost(service1, 3);
-        System.out.println(hotelAdminister.toString());
+        System.out.println(hotelAdminister);
     }
 }

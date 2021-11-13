@@ -10,8 +10,7 @@ public class HotelAdministerImpl implements HotelAdminister {
 
     @Override
     public void putInRoom(Room room) {
-        int index = findRoom(room);
-        Room chosenRoom = hotel.getRooms().get(index);
+        Room chosenRoom = findRoom(room);
         if (!(chosenRoom.isSettled() || chosenRoom.isRepaired())) {
             chosenRoom.setSettled(true);
         } else {
@@ -21,9 +20,9 @@ public class HotelAdministerImpl implements HotelAdminister {
 
     @Override
     public void evictFromRoom(Room room) {
-        int index = findRoom(room);
-        if (hotel.getRooms().get(index).isSettled()) {
-            hotel.getRooms().get(index).setSettled(false);
+        Room chosenRoom = findRoom(room);
+        if (chosenRoom.isSettled()) {
+            chosenRoom.setSettled(false);
         } else {
             System.out.println("This room is not settled");
         }
@@ -31,23 +30,23 @@ public class HotelAdministerImpl implements HotelAdminister {
 
     @Override
     public void changeRoomStatus(Room room) {
-        int index = findRoom(room);
-        Room chosenRoom = hotel.getRooms().get(index);
-        hotel.getRooms().get(index).setRepaired(!chosenRoom.isRepaired());
+        Room chosenRoom = findRoom(room);
+        chosenRoom.setRepaired(!chosenRoom.isRepaired());
     }
 
     @Override
     public void changeRoomCost(Room room, int cost) {
         validateCost(cost);
-        int index = findRoom(room);
-        hotel.getRooms().get(index).setCost(cost);
+        Room chosenRoom = findRoom(room);
+        chosenRoom.setCost(cost);
     }
 
-    private int findRoom(Room room) {
+    private Room findRoom(Room room) {
         if (!hotel.getRooms().contains(room)) {
             throw new IllegalArgumentException("This room does not exist");
         }
-        return hotel.getRooms().indexOf(room);
+        int index = hotel.getRooms().indexOf(room);
+        return hotel.getRooms().get(index);
     }
 
     @Override
@@ -58,8 +57,8 @@ public class HotelAdministerImpl implements HotelAdminister {
     @Override
     public void changeServiceCost(Service service, int cost) {
         validateCost(cost);
-        int index = findService(service);
-        hotel.getServices().get(index).setCost(cost);
+        Service chosenService = findService(service);
+        chosenService.setCost(cost);
     }
 
     private void validateCost(int cost) {
@@ -68,11 +67,12 @@ public class HotelAdministerImpl implements HotelAdminister {
         }
     }
 
-    private int findService(Service service) {
+    private Service findService(Service service) {
         if (!hotel.getServices().contains(service)) {
             throw new IllegalArgumentException("This service does not exist");
         }
-        return hotel.getServices().indexOf(service);
+        int index = hotel.getServices().indexOf(service);
+        return hotel.getServices().get(index);
     }
 
     @Override
