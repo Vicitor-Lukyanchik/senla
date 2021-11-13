@@ -4,11 +4,15 @@ import task4.adminiter.HotelAdminister;
 import task4.adminiter.HotelAdministerImpl;
 import task4.domain.Room;
 import task4.domain.Service;
+import task4.formatter.HotelForrmatter;
+import task4.formatter.HotelForrmatterImpl;
 
 public class Application {
 
     public static void main(String[] args) {
         HotelAdminister hotelAdminister = new HotelAdministerImpl();
+        HotelForrmatter hotelForrmatter = new HotelForrmatterImpl();
+        
         Room room1 = new Room(10);
         Room room2 = new Room(20);
         Room room3 = new Room(30);
@@ -25,15 +29,15 @@ public class Application {
         hotelAdminister.addService(service1);
         hotelAdminister.addService(service2);
 
-        System.out.println(hotelAdminister);
+        System.out.println(hotelForrmatter.formatHotel(hotelAdminister.getHotel()));
 
         hotelAdminister.putInRoom(room5);
         hotelAdminister.changeRoomCost(room1, 20);
         hotelAdminister.changeRoomStatus(room3);
-        System.out.println(hotelAdminister);
+        System.out.println(hotelForrmatter.formatHotel(hotelAdminister.getHotel()));
 
         hotelAdminister.evictFromRoom(room5);
         hotelAdminister.changeServiceCost(service1, 3);
-        System.out.println(hotelAdminister);
+        System.out.println(hotelForrmatter.formatHotel(hotelAdminister.getHotel()));
     }
 }

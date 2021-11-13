@@ -1,5 +1,6 @@
 package task4.adminiter;
 
+import task4.domain.Hotel;
 import task4.domain.Room;
 import task4.domain.Service;
 
@@ -17,4 +18,6 @@ public interface HotelAdminister {
     void changeServiceCost(Service service, int cost);
 
     void addService(Service service);
+
+    Hotel getHotel();
 }

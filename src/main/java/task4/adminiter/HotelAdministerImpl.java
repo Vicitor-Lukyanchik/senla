@@ -80,21 +80,7 @@ public class HotelAdministerImpl implements HotelAdminister {
         hotel.addService(service);
     }
 
-    @Override
-    public String toString() {
-        StringBuilder result = new StringBuilder();
-        result.append("Rooms: \n");
-        for (int i = 0; i < hotel.getRooms().size(); i++) {
-            Room room = hotel.getRooms().get(i);
-            result.append(i + 1).append(" ").append(room.getCost()).append(" ").append(room.isSettled()).append(" ")
-                    .append(room.isRepaired()).append("\n");
-        }
-        result.append("Services: \n");
-        for (int i = 0; i < hotel.getServices().size(); i++) {
-            Service service = hotel.getServices().get(i);
-            result.append(i + 1).append(" ").append(service.getName()).append(" ").append(service.getCost())
-                    .append("\n");
-        }
-        return result.toString();
+    public Hotel getHotel() {
+        return hotel;
     }
 }
