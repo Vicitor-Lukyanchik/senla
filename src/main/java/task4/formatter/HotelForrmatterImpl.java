@@ -16,11 +16,11 @@ public class HotelForrmatterImpl implements HotelForrmatter {
 
     private String formatRooms(Hotel hotel) {
         StringBuilder result = new StringBuilder();
+        int index = 1;
+
         result.append("Rooms:").append(NEXT_LINE);
-        
-        for (int i = 0; i < hotel.getRooms().size(); i++) {
-            Room room = hotel.getRooms().get(i);       
-            result.append(i + 1).append(SPASE).append(room.getCost()).append(SPASE).append(room.isSettled())
+        for (Room room : hotel.getRooms()) {
+            result.append(index++).append(SPASE).append(room.getCost()).append(SPASE).append(room.isSettled())
                     .append(SPASE).append(room.isRepaired()).append(NEXT_LINE);
         }
         return result.toString();
@@ -28,11 +28,11 @@ public class HotelForrmatterImpl implements HotelForrmatter {
 
     private String formatServices(Hotel hotel) {
         StringBuilder result = new StringBuilder();
+        int index = 1;
+
         result.append("Services:").append(NEXT_LINE);
-        
-        for (int i = 0; i < hotel.getServices().size(); i++) {
-            Service service = hotel.getServices().get(i);         
-            result.append(i + 1).append(SPASE).append(service.getName()).append(SPASE).append(service.getCost())
+        for (Service service : hotel.getServices()) {
+            result.append(index++).append(SPASE).append(service.getName()).append(SPASE).append(service.getCost())
                     .append(NEXT_LINE);
         }
         return result.toString();
