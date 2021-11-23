@@ -94,13 +94,15 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public Map<Lodger, Room> findAllReservations() {
+    public Map<Lodger, Room> findAllLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
         List<Reservation> reservations = hotel.getReservations();
         for (Reservation reservation : reservations) {
-            Lodger lodger = find(reservation.getLodgerId());
             Room room = roomService.find(reservation.getRoomId());
-            result.put(lodger, room);
+            if(room.isSettled()) {
+                Lodger lodger = find(reservation.getLodgerId());
+                result.put(lodger, room);
+            }
         }
         return result;
     }

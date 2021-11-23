@@ -46,7 +46,7 @@ public class HotelFormatterImpl implements HotelFormatter {
         result.append("Lodgers:").append(NEXT_LINE);
         for (Lodger lodger : lodgers) {
             result.append(lodger.getId()).append(SPASE).append(lodger.getFirstLastName()).append(SPASE)
-            .append(lodger.getPhoneNumber()).append(SPASE).append(NEXT_LINE);
+                    .append(lodger.getPhoneNumber()).append(SPASE).append(NEXT_LINE);
         }
         return result.toString();
     }
@@ -63,14 +63,27 @@ public class HotelFormatterImpl implements HotelFormatter {
         }
         return result.toString();
     }
-    
+
     @Override
     public String formatLodgerReversationsCost(Map<Lodger, BigDecimal> reservations) {
         StringBuilder result = new StringBuilder();
-        
+
         result.append("Costs:").append(NEXT_LINE);
         for (Map.Entry<Lodger, BigDecimal> reservation : reservations.entrySet()) {
-            result.append(reservation.getKey().getFirstLastName()).append(" : ").append(reservation.getValue()).append(NEXT_LINE);
+            result.append(reservation.getKey().getFirstLastName()).append(" : ").append(reservation.getValue())
+                    .append(NEXT_LINE);
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String formatLodgersRooms(Map<Lodger, Room> lodgersRooms) {
+        StringBuilder result = new StringBuilder();
+
+        result.append("Lodgers room:").append(NEXT_LINE);
+        for (Map.Entry<Lodger, Room> lodgersRoom : lodgersRooms.entrySet()) {
+            result.append(lodgersRoom.getKey().getFirstLastName()).append(" : ").append(lodgersRoom.getValue().getNumber())
+                    .append(NEXT_LINE);
         }
         return result.toString();
     }

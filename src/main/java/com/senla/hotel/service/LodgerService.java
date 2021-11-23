@@ -26,7 +26,7 @@ public interface LodgerService {
 
     Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId);
 
-    Map<Lodger, Room> findAllReservations();
+    Map<Lodger, Room> findAllLodgersRooms();
     
     void createSeviceOrder(ServiceOrder serviceOrder);
     
