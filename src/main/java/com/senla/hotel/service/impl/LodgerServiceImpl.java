@@ -53,7 +53,7 @@ public class LodgerServiceImpl implements LodgerService {
             throw new IllegalArgumentException("Phone number length should be 7");
         }
     }
-    
+
     @Override
     public List<Lodger> findAll() {
         return hotel.getLodgers();
@@ -79,30 +79,39 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void updateReservationEndDate(Integer id, LocalDate date) {
-        Reservation reservation = findReservation(id);
-        reservation.setEndDate(date);
-    }
-
-    private Reservation findReservation(Integer id) {
-        for (Reservation reservation : hotel.getReservations()) {
-            if (reservation.getId().equals(id)) {
-                return reservation;
-            }
+    public void updateReservationIsReservedByRoomId(Integer roomId) {
+        Reservation reservation = hotel.getReservations().stream().filter(room -> roomId.equals(room.getRoomId()))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("There is not room with this id"));
+        if(reservation.isReserved()) {
+            reservation.isNotReserved();
+            roomService.updateNotSettle(reservation.getRoomId());
         }
-        throw new IllegalArgumentException("There is not reservation with this id");
+        throw new IllegalArgumentException("This reservation is closed");
     }
 
     @Override
-    public Map<Lodger, Room> findAllLodgersRooms() {
+    public Map<Lodger, Room> findAllNowLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
         List<Reservation> reservations = hotel.getReservations();
         for (Reservation reservation : reservations) {
-            Room room = roomService.find(reservation.getRoomId());
-            if(room.isSettled()) {
+            if (reservation.isReserved()) {
                 Lodger lodger = find(reservation.getLodgerId());
+                Room room = roomService.find(reservation.getRoomId());
                 result.put(lodger, room);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId) {
+        List<Reservation> reservations = hotel.getReservations().stream().filter(r -> roomId.equals(r.getRoomId()))
+                .collect(Collectors.toList());
+        Map<Lodger, LocalDate> result = new LinkedHashMap<>();
+
+        for (Reservation reservation : reservations) {
+            Lodger lodger = find(reservation.getLodgerId());
+            result.put(lodger, reservation.getStartDate());
         }
         return result;
     }
@@ -119,19 +128,6 @@ public class LodgerServiceImpl implements LodgerService {
             Period period = Period.between(reservation.getStartDate(), reservation.getEndDate());
             BigDecimal cost = new BigDecimal(room.getCost().intValue() * period.getDays());
             result.put(lodger, cost);
-        }
-        return result;
-    }
-
-    @Override
-    public Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId) {
-        List<Reservation> reservations = hotel.getReservations().stream().filter(r -> roomId.equals(r.getRoomId()))
-                .collect(Collectors.toList());
-        Map<Lodger, LocalDate> result = new LinkedHashMap<>();
-
-        for (Reservation reservation : reservations) {
-            Lodger lodger = find(reservation.getLodgerId());
-            result.put(lodger, reservation.getStartDate());
         }
         return result;
     }
@@ -158,7 +154,7 @@ public class LodgerServiceImpl implements LodgerService {
                 .filter(s -> lodgerId.equals(s.getLodgerId())).collect(Collectors.toList());
 
         List<Service> result = new LinkedList<>();
-        for(ServiceOrder serviceOrder : serviceOrders) {
+        for (ServiceOrder serviceOrder : serviceOrders) {
             result.add(serviceService.find(serviceOrder.getServiceId()));
         }
         return result;

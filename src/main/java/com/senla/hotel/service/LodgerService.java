@@ -20,13 +20,13 @@ public interface LodgerService {
     
     void createReservation(Reservation reservation);
     
-    void updateReservationEndDate(Integer id, LocalDate date);
+    void updateReservationIsReservedByRoomId(Integer roomId);
     
     Map<Lodger, BigDecimal> findReservationCostByLodgerId(Integer lodgerId);
 
     Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId);
 
-    Map<Lodger, Room> findAllLodgersRooms();
+    Map<Lodger, Room> findAllNowLodgersRooms();
     
     void createSeviceOrder(ServiceOrder serviceOrder);
     

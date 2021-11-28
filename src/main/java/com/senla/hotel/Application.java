@@ -98,6 +98,6 @@ public class Application {
         System.out.println(lodgerService.findAll().size());
         
         //Клиенты и места проживания
-        System.out.println(hotelFormatter.formatLodgersRooms(lodgerService.findAllLodgersRooms()));
+        System.out.println(hotelFormatter.formatLodgersRooms(lodgerService.findAllNowLodgersRooms()));
     }
 }

@@ -40,7 +40,7 @@ public class RoomServiceImpl implements RoomService {
         if (!(room.isSettled() || room.isRepaired())) {
             room.setSettled(true);
         } else {
-            System.out.println("This room is settled or repaired");
+            throw new IllegalArgumentException("This room is settled or repaired");
         }
     }
 
@@ -50,7 +50,7 @@ public class RoomServiceImpl implements RoomService {
         if (room.isSettled()) {
             room.setSettled(false);
         } else {
-            System.out.println("This room is not settled");
+            throw new IllegalArgumentException("This room is not settled");
         }
     }
 

@@ -9,6 +9,7 @@ public class Reservation {
     private LocalDate endDate;
     private Integer lodgerId;
     private Integer roomId;
+    private boolean isReserved = true;
 
     public Reservation() {
     }
@@ -66,5 +67,13 @@ public class Reservation {
 
     public void setRoomId(Integer roomId) {
         this.roomId = roomId;
+    }
+
+    public boolean isReserved() {
+        return isReserved;
+    }
+
+    public void isNotReserved() {
+        isReserved = false;
     }
 }
