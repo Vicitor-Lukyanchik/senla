@@ -4,5 +4,5 @@ public interface Navigator {
 
     void printMenu();
     
-    void navigate(Integer index);
+    void navigate(int index);
 }

@@ -5,16 +5,15 @@ import com.senla.hotel.modul.Menu;
 import com.senla.hotel.modul.action.Action;
 import com.senla.hotel.modul.action.AddRoom;
 
-public class AddRoomMenuItem implements MenuItem {
+public class AddRoomItem implements MenuItem {
 
     private static final String TITLE = "Add room";
 
-    private Hotel hotel;
-    private Action action = new AddRoom(hotel);
+    private Action action;
     private Menu nextMenu;
 
-    public AddRoomMenuItem(Hotel hotel, Menu nextMenu) {
-        this.hotel = hotel;
+    public AddRoomItem(Hotel hotel, Menu nextMenu) {
+        action = new AddRoom(hotel);
         this.nextMenu = nextMenu;
     }
 

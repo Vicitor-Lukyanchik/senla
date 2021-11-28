@@ -11,23 +11,6 @@ public class Hotel {
     private List<Lodger> lodgers = new LinkedList<>();
     private List<Reservation> reservations = new LinkedList<>();
     private List<ServiceOrder> serviceOrders = new LinkedList<>();
-    private List<Worker> workers = new LinkedList<>();
-
-    public boolean addWorker(Worker worker) {
-        validateWorker(worker);
-        return workers.add(worker);
-    }
-
-    public boolean deleteWorker(Worker worker) {
-        validateWorker(worker);
-        return workers.remove(worker);
-    }
-
-    private void validateWorker(Worker worker) {
-        if (worker == null) {
-            throw new IllegalArgumentException("Worker can not be null");
-        }
-    }
 
     public boolean addServiceOrder(ServiceOrder serviceOrder) {
         validateServiceOrder(serviceOrder);
@@ -148,9 +131,5 @@ public class Hotel {
 
     public List<ServiceOrder> getServiceOrders() {
         return serviceOrders;
-    }
-
-    public List<Worker> getWorkers() {
-        return workers;
     }
 }
