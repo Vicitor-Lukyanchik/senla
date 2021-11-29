@@ -22,9 +22,10 @@ public class OrderServiceToLodger implements Action {
         System.out.print("\nInput date : ");
         LocalDate endDate = ConsoleReader.readDate();
         System.out.print("Input lodger id : ");
-        int lodgerId = ConsoleReader.readNumber();
+        Integer lodgerId = ConsoleReader.readNumber();
         System.out.print("Input service id : ");
-        int serviceId = ConsoleReader.readNumber();
+        Integer serviceId = ConsoleReader.readNumber();
+
         roomService.createSeviceOrder(createReservation(endDate, lodgerId, serviceId));
     }
 

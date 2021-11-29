@@ -23,6 +23,7 @@ public class AddService implements Action {
         String name = ConsoleReader.readLine();
         System.out.print("Input service cost : ");
         BigDecimal cost = ConsoleReader.readBigDecimal();
+
         serviceService.create(createService(name, cost));
     }
 

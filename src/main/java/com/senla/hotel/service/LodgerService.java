@@ -20,7 +20,7 @@ public interface LodgerService {
     
     void createReservation(Reservation reservation);
     
-    void updateReservationIsReservedByRoomId(Integer roomId);
+    void updateReservationIsReserved(Integer lodgerId, Integer roomId);
     
     Map<Lodger, BigDecimal> findReservationCostByLodgerId(Integer lodgerId);
 

@@ -29,6 +29,7 @@ public class AddRoom implements Action {
         int stars = ConsoleReader.readNumber();
         System.out.print("Input room cost : ");
         BigDecimal cost = ConsoleReader.readBigDecimal();
+
         roomService.create(createRoom(number, cost, capacity, stars));
     }
 

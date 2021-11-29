@@ -79,14 +79,17 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void updateReservationIsReservedByRoomId(Integer roomId) {
-        Reservation reservation = hotel.getReservations().stream().filter(room -> roomId.equals(room.getRoomId()))
+    public void updateReservationIsReserved(Integer lodgerId, Integer roomId) {
+        Reservation reservation = hotel.getReservations().stream().filter(
+                lodgerRoom -> roomId.equals(lodgerRoom.getRoomId()) && lodgerId.equals(lodgerRoom.getLodgerId()))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException("There is not room with this id"));
-        if(reservation.isReserved()) {
+
+        if (reservation.isReserved()) {
             reservation.isNotReserved();
             roomService.updateNotSettle(reservation.getRoomId());
+        } else {
+            throw new IllegalArgumentException("This reservation is closed");
         }
-        throw new IllegalArgumentException("This reservation is closed");
     }
 
     @Override

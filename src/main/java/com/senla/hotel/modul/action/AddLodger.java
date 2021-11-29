@@ -23,6 +23,7 @@ public class AddLodger implements Action {
         String lastName = ConsoleReader.readLine();
         System.out.print("Input lodger phone number : ");
         String phone = ConsoleReader.readLine();
+
         lodgerService.create(createLodger(firstName, lastName, phone));
     }
 

@@ -24,9 +24,10 @@ public class PutLodgerInRoom implements Action {
         System.out.print("Input end date : ");
         LocalDate endDate = ConsoleReader.readDate();
         System.out.print("Input lodger id : ");
-        int lodgerId = ConsoleReader.readNumber();
+        Integer lodgerId = ConsoleReader.readNumber();
         System.out.print("Input room id : ");
-        int roomId = ConsoleReader.readNumber();
+        Integer roomId = ConsoleReader.readNumber();
+
         roomService.createReservation(createReservation(startDate, endDate, lodgerId, roomId));
     }
 

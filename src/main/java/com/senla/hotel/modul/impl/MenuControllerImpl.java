@@ -18,12 +18,13 @@ public class MenuControllerImpl implements MenuController {
 
     @Override
     public void run() {
-        int choose = 1;
-        while(choose != 0) {
+        String choose = "";
+        System.out.println("Hotel");
+        while(!choose.equals("stop")) {
             navigator.printMenu();
             navigator.navigate(ConsoleReader.readNumber());
-            System.out.print("0 - end; any - continue : ");
-            choose = ConsoleReader.readNumber();
+            System.out.print("Press enter to continue; To stop programm - stop : ");
+            choose = ConsoleReader.readLine();
         }
     }
 }
