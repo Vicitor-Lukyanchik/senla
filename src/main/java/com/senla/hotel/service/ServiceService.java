@@ -9,12 +9,12 @@ import com.senla.hotel.domain.Service;
 public interface ServiceService {
 
     void create(Service service);
-    
+
     void updateCost(Integer id, BigDecimal cost);
-    
+
     Service find(Integer id);
-    
+
     List<Service> findAll();
-    
+
     Hotel getHotel();
 }

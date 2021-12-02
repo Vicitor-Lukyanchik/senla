@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Hotel {
-    
+
     private List<Room> rooms = new LinkedList<>();
     private List<Service> services = new LinkedList<>();
     private List<Lodger> lodgers = new LinkedList<>();

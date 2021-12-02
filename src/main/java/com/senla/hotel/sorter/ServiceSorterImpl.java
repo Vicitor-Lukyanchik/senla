@@ -8,7 +8,7 @@ import com.senla.hotel.domain.Service;
 
 public class ServiceSorterImpl {
 
-    public List<Service> sortRoomsByCost(List<Service> services){
+    public List<Service> sortRoomsByCost(List<Service> services) {
         return services.stream().sorted(Comparator.comparing(Service::getCost)).collect(Collectors.toList());
     }
 }

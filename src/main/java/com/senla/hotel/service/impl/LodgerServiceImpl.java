@@ -72,24 +72,24 @@ public class LodgerServiceImpl implements LodgerService {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation can not be null");
         }
-        
+
         find(reservation.getLodgerId());
         if (reservation.getStartDate().isAfter(reservation.getEndDate())) {
             throw new IllegalArgumentException("Start date can not be after than end date");
         }
-        
+
         Room room = roomService.find(reservation.getRoomId());
-        List<Reservation> roomReservations = hotel.getReservations().stream().filter(r -> room.getId().equals(r.getRoomId()))
-                .collect(Collectors.toList());
+        List<Reservation> roomReservations = hotel.getReservations().stream()
+                .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
         if (isRoomSettledOnDates(roomReservations, reservation.getStartDate(), reservation.getEndDate())) {
             throw new IllegalArgumentException("Room is settled on this dates");
         }
     }
-    
+
     private boolean isRoomSettledOnDates(List<Reservation> roomReservations, LocalDate startDate, LocalDate endDate) {
         if (roomReservations.isEmpty()) {
             return false;
-        }   
+        }
         for (Reservation reservation : roomReservations) {
             if (!(endDate.isBefore(reservation.getStartDate()) || startDate.isAfter(reservation.getEndDate()))) {
                 return true;

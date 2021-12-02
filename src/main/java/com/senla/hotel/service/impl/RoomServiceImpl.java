@@ -23,12 +23,12 @@ public class RoomServiceImpl implements RoomService {
         id++;
         hotel.addRoom(room);
     }
-    
+
     private void validateRoom(Room room) {
-        if(room == null) {
+        if (room == null) {
             throw new IllegalArgumentException("Room can not be null");
         }
-        if(room.getStars() < 1 || room.getStars() > 5) {
+        if (room.getStars() < 1 || room.getStars() > 5) {
             throw new IllegalArgumentException("Star can not be less then 1 and more than 5");
         }
     }
@@ -47,14 +47,14 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room find(Integer id) {
-        for(Room room : hotel.getRooms()) {
-            if(room.getId().equals(id)) {
+        for (Room room : hotel.getRooms()) {
+            if (room.getId().equals(id)) {
                 return room;
             }
         }
         throw new IllegalArgumentException("There is not room with this number");
     }
-    
+
     @Override
     public List<Room> findAll() {
         return hotel.getRooms();

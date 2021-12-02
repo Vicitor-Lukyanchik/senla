@@ -19,7 +19,7 @@ public class MenuControllerImpl implements MenuController {
     @Override
     public void run() {
         System.out.print("Hotel");
-        while(true) {
+        while (true) {
             navigator.printMenu();
             int commandNumber = ConsoleReader.readNumber();
             navigator.navigate(commandNumber);
