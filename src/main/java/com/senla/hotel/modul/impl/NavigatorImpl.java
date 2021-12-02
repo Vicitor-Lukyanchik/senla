@@ -35,9 +35,9 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-            System.out.println("\nSuccess\n");
+            System.out.println("\nSuccess");
         } catch (IllegalArgumentException ex) {
-            System.out.println("\nError\n");
+            System.out.println("\nError");
         }
     }
 }
