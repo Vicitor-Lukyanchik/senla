@@ -10,7 +10,6 @@ import com.senla.hotel.service.impl.RoomServiceImpl;
 
 public class AddRoom implements Action {
 
-    private static final boolean DEFAULT_SETTLED = false;
     private static final boolean DEFAULT_REPAIRED = false;
 
     private RoomService roomService;
@@ -34,6 +33,6 @@ public class AddRoom implements Action {
     }
 
     private Room createRoom(int number, BigDecimal cost, int capacity, int stars) {
-        return new Room(number, cost, capacity, stars, DEFAULT_SETTLED, DEFAULT_REPAIRED);
+        return new Room(number, cost, capacity, stars, DEFAULT_REPAIRED);
     }
 }

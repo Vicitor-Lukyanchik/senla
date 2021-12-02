@@ -24,15 +24,13 @@ public class HotelFormatterImpl implements HotelFormatter {
         if (!rooms.isEmpty()) {
             result.append("id").append(SPASE).append(TABULATION).append("number").append(SPASE).append(TABULATION)
                     .append("cost").append(SPASE).append(TABULATION).append("cap").append(SPASE).append(TABULATION)
-                    .append("stars").append(SPASE).append(TABULATION).append("settle").append(SPASE).append(TABULATION)
-                    .append("repaired").append(NEXT_LINE);
+                    .append("stars").append(SPASE).append(TABULATION).append("repaired").append(NEXT_LINE);
 
             for (Room room : rooms) {
                 result.append(room.getId()).append(SPASE).append(TABULATION).append(room.getNumber()).append(SPASE)
                         .append(TABULATION).append(room.getCost()).append(SPASE).append(TABULATION)
                         .append(room.getCapacity()).append(SPASE).append(TABULATION).append(room.getStars())
-                        .append(SPASE).append(TABULATION).append(room.isSettled()).append(SPASE).append(TABULATION)
-                        .append(room.isRepaired()).append(NEXT_LINE);
+                        .append(SPASE).append(TABULATION).append(room.isRepaired()).append(NEXT_LINE);
             }
         }
         return result.toString();
@@ -126,7 +124,7 @@ public class HotelFormatterImpl implements HotelFormatter {
         }
         return result.toString();
     }
-    
+
     @Override
     public String formatLastRoomReservations(Map<LocalDate, Lodger> reservations) {
         StringBuilder result = new StringBuilder();
@@ -137,8 +135,8 @@ public class HotelFormatterImpl implements HotelFormatter {
             result.append("start date").append(TABULATION).append("FI").append(NEXT_LINE);
 
             for (Map.Entry<LocalDate, Lodger> lodgersRoom : reservations.entrySet()) {
-                result.append(lodgersRoom.getKey()).append(TABULATION)
-                        .append(lodgersRoom.getValue().getFirstLastName()).append(NEXT_LINE);
+                result.append(lodgersRoom.getKey()).append(TABULATION).append(lodgersRoom.getValue().getFirstLastName())
+                        .append(NEXT_LINE);
             }
         }
         return result.toString();

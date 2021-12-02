@@ -63,7 +63,6 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createReservation(Reservation reservation) {
         validateReservation(reservation);
-        roomService.updateSettle(reservation.getRoomId());
         reservation.setId(reservationId);
         reservationId++;
         hotel.addReservation(reservation);
@@ -107,7 +106,6 @@ public class LodgerServiceImpl implements LodgerService {
 
         if (reservation.isReserved()) {
             reservation.isNotReserved();
-            roomService.updateNotSettle(reservation.getRoomId());
         } else {
             throw new IllegalArgumentException("This reservation is closed");
         }

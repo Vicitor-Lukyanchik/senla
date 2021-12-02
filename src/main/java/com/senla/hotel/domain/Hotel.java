@@ -1,11 +1,10 @@
 package com.senla.hotel.domain;
 
-import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Hotel {
-
+    
     private List<Room> rooms = new LinkedList<>();
     private List<Service> services = new LinkedList<>();
     private List<Lodger> lodgers = new LinkedList<>();
@@ -94,27 +93,6 @@ public class Hotel {
 
     public List<Room> getRooms() {
         return rooms;
-    }
-
-    public List<Room> getNotSettledRooms() {
-        List<Room> result = new LinkedList<>();
-        for (Room room : rooms) {
-            if (!room.isSettled()) {
-                result.add(room);
-            }
-        }
-        return result;
-    }
-
-    public List<Room> getNotSettledRoomsOnDate(LocalDate date) {
-        List<Room> result = new LinkedList<>();
-        for (Reservation reservation : reservations) {
-            if (date.isAfter(reservation.getStartDate()) && date.isBefore(reservation.getEndDate())) {
-                result.add(rooms.stream().filter(r -> reservation.getRoomId().equals(r.getId())).findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("There is not this room id")));
-            }
-        }
-        return result;
     }
 
     public List<Service> getServices() {

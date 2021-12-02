@@ -32,22 +32,6 @@ public class RoomServiceImpl implements RoomService {
             throw new IllegalArgumentException("Star can not be less then 1 and more than 5");
         }
     }
-    
-    @Override
-    public void updateSettle(Integer id) {
-        Room room = find(id);
-        if (!(room.isSettled() || room.isRepaired())) {
-            room.setSettled(true);
-        }
-    }
-
-    @Override
-    public void updateNotSettle(Integer id) {
-        Room room = find(id);
-        if (room.isSettled()) {
-            room.setSettled(false);
-        }
-    }
 
     @Override
     public void updateStatus(Integer id) {
@@ -74,11 +58,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> findAll() {
         return hotel.getRooms();
-    }
-    
-    @Override
-    public List<Room> findAllNotSettled() {
-        return hotel.getNotSettledRooms();
     }
 
     @Override

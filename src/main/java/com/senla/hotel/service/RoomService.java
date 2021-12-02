@@ -10,10 +10,6 @@ public interface RoomService {
 
     void create(Room room);
     
-    void updateSettle(Integer id);
-    
-    void updateNotSettle(Integer id);
-    
     void updateStatus(Integer id);
     
     void updateCost(Integer id, BigDecimal cost);
@@ -21,8 +17,6 @@ public interface RoomService {
     Room find(Integer id);
     
     List<Room> findAll();
-    
-    List<Room> findAllNotSettled();
         
     Hotel getHotel();
 }
