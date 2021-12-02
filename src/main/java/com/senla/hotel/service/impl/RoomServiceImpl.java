@@ -1,7 +1,6 @@
 package com.senla.hotel.service.impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.senla.hotel.domain.Hotel;
@@ -39,8 +38,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = find(id);
         if (!(room.isSettled() || room.isRepaired())) {
             room.setSettled(true);
-        } else {
-            throw new IllegalArgumentException("This room is settled or repaired");
         }
     }
 
@@ -49,8 +46,6 @@ public class RoomServiceImpl implements RoomService {
         Room room = find(id);
         if (room.isSettled()) {
             room.setSettled(false);
-        } else {
-            throw new IllegalArgumentException("This room is not settled");
         }
     }
 
@@ -84,11 +79,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<Room> findAllNotSettled() {
         return hotel.getNotSettledRooms();
-    }
-    
-    @Override
-    public List<Room> findAllNotSettledOnDate(LocalDate date) {
-        return hotel.getNotSettledRoomsOnDate(date);
     }
 
     @Override

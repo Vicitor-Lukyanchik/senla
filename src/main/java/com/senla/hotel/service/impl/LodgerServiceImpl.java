@@ -3,6 +3,7 @@ package com.senla.hotel.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,10 +73,30 @@ public class LodgerServiceImpl implements LodgerService {
         if (reservation == null) {
             throw new IllegalArgumentException("Reservation can not be null");
         }
+        
         find(reservation.getLodgerId());
         if (reservation.getStartDate().isAfter(reservation.getEndDate())) {
             throw new IllegalArgumentException("Start date can not be after than end date");
         }
+        
+        Room room = roomService.find(reservation.getRoomId());
+        List<Reservation> roomReservations = hotel.getReservations().stream().filter(r -> room.getId().equals(r.getRoomId()))
+                .collect(Collectors.toList());
+        if (isRoomSettledOnDates(roomReservations, reservation.getStartDate(), reservation.getEndDate())) {
+            throw new IllegalArgumentException("Room is settled on this dates");
+        }
+    }
+    
+    private boolean isRoomSettledOnDates(List<Reservation> roomReservations, LocalDate startDate, LocalDate endDate) {
+        if (roomReservations.isEmpty()) {
+            return false;
+        }   
+        for (Reservation reservation : roomReservations) {
+            if (!(endDate.isBefore(reservation.getStartDate()) || startDate.isAfter(reservation.getEndDate()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -96,6 +117,7 @@ public class LodgerServiceImpl implements LodgerService {
     public Map<Lodger, Room> findAllNowLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
         List<Reservation> reservations = hotel.getReservations();
+
         for (Reservation reservation : reservations) {
             if (reservation.isReserved()) {
                 Lodger lodger = find(reservation.getLodgerId());
@@ -107,32 +129,56 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId) {
+    public Map<LocalDate, Lodger> findLastReservationsByRoomId(Integer roomId, int limit) {
+        Map<LocalDate, Lodger> result = new LinkedHashMap<>();
         List<Reservation> reservations = hotel.getReservations().stream().filter(r -> roomId.equals(r.getRoomId()))
-                .collect(Collectors.toList());
-        Map<Lodger, LocalDate> result = new LinkedHashMap<>();
+                .sorted(Comparator.comparing(Reservation::getStartDate)).limit(limit).collect(Collectors.toList());
 
         for (Reservation reservation : reservations) {
-            Lodger lodger = find(reservation.getLodgerId());
-            result.put(lodger, reservation.getStartDate());
+            result.put(reservation.getStartDate(), find(reservation.getLodgerId()));
         }
         return result;
     }
 
     @Override
-    public Map<Lodger, BigDecimal> findReservationCostByLodgerId(Integer lodgerId) {
-        List<Reservation> reservations = hotel.getReservations().stream().filter(r -> lodgerId.equals(r.getLodgerId()))
-                .collect(Collectors.toList());
-        Map<Lodger, BigDecimal> result = new LinkedHashMap<>();
+    public Map<Integer, BigDecimal> findReservationCostByLodgerId(Integer lodgerId) {
+        List<Reservation> reservations = hotel.getReservations().stream()
+                .filter(r -> lodgerId.equals(r.getLodgerId()) && r.isReserved()).collect(Collectors.toList());
+        Map<Integer, BigDecimal> result = new LinkedHashMap<>();
 
         for (Reservation reservation : reservations) {
             Room room = roomService.find(reservation.getRoomId());
-            Lodger lodger = find(reservation.getLodgerId());
             Period period = Period.between(reservation.getStartDate(), reservation.getEndDate());
             BigDecimal cost = new BigDecimal(room.getCost().intValue() * period.getDays());
-            result.put(lodger, cost);
+            result.put(room.getNumber(), cost);
         }
         return result;
+    }
+
+    @Override
+    public List<Room> findAllNotSettledRoomOnDate(LocalDate date) {
+        List<Reservation> reservations = hotel.getReservations();
+        List<Room> result = new LinkedList<>();
+
+        for (Room room : roomService.findAll()) {
+            List<Reservation> roomReservations = reservations.stream().filter(r -> room.getId().equals(r.getRoomId()))
+                    .collect(Collectors.toList());
+            if (isRoomNotSettledOnDate(roomReservations, date)) {
+                result.add(room);
+            }
+        }
+        return result;
+    }
+
+    private boolean isRoomNotSettledOnDate(List<Reservation> roomReservations, LocalDate date) {
+        if (!roomReservations.isEmpty()) {
+            for (Reservation reservation : roomReservations) {
+                if (reservation.getStartDate().isBefore(date) && reservation.getEndDate().isAfter(date)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override

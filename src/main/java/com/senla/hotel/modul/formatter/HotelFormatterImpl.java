@@ -1,6 +1,7 @@
 package com.senla.hotel.modul.formatter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,7 @@ public class HotelFormatterImpl implements HotelFormatter {
     public String formatRooms(List<Room> rooms) {
         StringBuilder result = new StringBuilder();
 
-        result.append("\nRooms:").append(NEXT_LINE);
+        result.append("\nRooms : ").append(NEXT_LINE);
 
         if (!rooms.isEmpty()) {
             result.append("id").append(SPASE).append(TABULATION).append("number").append(SPASE).append(TABULATION)
@@ -38,16 +39,49 @@ public class HotelFormatterImpl implements HotelFormatter {
     }
 
     @Override
-    public String formatServices(List<Service> services) {
+    public String formatRoomsCosts(List<Room> rooms) {
         StringBuilder result = new StringBuilder();
 
-        if (!services.isEmpty()) {
-            result.append("\nServices : ").append(NEXT_LINE);
-            result.append("id").append(TABULATION).append("service").append(TABULATION).append("cost").append(NEXT_LINE);
-            
-            for (Service service : services) {
-                result.append(service.getId()).append(TABULATION).append(service.getName()).append(TABULATION).append(service.getCost()).append(TABULATION)
+        result.append("\nRooms costs :").append(NEXT_LINE);
+
+        if (!rooms.isEmpty()) {
+            result.append("number").append(SPASE).append(TABULATION).append("cost").append(NEXT_LINE);
+
+            for (Room room : rooms) {
+                result.append(room.getNumber()).append(SPASE).append(TABULATION).append(room.getCost())
                         .append(NEXT_LINE);
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String formatServices(List<Service> services) {
+        StringBuilder result = new StringBuilder();
+        result.append("\nServices : ").append(NEXT_LINE);
+
+        if (!services.isEmpty()) {
+            result.append("id").append(TABULATION).append("service").append(TABULATION).append("cost")
+                    .append(NEXT_LINE);
+
+            for (Service service : services) {
+                result.append(service.getId()).append(TABULATION).append(service.getName()).append(TABULATION)
+                        .append(service.getCost()).append(TABULATION).append(NEXT_LINE);
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
+    public String formatServicesCosts(List<Service> services) {
+        StringBuilder result = new StringBuilder();
+        result.append("\nServices costs : ").append(NEXT_LINE);
+
+        if (!services.isEmpty()) {
+            result.append("service").append(TABULATION).append("cost").append(NEXT_LINE);
+
+            for (Service service : services) {
+                result.append(service.getName()).append(TABULATION).append(service.getCost()).append(NEXT_LINE);
             }
         }
         return result.toString();
@@ -66,13 +100,12 @@ public class HotelFormatterImpl implements HotelFormatter {
     }
 
     @Override
-    public String formatLodgerReversationsCost(Map<Lodger, BigDecimal> reservations) {
+    public String formatLodgerReversationsCost(Map<Integer, BigDecimal> reservations) {
         StringBuilder result = new StringBuilder();
 
-        result.append("\nCosts:").append(NEXT_LINE);
-        for (Map.Entry<Lodger, BigDecimal> reservation : reservations.entrySet()) {
-            result.append(reservation.getKey().getFirstLastName()).append(" : ").append(reservation.getValue())
-                    .append(NEXT_LINE);
+        result.append("\nLodger room cost:").append(NEXT_LINE);
+        for (Map.Entry<Integer, BigDecimal> reservation : reservations.entrySet()) {
+            result.append(reservation.getKey()).append(" : ").append(reservation.getValue()).append(NEXT_LINE);
         }
         return result.toString();
     }
@@ -95,13 +128,30 @@ public class HotelFormatterImpl implements HotelFormatter {
     }
     
     @Override
+    public String formatLastRoomReservations(Map<LocalDate, Lodger> reservations) {
+        StringBuilder result = new StringBuilder();
+
+        result.append("\nLast 3 room reservations : ").append(NEXT_LINE);
+
+        if (!reservations.isEmpty()) {
+            result.append("start date").append(TABULATION).append("FI").append(NEXT_LINE);
+
+            for (Map.Entry<LocalDate, Lodger> lodgersRoom : reservations.entrySet()) {
+                result.append(lodgersRoom.getKey()).append(TABULATION)
+                        .append(lodgersRoom.getValue().getFirstLastName()).append(NEXT_LINE);
+            }
+        }
+        return result.toString();
+    }
+
+    @Override
     public String formatLodgerServices(List<Service> services) {
         StringBuilder result = new StringBuilder();
 
         if (!services.isEmpty()) {
             result.append("\nLodgers services : ").append(NEXT_LINE);
             result.append("service").append(TABULATION).append("cost").append(NEXT_LINE);
-            
+
             for (Service service : services) {
                 result.append(service.getName()).append(TABULATION).append(service.getCost()).append(TABULATION)
                         .append(NEXT_LINE);

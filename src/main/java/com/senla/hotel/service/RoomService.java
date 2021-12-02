@@ -1,7 +1,6 @@
 package com.senla.hotel.service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.senla.hotel.domain.Hotel;
@@ -24,8 +23,6 @@ public interface RoomService {
     List<Room> findAll();
     
     List<Room> findAllNotSettled();
-    
-    List<Room> findAllNotSettledOnDate(LocalDate date);
-    
+        
     Hotel getHotel();
 }

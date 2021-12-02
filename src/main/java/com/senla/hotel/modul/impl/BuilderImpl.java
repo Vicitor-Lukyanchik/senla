@@ -18,8 +18,12 @@ import com.senla.hotel.modul.menuitem.FindLodgersRoomsItem;
 import com.senla.hotel.modul.menuitem.FindNotSettledRoomsItem;
 import com.senla.hotel.modul.menuitem.FindNotSettledRoomsOnDateItem;
 import com.senla.hotel.modul.menuitem.FindReservationCostItem;
+import com.senla.hotel.modul.menuitem.FindRoomItem;
+import com.senla.hotel.modul.menuitem.FindRoomsCostsItem;
 import com.senla.hotel.modul.menuitem.FindRoomsItem;
+import com.senla.hotel.modul.menuitem.FindServicesCostsItem;
 import com.senla.hotel.modul.menuitem.FindCountNotSettledRoomsItem;
+import com.senla.hotel.modul.menuitem.FindLastRoomLodgersItem;
 import com.senla.hotel.modul.menuitem.FindLodgerServicesItem;
 import com.senla.hotel.modul.menuitem.MenuItem;
 import com.senla.hotel.modul.menuitem.OrderServiceToLodgerItem;
@@ -56,6 +60,10 @@ public class BuilderImpl implements Builder {
         menuItems.put(15, new FindNotSettledRoomsOnDateItem(hotel, rootMenu));
         menuItems.put(16, new FindReservationCostItem(hotel, rootMenu));
         menuItems.put(17, new FindLodgerServicesItem(hotel, rootMenu));
+        menuItems.put(18, new FindRoomItem(hotel, rootMenu));
+        menuItems.put(19, new FindRoomsCostsItem(hotel, rootMenu));
+        menuItems.put(20, new FindServicesCostsItem(hotel, rootMenu));
+        menuItems.put(21, new FindLastRoomLodgersItem(hotel, rootMenu));
         rootMenu.setMenuItems(menuItems);
     }
 
