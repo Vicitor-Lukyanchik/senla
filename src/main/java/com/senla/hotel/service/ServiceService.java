@@ -11,7 +11,7 @@ public interface ServiceService {
 
     void updateCost(Long id, BigDecimal cost);
 
-    Service find(Long id);
+    Service findById(Long id);
 
     List<Service> findAll();
 }

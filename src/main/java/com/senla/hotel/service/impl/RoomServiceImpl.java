@@ -42,18 +42,18 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateStatus(Long id) {
-        Room room = find(id);
+        Room room = findById(id);
         room.setRepaired(!room.isRepaired());
     }
 
     @Override
     public void updateCost(Long id, BigDecimal cost) {
-        Room room = find(id);
+        Room room = findById(id);
         room.setCost(cost);
     }
 
     @Override
-    public Room find(Long id) {
+    public Room findById(Long id) {
         for (Room room : roomRepository.getRooms()) {
             if (room.getId().equals(id)) {
                 return room;

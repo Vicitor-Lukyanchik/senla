@@ -1,4 +1,4 @@
-package com.senla.hotel.ui.action;
+package com.senla.hotel.ui;
 
 public interface Action {
 

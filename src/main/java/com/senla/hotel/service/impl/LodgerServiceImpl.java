@@ -89,7 +89,7 @@ public class LodgerServiceImpl implements LodgerService {
             throw new ServiceException("Start date can not be after than end date");
         }
 
-        Room room = roomService.find(roomId);
+        Room room = roomService.findById(roomId);
         List<Reservation> roomReservations = reservationRepository.getReservations().stream()
                 .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
         if (isRoomSettledOnDates(roomReservations, startDate, endDate)) {
@@ -130,7 +130,7 @@ public class LodgerServiceImpl implements LodgerService {
         for (Reservation reservation : reservations) {
             if (reservation.isReserved()) {
                 Lodger lodger = findById(reservation.getLodgerId());
-                Room room = roomService.find(reservation.getRoomId());
+                Room room = roomService.findById(reservation.getRoomId());
                 result.put(lodger, room);
             }
         }
@@ -156,7 +156,7 @@ public class LodgerServiceImpl implements LodgerService {
         Map<Integer, BigDecimal> result = new LinkedHashMap<>();
 
         for (Reservation reservation : reservations) {
-            Room room = roomService.find(reservation.getRoomId());
+            Room room = roomService.findById(reservation.getRoomId());
             Period period = Period.between(reservation.getStartDate(), reservation.getEndDate());
             BigDecimal cost = new BigDecimal(room.getCost().intValue() * period.getDays());
             result.put(room.getNumber(), cost);
@@ -198,7 +198,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private void validateServiceOrder(Long lodgerId, Long serviceId) {
-        serviceService.find(serviceId);
+        serviceService.findById(serviceId);
         findById(lodgerId);
     }
 
@@ -218,7 +218,7 @@ public class LodgerServiceImpl implements LodgerService {
 
         List<Service> result = new LinkedList<>();
         for (ServiceOrder serviceOrder : serviceOrders) {
-            result.add(serviceService.find(serviceOrder.getServiceId()));
+            result.add(serviceService.findById(serviceOrder.getServiceId()));
         }
         return result;
     }

@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.ui.Menu;
+import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
-import com.senla.hotel.ui.menuitem.MenuItem;
 
 public class NavigatorImpl implements Navigator {
 
@@ -41,7 +41,6 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-            System.out.println("\nSuccess");
         } catch (ServiceException ex) {
             System.out.println("\nError");
             System.out.println(ex.getMessage());

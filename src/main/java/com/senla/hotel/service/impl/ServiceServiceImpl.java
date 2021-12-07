@@ -42,12 +42,12 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public void updateCost(Long id, BigDecimal cost) {
-        Service service = find(id);
+        Service service = findById(id);
         service.setCost(cost);
     }
 
     @Override
-    public Service find(Long id) {
+    public Service findById(Long id) {
         for (Service service : serviceRepository.getServices()) {
             if (service.getId().equals(id)) {
                 return service;

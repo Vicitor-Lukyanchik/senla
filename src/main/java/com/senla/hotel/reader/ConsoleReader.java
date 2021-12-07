@@ -18,6 +18,10 @@ public class ConsoleReader {
     public static int readNumber() {
         return scanner.nextInt();
     }
+    
+    public static Long readLong() {
+        return scanner.nextLong();
+    }
 
     public static BigDecimal readBigDecimal() {
         return scanner.nextBigDecimal();

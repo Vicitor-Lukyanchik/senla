@@ -1,7 +1,4 @@
-package com.senla.hotel.ui.menuitem;
-
-import com.senla.hotel.ui.Menu;
-import com.senla.hotel.ui.action.Action;
+package com.senla.hotel.ui;
 
 public class MenuItem {
 

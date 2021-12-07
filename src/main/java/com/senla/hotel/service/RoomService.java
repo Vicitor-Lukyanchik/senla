@@ -13,7 +13,7 @@ public interface RoomService {
 
     void updateCost(Long id, BigDecimal cost);
 
-    Room find(Long id);
+    Room findById(Long id);
 
     List<Room> findAll();
 }

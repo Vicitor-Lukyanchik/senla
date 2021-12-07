@@ -3,8 +3,6 @@ package com.senla.hotel.ui;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.senla.hotel.ui.menuitem.MenuItem;
-
 public class Menu {
 
     private String name;
