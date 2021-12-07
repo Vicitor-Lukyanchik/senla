@@ -3,18 +3,15 @@ package com.senla.hotel.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.senla.hotel.domain.Hotel;
 import com.senla.hotel.domain.Service;
 
 public interface ServiceService {
 
-    void create(Service service);
+    void create(String name, BigDecimal cost);
 
-    void updateCost(Integer id, BigDecimal cost);
+    void updateCost(Long id, BigDecimal cost);
 
-    Service find(Integer id);
+    Service find(Long id);
 
     List<Service> findAll();
-
-    Hotel getHotel();
 }

@@ -3,65 +3,67 @@ package com.senla.hotel.service.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.senla.hotel.domain.Hotel;
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.exception.ServiceException;
+import com.senla.hotel.repository.RoomRepository;
+import com.senla.hotel.repository.RoomRepositoryImpl;
 import com.senla.hotel.service.RoomService;
 
 public class RoomServiceImpl implements RoomService {
 
-    private Hotel hotel;
-    private Integer id = 1;
+    private static RoomService instance;
+    
+    private RoomRepository roomRepository;
+    private Long id = 1l;
 
-    public RoomServiceImpl(Hotel hotel) {
-        this.hotel = hotel;
+    public RoomServiceImpl() {
+        roomRepository = RoomRepositoryImpl.getInstance();
     }
 
+    public static RoomService getInstance() {
+        if(instance == null) {
+            instance = new RoomServiceImpl();
+        }
+        return instance;
+    }
+    
     @Override
-    public void create(Room room) {
-        validateRoom(room);
-        room.setId(id);
+    public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
+        validateStars(stars);
+        roomRepository.addRoom(new Room(id, number, cost, capacity, stars, isRepaired));
         id++;
-        hotel.addRoom(room);
     }
 
-    private void validateRoom(Room room) {
-        if (room == null) {
-            throw new IllegalArgumentException("Room can not be null");
-        }
-        if (room.getStars() < 1 || room.getStars() > 5) {
-            throw new IllegalArgumentException("Star can not be less then 1 and more than 5");
+    private void validateStars(int stars) {
+        if (stars < 1 || stars > 5) {
+            throw new ServiceException("Star can not be less then 1 and more than 5");
         }
     }
 
     @Override
-    public void updateStatus(Integer id) {
+    public void updateStatus(Long id) {
         Room room = find(id);
         room.setRepaired(!room.isRepaired());
     }
 
     @Override
-    public void updateCost(Integer id, BigDecimal cost) {
+    public void updateCost(Long id, BigDecimal cost) {
         Room room = find(id);
         room.setCost(cost);
     }
 
     @Override
-    public Room find(Integer id) {
-        for (Room room : hotel.getRooms()) {
+    public Room find(Long id) {
+        for (Room room : roomRepository.getRooms()) {
             if (room.getId().equals(id)) {
                 return room;
             }
         }
-        throw new IllegalArgumentException("There is not room with this number");
+        throw new ServiceException("There is not room with this number");
     }
 
     @Override
     public List<Room> findAll() {
-        return hotel.getRooms();
-    }
-
-    @Override
-    public Hotel getHotel() {
-        return hotel;
+        return roomRepository.getRooms();
     }
 }

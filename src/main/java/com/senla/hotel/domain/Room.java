@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Room {
 
-    private Integer id;
+    private Long id;
     private int number;
     private BigDecimal cost;
     private int capacity;
@@ -22,7 +22,7 @@ public class Room {
         this.isRepaired = isRepaired;
     }
 
-    public Room(Integer id, int number, BigDecimal cost, int capacity, int star, boolean isRepaired) {
+    public Room(Long id, int number, BigDecimal cost, int capacity, int star, boolean isRepaired) {
         this.id = id;
         this.number = number;
         this.cost = cost;
@@ -31,11 +31,11 @@ public class Room {
         this.isRepaired = isRepaired;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -4,24 +4,24 @@ import java.time.LocalDate;
 
 public class Reservation {
 
-    private Integer id;
+    private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer lodgerId;
-    private Integer roomId;
+    private Long lodgerId;
+    private Long roomId;
     private boolean isReserved = true;
 
     public Reservation() {
     }
     
-    public Reservation(LocalDate startDate, LocalDate endDate, Integer lodgerId, Integer roomId) {
+    public Reservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.lodgerId = lodgerId;
         this.roomId = roomId;
     }
 
-    public Reservation(Integer id, LocalDate startDate, LocalDate endDate, Integer lodgerId, Integer roomId) {
+    public Reservation(Long id, LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -29,11 +29,11 @@ public class Reservation {
         this.roomId = roomId;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,19 +53,19 @@ public class Reservation {
         this.endDate = endDate;
     }
 
-    public Integer getLodgerId() {
+    public Long getLodgerId() {
         return lodgerId;
     }
 
-    public void setLodgerId(Integer lodgerId) {
+    public void setLodgerId(Long lodgerId) {
         this.lodgerId = lodgerId;
     }
 
-    public Integer getRoomId() {
+    public Long getRoomId() {
         return roomId;
     }
 
-    public void setRoomId(Integer roomId) {
+    public void setRoomId(Long roomId) {
         this.roomId = roomId;
     }
 
