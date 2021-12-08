@@ -1,9 +1,10 @@
-package com.senla.hotel.repository;
+package com.senla.hotel.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.senla.hotel.domain.Lodger;
+import com.senla.hotel.repository.LodgerRepository;
 
 public class LodgerRepositoryImpl implements LodgerRepository {
 
@@ -18,7 +19,7 @@ public class LodgerRepositoryImpl implements LodgerRepository {
     }
 
     public List<Lodger> getLodgers() {
-        return lodgers;
+        return  new ArrayList<>(lodgers);
     }
 
     public void addLodger(Lodger lodger) {

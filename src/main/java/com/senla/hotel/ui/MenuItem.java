@@ -11,6 +11,12 @@ public class MenuItem {
         this.title = title;
         this.nextMenu = nextMenu;
     }
+    
+    public MenuItem(String title, Action action, Menu nextMenu) {
+        this.title = title;
+        this.action = action;
+        this.nextMenu = nextMenu;
+    }
 
     public void doAction() {
         action.execute();

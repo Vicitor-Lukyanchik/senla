@@ -6,7 +6,7 @@ import java.util.List;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.repository.RoomRepository;
-import com.senla.hotel.repository.RoomRepositoryImpl;
+import com.senla.hotel.repository.impl.RoomRepositoryImpl;
 import com.senla.hotel.service.RoomService;
 
 public class RoomServiceImpl implements RoomService {

@@ -1,9 +1,10 @@
-package com.senla.hotel.repository;
+package com.senla.hotel.repository.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.repository.RoomRepository;
 
 public class RoomRepositoryImpl implements RoomRepository {
 
@@ -18,7 +19,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     public List<Room> getRooms() {
-        return rooms;
+        return  new ArrayList<>(rooms);
     }
 
     public void addRoom(Room room) {

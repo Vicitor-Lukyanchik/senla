@@ -6,7 +6,7 @@ import java.util.List;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.repository.ServiceRepository;
-import com.senla.hotel.repository.ServiceRepositoryImpl;
+import com.senla.hotel.repository.impl.ServiceRepositoryImpl;
 import com.senla.hotel.service.ServiceService;
 
 public class ServiceServiceImpl implements ServiceService {
