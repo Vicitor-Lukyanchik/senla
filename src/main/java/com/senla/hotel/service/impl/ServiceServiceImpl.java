@@ -12,7 +12,7 @@ import com.senla.hotel.service.ServiceService;
 public class ServiceServiceImpl implements ServiceService {
 
     private static ServiceService instance;
-    
+
     private ServiceRepository serviceRepository;
     private Long id = 1l;
 
@@ -20,13 +20,13 @@ public class ServiceServiceImpl implements ServiceService {
         serviceRepository = ServiceRepositoryImpl.getInstance();
     }
 
-    public static ServiceService getInstance () {
-        if(instance == null) {
+    public static ServiceService getInstance() {
+        if (instance == null) {
             instance = new ServiceServiceImpl();
         }
         return instance;
     }
-    
+
     @Override
     public void create(String name, BigDecimal cost) {
         validateService(name);

@@ -12,11 +12,11 @@ import com.senla.hotel.domain.Service;
 public interface HotelFormatter {
 
     String formatRooms(List<Room> rooms);
-    
+
     String formatRoomsCosts(List<Room> rooms);
 
     String formatServices(List<Service> services);
-    
+
     String formatServicesCosts(List<Service> services);
 
     String formatLodgers(List<Lodger> lodgers);
@@ -24,7 +24,7 @@ public interface HotelFormatter {
     String formatLodgerReversationsCost(Map<Integer, BigDecimal> reservations);
 
     String formatLodgersRooms(Map<Lodger, Room> lodgersRooms);
-    
+
     String formatLastRoomReservations(Map<LocalDate, Lodger> reservations);
 
     String formatLodgerServices(List<Service> services);

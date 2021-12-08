@@ -19,7 +19,7 @@ public class LodgerRepositoryImpl implements LodgerRepository {
     }
 
     public List<Lodger> getLodgers() {
-        return  new ArrayList<>(lodgers);
+        return new ArrayList<>(lodgers);
     }
 
     public void addLodger(Lodger lodger) {

@@ -6,6 +6,6 @@ import com.senla.hotel.domain.Service;
 
 public interface ServiceRepository {
     List<Service> getServices();
-    
+
     void addService(Service service);
 }

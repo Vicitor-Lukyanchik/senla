@@ -13,7 +13,7 @@ public class Reservation {
 
     public Reservation() {
     }
-    
+
     public Reservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         this.startDate = startDate;
         this.endDate = endDate;

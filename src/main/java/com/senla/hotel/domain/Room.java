@@ -13,7 +13,7 @@ public class Room {
 
     public Room() {
     }
-    
+
     public Room(int number, BigDecimal cost, int capacity, int star, boolean isRepaired) {
         this.number = number;
         this.cost = cost;
@@ -54,7 +54,7 @@ public class Room {
     public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
-    
+
     public int getCapacity() {
         return capacity;
     }

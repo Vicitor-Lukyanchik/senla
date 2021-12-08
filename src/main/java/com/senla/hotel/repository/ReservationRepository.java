@@ -6,6 +6,6 @@ import com.senla.hotel.domain.Reservation;
 
 public interface ReservationRepository {
     List<Reservation> getReservations();
-    
+
     void addReservation(Reservation reservation);
 }

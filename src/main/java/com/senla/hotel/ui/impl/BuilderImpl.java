@@ -68,7 +68,7 @@ public class BuilderImpl implements Builder {
     private void buildRoomMenu() {
         roomMenu.setName("Room menu");
         roomMenu.setMenuItems(roomItemsBuilder.buildRoomItems(rootMenu));
-    }      
+    }
 
     private void buildServiceMenu() {
         serviceMenu.setName("Service menu");

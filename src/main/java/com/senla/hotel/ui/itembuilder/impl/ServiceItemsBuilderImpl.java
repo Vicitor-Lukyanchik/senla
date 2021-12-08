@@ -48,7 +48,7 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
     private MenuItem createMenuItem(String title, Action action, Menu nextMenu) {
         return new MenuItem(title, action, nextMenu);
     }
-    
+
     private Action addService() {
         return () -> {
             System.out.print("\nInput service name : ");

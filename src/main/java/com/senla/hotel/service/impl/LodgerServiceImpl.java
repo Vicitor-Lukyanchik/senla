@@ -29,7 +29,7 @@ import com.senla.hotel.service.ServiceService;
 public class LodgerServiceImpl implements LodgerService {
 
     private static LodgerService instance;
-    
+
     private ServiceService serviceService;
     private RoomService roomService;
     private LodgerRepository lodgerRepository;
@@ -42,19 +42,19 @@ public class LodgerServiceImpl implements LodgerService {
     public LodgerServiceImpl() {
         serviceService = ServiceServiceImpl.getInstance();
         roomService = RoomServiceImpl.getInstance();
-        
+
         lodgerRepository = LodgerRepositoryImpl.getInstance();
         serviceOrderRepository = ServiceOrderRepositoryImpl.getInstance();
         reservationRepository = ReservationRepositoryImpl.getInstance();
     }
 
     public static LodgerService getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new LodgerServiceImpl();
         }
         return instance;
     }
-    
+
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
@@ -140,8 +140,9 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
-        List<Reservation> reservations = reservationRepository.getReservations().stream().filter(r -> roomId.equals(r.getRoomId()))
-                .sorted(Comparator.comparing(Reservation::getStartDate)).limit(limit).collect(Collectors.toList());
+        List<Reservation> reservations = reservationRepository.getReservations().stream()
+                .filter(r -> roomId.equals(r.getRoomId())).sorted(Comparator.comparing(Reservation::getStartDate))
+                .limit(limit).collect(Collectors.toList());
 
         for (Reservation reservation : reservations) {
             result.put(reservation.getStartDate(), findById(reservation.getLodgerId()));
@@ -210,7 +211,7 @@ public class LodgerServiceImpl implements LodgerService {
         }
         throw new ServiceException("There is not lodger with this id");
     }
-    
+
     @Override
     public List<Service> findServiceOrderByLodgerId(Long lodgerId) {
         List<ServiceOrder> serviceOrders = serviceOrderRepository.getServiceOrders().stream()

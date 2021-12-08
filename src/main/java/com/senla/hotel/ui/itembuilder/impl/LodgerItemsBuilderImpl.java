@@ -52,7 +52,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
     private MenuItem createMenuItem(String title, Action action, Menu nextMenu) {
         return new MenuItem(title, action, nextMenu);
     }
-    
+
     private Action addLodger() {
         return () -> {
             System.out.print("\nInput lodger id : ");

@@ -10,7 +10,7 @@ public class Service {
 
     public Service() {
     }
-    
+
     public Service(String name, BigDecimal cost) {
         this.name = name;
         this.cost = cost;

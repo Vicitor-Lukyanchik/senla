@@ -12,7 +12,7 @@ import com.senla.hotel.service.RoomService;
 public class RoomServiceImpl implements RoomService {
 
     private static RoomService instance;
-    
+
     private RoomRepository roomRepository;
     private Long id = 1l;
 
@@ -21,12 +21,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     public static RoomService getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new RoomServiceImpl();
         }
         return instance;
     }
-    
+
     @Override
     public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
         validateStars(stars);

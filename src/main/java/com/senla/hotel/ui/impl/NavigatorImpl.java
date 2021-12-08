@@ -11,16 +11,16 @@ import com.senla.hotel.ui.Navigator;
 public class NavigatorImpl implements Navigator {
 
     private static Navigator instance;
-    
+
     private Menu currentMenu;
 
     public static Navigator getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new NavigatorImpl();
         }
         return instance;
     }
-    
+
     @Override
     public void printMenu() {
         System.out.println("\n\n");

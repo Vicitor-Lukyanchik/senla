@@ -19,7 +19,7 @@ public class ReservationRepositoryImpl implements ReservationRepository {
     }
 
     public List<Reservation> getReservations() {
-        return  new ArrayList<>(reservations);
+        return new ArrayList<>(reservations);
     }
 
     public void addReservation(Reservation reservation) {

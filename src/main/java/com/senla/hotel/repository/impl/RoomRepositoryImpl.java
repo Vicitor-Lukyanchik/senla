@@ -19,7 +19,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     public List<Room> getRooms() {
-        return  new ArrayList<>(rooms);
+        return new ArrayList<>(rooms);
     }
 
     public void addRoom(Room room) {

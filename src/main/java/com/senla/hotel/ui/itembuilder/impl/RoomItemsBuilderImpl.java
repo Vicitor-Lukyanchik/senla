@@ -56,19 +56,25 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         result.put(commandNumber++, createMenuItem("Add room", addRoom(), rootMenu));
         result.put(commandNumber++, createMenuItem("Change room cost", changeRoomCost(), rootMenu));
         result.put(commandNumber++, createMenuItem("Change room status", changeRoomStatus(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Find count not settled rooms", findCountNotSettledRooms(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Find last lodgers, who lived in room", findLastLodgers(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Find count not settled rooms", findCountNotSettledRooms(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Find last lodgers, who lived in room", findLastLodgers(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find not settled rooms", findNotSettledRooms(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Find not settled rooms on date", findNotSettledRoomsOnDate(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Find not settled rooms on date", findNotSettledRoomsOnDate(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find room", findRoom(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find rooms", findRooms(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find rooms costs", findRoomsCosts(), rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by capacity", sortRoomsByCapacity(), rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by cost", sortRoomsByCost(), rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by stars", sortRoomsByStars(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Sort not settled rooms by capacity", sortNotSettledRoomsByCapacity(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Sort not settled rooms by cost", sortNotSettledRoomsByCost(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Sort not settled rooms by stars", sortNotSettledRoomsByStars(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Sort not settled rooms by capacity", sortNotSettledRoomsByCapacity(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Sort not settled rooms by cost", sortNotSettledRoomsByCost(), rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Sort not settled rooms by stars", sortNotSettledRoomsByStars(), rootMenu));
         return result;
     }
 
@@ -123,14 +129,14 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
             System.out.println(hotelFormatter.formatLastRoomReservations(reservations));
         };
     }
-    
+
     private Action findNotSettledRooms() {
         return () -> {
             List<Room> rooms = lodgerService.findAllNotSettledRoomOnDate(DATE_NOW);
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action findNotSettledRoomsOnDate() {
         return () -> {
             ConsoleReader.readLine();
@@ -139,7 +145,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action findRoom() {
         return () -> {
             System.out.print("\nInput room id : ");
@@ -148,60 +154,60 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
             System.out.println(hotelFormatter.formatRooms(Arrays.asList(room)));
         };
     }
-    
+
     private Action findRooms() {
         return () -> {
             List<Room> rooms = roomService.findAll();
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action findRoomsCosts() {
         return () -> {
             List<Room> rooms = roomService.findAll();
             System.out.println(hotelFormatter.formatRoomsCosts(rooms));
         };
     }
-    
+
     private Action sortRoomsByCapacity() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByCapacity(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action sortRoomsByCost() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByCost(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action sortRoomsByStars() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByStars(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action sortNotSettledRoomsByCapacity() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action sortNotSettledRoomsByCost() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
-    
+
     private Action sortNotSettledRoomsByStars() {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
-    }  
+    }
 }

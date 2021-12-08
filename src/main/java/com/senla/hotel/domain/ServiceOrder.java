@@ -11,7 +11,7 @@ public class ServiceOrder {
 
     public ServiceOrder() {
     }
-    
+
     public ServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         this.date = date;
         this.lodgerId = lodgerId;

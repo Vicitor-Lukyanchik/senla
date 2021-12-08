@@ -7,7 +7,7 @@ import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.repository.ServiceOrderRepository;
 
 public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
-    
+
     private static ServiceOrderRepository instance;
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
 
@@ -19,7 +19,7 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     }
 
     public List<ServiceOrder> getServiceOrders() {
-        return  new ArrayList<>(serviceOrders);
+        return new ArrayList<>(serviceOrders);
     }
 
     public void addServiceOrder(ServiceOrder serviceOrder) {

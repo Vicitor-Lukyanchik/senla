@@ -6,6 +6,6 @@ import com.senla.hotel.domain.ServiceOrder;
 
 public interface ServiceOrderRepository {
     List<ServiceOrder> getServiceOrders();
-    
+
     void addServiceOrder(ServiceOrder serviceOrder);
 }

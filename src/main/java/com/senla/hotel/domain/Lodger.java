@@ -9,7 +9,7 @@ public class Lodger {
 
     public Lodger() {
     }
-    
+
     public Lodger(String firstName, String secondName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = secondName;
@@ -46,7 +46,7 @@ public class Lodger {
     public void setLastName(String secondName) {
         this.lastName = secondName;
     }
-    
+
     public String getFirstLastName() {
         return firstName + " " + lastName;
     }
