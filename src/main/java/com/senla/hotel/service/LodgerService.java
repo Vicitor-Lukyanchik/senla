@@ -5,32 +5,29 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import com.senla.hotel.domain.Hotel;
 import com.senla.hotel.domain.Lodger;
-import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
-import com.senla.hotel.domain.ServiceOrder;
 
 public interface LodgerService {
 
-    void create(Lodger lodger);
-    
+    void create(String firstName, String lastName, String phone);
+
     List<Lodger> findAll();
-    
-    void createReservation(Reservation reservation);
-    
-    void updateReservationEndDate(Integer id, LocalDate date);
-    
-    Map<Lodger, BigDecimal> findReservationCostByLodgerId(Integer lodgerId);
 
-    Map<Lodger, LocalDate> findReservationsByRoomId(Integer roomId);
+    void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId);
 
-    Map<Lodger, Room> findAllLodgersRooms();
-    
-    void createSeviceOrder(ServiceOrder serviceOrder);
-    
-    List<Service> findServiceOrderByLodgerId(Integer lodgerId);
-    
-    Hotel getHotel();
+    void updateReservationIsReserved(Long lodgerId, Long roomId);
+
+    Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId);
+
+    Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit);
+
+    Map<Lodger, Room> findAllNowLodgersRooms();
+
+    List<Room> findAllNotSettledRoomOnDate(LocalDate date);
+
+    void createSeviceOrder(LocalDate startDate, Long lodgerId, Long serviceId);
+
+    List<Service> findServiceOrderByLodgerId(Long lodgerId);
 }

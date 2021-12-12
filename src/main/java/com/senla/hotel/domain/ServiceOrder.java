@@ -4,32 +4,32 @@ import java.time.LocalDate;
 
 public class ServiceOrder {
 
-    private Integer id;
+    private Long id;
     private LocalDate date;
-    private Integer lodgerId;
-    private Integer serviceId;
+    private Long lodgerId;
+    private Long serviceId;
 
     public ServiceOrder() {
     }
-    
-    public ServiceOrder(LocalDate date, Integer lodgerId, Integer serviceId) {
+
+    public ServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         this.date = date;
         this.lodgerId = lodgerId;
         this.serviceId = serviceId;
     }
 
-    public ServiceOrder(Integer id, LocalDate date, Integer lodgerId, Integer serviceId) {
+    public ServiceOrder(Long id, LocalDate date, Long lodgerId, Long serviceId) {
         this.id = id;
         this.date = date;
         this.lodgerId = lodgerId;
         this.serviceId = serviceId;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -41,19 +41,19 @@ public class ServiceOrder {
         this.date = date;
     }
 
-    public Integer getLodgerId() {
+    public Long getLodgerId() {
         return lodgerId;
     }
 
-    public void setLodgerId(Integer lodgerId) {
+    public void setLodgerId(Long lodgerId) {
         this.lodgerId = lodgerId;
     }
 
-    public Integer getServiceId() {
+    public Long getServiceId() {
         return serviceId;
     }
 
-    public void setServiceId(Integer serviceId) {
+    public void setServiceId(Long serviceId) {
         this.serviceId = serviceId;
     }
 }

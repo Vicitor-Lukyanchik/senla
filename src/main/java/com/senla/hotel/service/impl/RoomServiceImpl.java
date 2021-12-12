@@ -1,98 +1,69 @@
 package com.senla.hotel.service.impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
-import com.senla.hotel.domain.Hotel;
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.exception.ServiceException;
+import com.senla.hotel.repository.RoomRepository;
+import com.senla.hotel.repository.impl.RoomRepositoryImpl;
 import com.senla.hotel.service.RoomService;
 
 public class RoomServiceImpl implements RoomService {
 
-    private Hotel hotel;
-    private Integer id = 1;
+    private static RoomService instance;
 
-    public RoomServiceImpl(Hotel hotel) {
-        this.hotel = hotel;
+    private RoomRepository roomRepository;
+    private Long id = 1l;
+
+    public RoomServiceImpl() {
+        roomRepository = RoomRepositoryImpl.getInstance();
+    }
+
+    public static RoomService getInstance() {
+        if (instance == null) {
+            instance = new RoomServiceImpl();
+        }
+        return instance;
     }
 
     @Override
-    public void create(Room room) {
-        validateRoom(room);
-        room.setId(id);
+    public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
+        validateStars(stars);
+        roomRepository.addRoom(new Room(id, number, cost, capacity, stars, isRepaired));
         id++;
-        hotel.addRoom(room);
     }
-    
-    private void validateRoom(Room room) {
-        if(room == null) {
-            throw new IllegalArgumentException("Room can not be null");
-        }
-        if(room.getStars() < 1 || room.getStars() > 5) {
-            throw new IllegalArgumentException("Star can not be less then 1 and more than 5");
-        }
-    }
-    
-    @Override
-    public void updateSettle(Integer id) {
-        Room room = find(id);
-        if (!(room.isSettled() || room.isRepaired())) {
-            room.setSettled(true);
-        } else {
-            System.out.println("This room is settled or repaired");
+
+    private void validateStars(int stars) {
+        if (stars < 1 || stars > 5) {
+            throw new ServiceException("Star can not be less then 1 and more than 5");
         }
     }
 
     @Override
-    public void updateNotSettle(Integer id) {
-        Room room = find(id);
-        if (room.isSettled()) {
-            room.setSettled(false);
-        } else {
-            System.out.println("This room is not settled");
-        }
-    }
-
-    @Override
-    public void updateStatus(Integer id) {
-        Room room = find(id);
+    public void updateStatus(Long id) {
+        Room room = findById(id);
         room.setRepaired(!room.isRepaired());
     }
 
     @Override
-    public void updateCost(Integer id, BigDecimal cost) {
-        Room room = find(id);
+    public void updateCost(Long id, BigDecimal cost) {
+        Room room = findById(id);
         room.setCost(cost);
     }
 
     @Override
-    public Room find(Integer id) {
-        for(Room room : hotel.getRooms()) {
-            if(room.getId().equals(id)) {
+    public Room findById(Long id) {
+        for (Room room : roomRepository.getRooms()) {
+            if (room.getId().equals(id)) {
                 return room;
             }
         }
-        throw new IllegalArgumentException("There is not room with this number");
-    }
-    
-    @Override
-    public List<Room> findAll() {
-        return hotel.getRooms();
-    }
-    
-    @Override
-    public List<Room> findAllNotSettled() {
-        return hotel.getNotSettledRooms();
-    }
-    
-    @Override
-    public List<Room> findAllNotSettledOnDate(LocalDate date) {
-        return hotel.getNotSettledRoomsOnDate(date);
+        throw new ServiceException("There is not room with this number");
     }
 
     @Override
-    public Hotel getHotel() {
-        return hotel;
+    public List<Room> findAll() {
+        return roomRepository.getRooms();
     }
 }

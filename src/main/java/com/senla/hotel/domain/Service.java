@@ -4,29 +4,29 @@ import java.math.BigDecimal;
 
 public class Service {
 
-    private Integer id;
+    private Long id;
     private String name;
     private BigDecimal cost;
 
     public Service() {
     }
-    
+
     public Service(String name, BigDecimal cost) {
         this.name = name;
         this.cost = cost;
     }
 
-    public Service(Integer id, String name, BigDecimal cost) {
+    public Service(Long id, String name, BigDecimal cost) {
         this.id = id;
         this.name = name;
         this.cost = cost;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

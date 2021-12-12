@@ -2,32 +2,32 @@ package com.senla.hotel.domain;
 
 public class Lodger {
 
-    private Integer id;
+    private Long id;
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
     public Lodger() {
     }
-    
+
     public Lodger(String firstName, String secondName, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = secondName;
         this.phoneNumber = phoneNumber;
     }
 
-    public Lodger(Integer id, String firstName, String secondName, String phoneNumber) {
+    public Lodger(Long id, String firstName, String secondName, String phoneNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = secondName;
         this.phoneNumber = phoneNumber;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class Lodger {
     public void setLastName(String secondName) {
         this.lastName = secondName;
     }
-    
+
     public String getFirstLastName() {
         return firstName + " " + lastName;
     }
