@@ -3,6 +3,8 @@ package com.senla.hotel.ui.impl;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
+import com.senla.hotel.exception.FileException;
+import com.senla.hotel.exception.FileRepositoryException;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
@@ -48,6 +50,12 @@ public class NavigatorImpl implements Navigator {
         } catch (DateTimeParseException ex) {
             System.out.println("\nError");
             System.out.println("Date should be this format : DD.MM.YYYY");
+        } catch (FileRepositoryException ex) {
+            System.out.println("\nError");
+            System.out.println(ex.getMessage());
+        } catch (FileException ex) {
+            System.out.println("\nError");
+            System.out.println(ex.getMessage());
         }
     }
 

@@ -14,7 +14,7 @@ public class RoomServiceImpl implements RoomService {
     private static RoomService instance;
 
     private RoomRepository roomRepository;
-    private Long id = 1l;
+    private Long id = 0l;
 
     public RoomServiceImpl() {
         roomRepository = RoomRepositoryImpl.getInstance();
@@ -29,6 +29,24 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
+        validateStars(stars);
+        roomRepository.addRoom(new Room(generateId(), number, cost, capacity, stars, isRepaired));
+        id++;
+    }
+
+    private Long generateId() {
+        try {
+            while (true) {
+                id++;
+                findById(id);
+            }
+        } catch (ServiceException ex) {
+            return id;
+        }
+    }
+
+    @Override
+    public void createWithId(Long id, int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
         validateStars(stars);
         roomRepository.addRoom(new Room(id, number, cost, capacity, stars, isRepaired));
         id++;

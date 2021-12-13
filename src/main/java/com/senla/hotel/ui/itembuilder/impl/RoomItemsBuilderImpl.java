@@ -10,6 +10,9 @@ import java.util.Map;
 
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.exception.ServiceException;
+import com.senla.hotel.filerepository.RoomFileRepository;
+import com.senla.hotel.filerepository.impl.RoomFileRepositoryImpl;
 import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
@@ -37,10 +40,12 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     private Integer commandNumber = 1;
     private RoomService roomService;
     private LodgerService lodgerService;
+    private RoomFileRepository roomFile;
 
     public RoomItemsBuilderImpl() {
         roomService = RoomServiceImpl.getInstance();
         lodgerService = LodgerServiceImpl.getInstance();
+        roomFile = RoomFileRepositoryImpl.getInstance();
     }
 
     public static RoomItemsBuilder getInstance() {
@@ -75,6 +80,8 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
                 createMenuItem("Sort not settled rooms by cost", sortNotSettledRoomsByCost(), rootMenu));
         result.put(commandNumber++,
                 createMenuItem("Sort not settled rooms by stars", sortNotSettledRoomsByStars(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Import room", importRoom(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Export room", exportRoom(), rootMenu));
         return result;
     }
 
@@ -208,6 +215,34 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         return () -> {
             List<Room> rooms = roomsSorter.sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
+        };
+    }
+
+    private Action importRoom() {
+        return () -> {
+            System.out.print("\nInput room id : ");
+            Long id = ConsoleReader.readLong();
+            Room importRoom = roomFile.findById(id);
+            try {
+                Room room = roomService.findById(id);
+                room.setNumber(importRoom.getNumber());
+                room.setCost(importRoom.getCost());
+                room.setCapacity(importRoom.getCapacity());
+                room.setStars(importRoom.getStars());
+                room.setRepaired(importRoom.isRepaired());
+            } catch (ServiceException ex) {
+                roomService.createWithId(id, importRoom.getNumber(), importRoom.getCost(), importRoom.getCapacity(),
+                        importRoom.getStars(), importRoom.isRepaired());
+            }
+        };
+    }
+    
+    private Action exportRoom() {
+        return () -> {
+            System.out.print("\nInput room id : ");
+            Long id = ConsoleReader.readLong();
+            Room exportRoom = roomService.findById(id);
+            roomFile.export(exportRoom);
         };
     }
 }

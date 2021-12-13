@@ -14,7 +14,7 @@ public class ServiceServiceImpl implements ServiceService {
     private static ServiceService instance;
 
     private ServiceRepository serviceRepository;
-    private Long id = 1l;
+    private Long id = 0l;
 
     public ServiceServiceImpl() {
         serviceRepository = ServiceRepositoryImpl.getInstance();
@@ -30,8 +30,25 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public void create(String name, BigDecimal cost) {
         validateService(name);
-        serviceRepository.addService(new Service(id, name, cost));
+        serviceRepository.addService(new Service(generateId(), name, cost));
         id++;
+    }
+    
+    private Long generateId() {
+        try {
+            while (true) {
+                id++;
+                findById(id);
+            }
+        } catch (ServiceException ex) {
+            return id;
+        }
+    }
+    
+    @Override
+    public void createWithId(Long id, String name, BigDecimal cost) {
+        validateService(name);
+        serviceRepository.addService(new Service(id, name, cost));
     }
 
     private void validateService(String name) {

@@ -8,6 +8,8 @@ import com.senla.hotel.domain.Service;
 public interface ServiceService {
 
     void create(String name, BigDecimal cost);
+    
+    void createWithId(Long id, String name, BigDecimal cost);
 
     void updateCost(Long id, BigDecimal cost);
 

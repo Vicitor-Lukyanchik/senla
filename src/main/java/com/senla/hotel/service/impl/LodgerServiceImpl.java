@@ -35,9 +35,9 @@ public class LodgerServiceImpl implements LodgerService {
     private LodgerRepository lodgerRepository;
     private ServiceOrderRepository serviceOrderRepository;
     private ReservationRepository reservationRepository;
-    private Long id = 1l;
-    private Long reservationId = 1l;
-    private Long serviceOrderId = 1l;
+    private Long id = 0l;
+    private Long reservationId = 0l;
+    private Long serviceOrderId = 0l;
 
     public LodgerServiceImpl() {
         serviceService = ServiceServiceImpl.getInstance();
@@ -58,8 +58,25 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
-        lodgerRepository.addLodger(new Lodger(id, firstName, lastName, phone));
+        lodgerRepository.addLodger(new Lodger(generateId(), firstName, lastName, phone));
         id++;
+    }
+    
+    private Long generateId() {
+        try {
+            while (true) {
+                id++;
+                findById(id);
+            }
+        } catch (ServiceException ex) {
+            return id;
+        }
+    }
+    
+    @Override
+    public void createWithId(Long id, String firstName, String lastName, String phone) {
+        validateLodger(firstName, lastName, phone);
+        lodgerRepository.addLodger(new Lodger(id, firstName, lastName, phone));
     }
 
     private void validateLodger(String firstName, String lastName, String phone) {
@@ -79,8 +96,24 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         validateReservation(startDate, endDate, lodgerId, roomId);
-        reservationRepository.addReservation(new Reservation(reservationId, startDate, endDate, lodgerId, roomId));
-        reservationId++;
+        reservationRepository.addReservation(new Reservation(generateReservationId(), startDate, endDate, lodgerId, roomId));
+    }
+    
+    private Long generateReservationId() {
+        try {
+            while (true) {
+                reservationId++;
+                findReservationById(reservationId);
+            }
+        } catch (ServiceException ex) {
+            return reservationId;
+        }
+    }
+    
+    @Override
+    public void createReservationWithId(Long id, LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
+        validateReservation(startDate, endDate, lodgerId, roomId);
+        reservationRepository.addReservation(new Reservation(id, startDate, endDate, lodgerId, roomId));
     }
 
     private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
@@ -190,26 +223,63 @@ public class LodgerServiceImpl implements LodgerService {
         }
         return true;
     }
-
+    
     @Override
-    public void createSeviceOrder(LocalDate date, Long lodgerId, Long serviceId) {
-        validateServiceOrder(lodgerId, serviceId);
-        serviceOrderRepository.addServiceOrder(new ServiceOrder(serviceId, date, lodgerId, serviceId));
-        serviceOrderId++;
+    public Reservation findReservationById(Long id) {
+        for(Reservation reservation : reservationRepository.getReservations()) {
+            if(reservation.getId().equals(id)) {
+                return reservation;
+            }
+        }
+        throw new ServiceException("There is not reservation with this id");
     }
 
+    @Override
+    public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
+        validateServiceOrder(lodgerId, serviceId);
+        serviceOrderRepository.addServiceOrder(new ServiceOrder(generateServiceOrderId(), date, lodgerId, serviceId));
+    }
+    
+    @Override
+    public void createServiceOrderWithId(Long id, LocalDate date, Long lodgerId, Long serviceId) {
+        validateServiceOrder(lodgerId, serviceId);
+        serviceOrderRepository.addServiceOrder(new ServiceOrder(id, date, lodgerId, serviceId));
+    }
+
+    private Long generateServiceOrderId() {
+        try {
+            while (true) {
+                serviceOrderId++;
+                findServiceOrderById(serviceOrderId);
+            }
+        } catch (ServiceException ex) {
+            return serviceOrderId;
+        }
+    }
+    
     private void validateServiceOrder(Long lodgerId, Long serviceId) {
         serviceService.findById(serviceId);
         findById(lodgerId);
     }
 
-    private Lodger findById(Long id) {
+    @Override
+    public Lodger findById(Long id) {
         for (Lodger lodger : lodgerRepository.getLodgers()) {
             if (lodger.getId().equals(id)) {
                 return lodger;
             }
         }
         throw new ServiceException("There is not lodger with this id");
+    }
+    
+    @Override
+    public ServiceOrder findServiceOrderById(Long id) {
+        for(ServiceOrder ServiceOrder : serviceOrderRepository.getServiceOrders()) {
+            if(ServiceOrder.getId().equals(id)) {
+                return ServiceOrder;
+            }
+        }
+        throw new ServiceException("There is not service order with this id");
     }
 
     @Override

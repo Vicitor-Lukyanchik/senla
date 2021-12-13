@@ -6,8 +6,9 @@ import java.util.List;
 import com.senla.hotel.domain.Room;
 
 public interface RoomService {
-
     void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired);
+   
+    void createWithId(Long id, int number, BigDecimal cost, int capacity, int stars, boolean isRepaired);
 
     void updateStatus(Long id);
 
