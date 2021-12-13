@@ -14,7 +14,7 @@ import com.senla.hotel.writer.FileWriterImpl;
 
 public class ServiceOrderFileRepositoryImpl implements ServiceOrderFileRepository {
 
-    private static final String PATH = "reservations.csv";
+    private static final String PATH = "service_orders.csv";
 
     private static ServiceOrderFileRepository instance;
 
