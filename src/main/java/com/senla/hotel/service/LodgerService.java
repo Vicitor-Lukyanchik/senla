@@ -15,14 +15,18 @@ public interface LodgerService {
 
     void create(String firstName, String lastName, String phone);
     
-    void createWithId(Long id, String firstName, String lastName, String phone);
+    void importLodgers();
 
+    void exportLodger(Long id);
+    
     List<Lodger> findAll();
 
     void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId);
     
-    void createReservationWithId(Long id, LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId);
+    void importReservations();
 
+    void exportReservation(Long id);
+    
     void updateReservationIsReserved(Long lodgerId, Long roomId);
 
     Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId);
@@ -37,7 +41,9 @@ public interface LodgerService {
 
     void createServiceOrder(LocalDate startDate, Long lodgerId, Long serviceId);
    
-    void createServiceOrderWithId(Long id, LocalDate startDate, Long lodgerId, Long serviceId);
+    void importServiceOrders();
+    
+    void exportServiceOrder(Long id);
     
     Lodger findById(Long id);
     

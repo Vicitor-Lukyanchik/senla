@@ -5,20 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.senla.hotel.domain.Lodger;
-import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
-import com.senla.hotel.domain.ServiceOrder;
-import com.senla.hotel.exception.ServiceException;
-import com.senla.hotel.filerepository.LodgerFileRepository;
-import com.senla.hotel.filerepository.ReservationFileRepository;
-import com.senla.hotel.filerepository.ServiceOrderFileRepository;
-import com.senla.hotel.filerepository.impl.LodgerFileRepositoryImpl;
-import com.senla.hotel.filerepository.impl.ReservationFileRepositoryImpl;
-import com.senla.hotel.filerepository.impl.ServiceOrderFileRepositoryImpl;
-import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.impl.LodgerServiceImpl;
 import com.senla.hotel.ui.Action;
+import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
@@ -33,15 +24,9 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
     private Integer commandNumber = 1;
     private LodgerService lodgerService;
-    private LodgerFileRepository lodgerFile;
-    private ReservationFileRepository reservationFile;
-    private ServiceOrderFileRepository serviceOrderFile;
 
     public LodgerItemsBuilderImpl() {
         lodgerService = LodgerServiceImpl.getInstance();
-        lodgerFile = LodgerFileRepositoryImpl.getInstance();
-        reservationFile = ReservationFileRepositoryImpl.getInstance();
-        serviceOrderFile = ServiceOrderFileRepositoryImpl.getInstance();
     }
 
     public static LodgerItemsBuilder getInstance() {
@@ -151,81 +136,38 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
     }
 
     private Action importLodger() {
-        return () -> {
-            System.out.print("\nInput lodger id : ");
-            Long id = ConsoleReader.readLong();
-            Lodger importLodger = lodgerFile.findById(id);
-            try {
-                Lodger lodger = lodgerService.findById(id);
-                lodger.setFirstName(importLodger.getFirstName());
-                lodger.setLastName(importLodger.getLastName());
-                lodger.setPhoneNumber(importLodger.getPhoneNumber());
-            } catch (ServiceException ex) {
-                lodgerService.createWithId(id, importLodger.getFirstName(), importLodger.getLastName(),
-                        importLodger.getPhoneNumber());
-            }
-        };
+        return () -> lodgerService.importLodgers();
     }
 
     private Action exportLodger() {
         return () -> {
             System.out.print("\nInput lodger id : ");
             Long id = ConsoleReader.readLong();
-            Lodger exportLodger = lodgerService.findById(id);
-            lodgerFile.export(exportLodger);
+            lodgerService.exportLodger(id);
         };
     }
 
     private Action importReservation() {
-        return () -> {
-            System.out.print("\nInput reservation id : ");
-            Long id = ConsoleReader.readLong();
-            Reservation importReservation = reservationFile.findById(id);
-            try {
-                Reservation reservation = lodgerService.findReservationById(id);
-                reservation.setStartDate(importReservation.getStartDate());
-                reservation.setEndDate(importReservation.getEndDate());
-                reservation.setLodgerId(importReservation.getLodgerId());
-                reservation.setRoomId(importReservation.getRoomId());
-            } catch (ServiceException ex) {
-                lodgerService.createReservationWithId(id, importReservation.getStartDate(),
-                        importReservation.getEndDate(), importReservation.getLodgerId(), importReservation.getRoomId());
-            }
-        };
+        return () -> lodgerService.importReservations();
     }
 
     private Action exportReservation() {
         return () -> {
             System.out.print("\nInput reservation id : ");
             Long id = ConsoleReader.readLong();
-            Reservation exportReservation = lodgerService.findReservationById(id);
-            reservationFile.export(exportReservation);
+            lodgerService.exportReservation(id);
         };
     }
 
     private Action importServiceOrder() {
-        return () -> {
-            System.out.print("\nInput service order id : ");
-            Long id = ConsoleReader.readLong();
-            ServiceOrder importReservation = serviceOrderFile.findById(id);
-            try {
-                ServiceOrder reservation = lodgerService.findServiceOrderById(id);
-                reservation.setDate(importReservation.getDate());
-                reservation.setLodgerId(importReservation.getLodgerId());
-                reservation.setServiceId(importReservation.getServiceId());
-            } catch (ServiceException ex) {
-                lodgerService.createServiceOrderWithId(id, importReservation.getDate(), importReservation.getLodgerId(),
-                        importReservation.getServiceId());
-            }
-        };
+        return () -> lodgerService.importServiceOrders();
     }
 
     private Action exportServiceOrder() {
         return () -> {
             System.out.print("\nInput service order id : ");
             Long id = ConsoleReader.readLong();
-            ServiceOrder exportServiceOrder = lodgerService.findServiceOrderById(id);
-            serviceOrderFile.export(exportServiceOrder);
+            lodgerService.exportServiceOrder(id);
         };
     }
 }

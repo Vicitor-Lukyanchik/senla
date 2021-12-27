@@ -4,23 +4,20 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
-import com.senla.hotel.exception.ServiceException;
-import com.senla.hotel.filerepository.RoomFileRepository;
-import com.senla.hotel.filerepository.impl.RoomFileRepositoryImpl;
-import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.impl.LodgerServiceImpl;
 import com.senla.hotel.service.impl.RoomServiceImpl;
-import com.senla.hotel.sorter.RoomsSorter;
-import com.senla.hotel.sorter.impl.RoomsSorterImpl;
 import com.senla.hotel.ui.Action;
+import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
@@ -35,17 +32,14 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     private static RoomItemsBuilder instance;
 
     private final HotelFormatter hotelFormatter = new HotelFormatterImpl();
-    private final RoomsSorter roomsSorter = new RoomsSorterImpl();
 
     private Integer commandNumber = 1;
     private RoomService roomService;
     private LodgerService lodgerService;
-    private RoomFileRepository roomFile;
 
     public RoomItemsBuilderImpl() {
         roomService = RoomServiceImpl.getInstance();
         lodgerService = LodgerServiceImpl.getInstance();
-        roomFile = RoomFileRepositoryImpl.getInstance();
     }
 
     public static RoomItemsBuilder getInstance() {
@@ -178,71 +172,67 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private Action sortRoomsByCapacity() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByCapacity(roomService.findAll());
+            List<Room> rooms = sortRoomsByCapacity(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
     private Action sortRoomsByCost() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByCost(roomService.findAll());
+            List<Room> rooms = sortRoomsByCost(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
     private Action sortRoomsByStars() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByStars(roomService.findAll());
+            List<Room> rooms = sortRoomsByStars(roomService.findAll());
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
     private Action sortNotSettledRoomsByCapacity() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+            List<Room> rooms = sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
     private Action sortNotSettledRoomsByCost() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+            List<Room> rooms = sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
     private Action sortNotSettledRoomsByStars() {
         return () -> {
-            List<Room> rooms = roomsSorter.sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+            List<Room> rooms = sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
             System.out.println(hotelFormatter.formatRooms(rooms));
         };
     }
 
-    private Action importRoom() {
-        return () -> {
-            System.out.print("\nInput room id : ");
-            Long id = ConsoleReader.readLong();
-            Room importRoom = roomFile.findById(id);
-            try {
-                Room room = roomService.findById(id);
-                room.setNumber(importRoom.getNumber());
-                room.setCost(importRoom.getCost());
-                room.setCapacity(importRoom.getCapacity());
-                room.setStars(importRoom.getStars());
-                room.setRepaired(importRoom.isRepaired());
-            } catch (ServiceException ex) {
-                roomService.createWithId(id, importRoom.getNumber(), importRoom.getCost(), importRoom.getCapacity(),
-                        importRoom.getStars(), importRoom.isRepaired());
-            }
-        };
+    public List<Room> sortRoomsByCost(List<Room> rooms) {
+        return rooms.stream().sorted(Comparator.comparing(Room::getCost)).collect(Collectors.toList());
     }
-    
+
+    public List<Room> sortRoomsByStars(List<Room> rooms) {
+        return rooms.stream().sorted(Comparator.comparing(Room::getStars)).collect(Collectors.toList());
+    }
+
+    public List<Room> sortRoomsByCapacity(List<Room> rooms) {
+        return rooms.stream().sorted(Comparator.comparing(Room::getCapacity)).collect(Collectors.toList());
+    }
+
+    private Action importRoom() {
+        return () -> roomService.importRooms();
+    }
+
     private Action exportRoom() {
         return () -> {
             System.out.print("\nInput room id : ");
             Long id = ConsoleReader.readLong();
-            Room exportRoom = roomService.findById(id);
-            roomFile.export(exportRoom);
+            roomService.exportRoom(id);
         };
     }
 }

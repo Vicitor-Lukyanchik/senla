@@ -1,5 +1,6 @@
-package com.senla.hotel.reader;
+package com.senla.hotel.file;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,18 +9,39 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.senla.hotel.exception.FileException;
 
-
-public class FileReaderImpl implements FileReader{
+public class FileReaderImpl implements FileReader {
+    
+    private static FileReader instance;
+    
+    public static FileReader getInstance() {
+        if(instance == null) {
+            instance = new FileReaderImpl();
+        }
+        return instance;
+    }
     
     @Override
     public List<String> readResourceFileLines(String path) {
         try (Stream<String> lines = Files.lines(findResourcePath(path))) {
             return lines.collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new FileException("File does not exist: " + path, e);
+        }
+    }
+    
+    @Override
+    public Properties readProperties(String path) {
+        Properties properties= new Properties();
+        try(FileInputStream fileInputStream = new FileInputStream(findResourcePath(path).toString())) {
+            
+            properties.load(fileInputStream);
+            return properties;
         } catch (IOException e) {
             throw new FileException("File does not exist: " + path, e);
         }

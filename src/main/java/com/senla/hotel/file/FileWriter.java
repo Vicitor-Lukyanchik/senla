@@ -1,4 +1,4 @@
-package com.senla.hotel.writer;
+package com.senla.hotel.file;
 
 import java.util.List;
 

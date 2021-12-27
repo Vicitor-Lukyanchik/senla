@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.senla.hotel.domain.Service;
-import com.senla.hotel.exception.ServiceException;
-import com.senla.hotel.filerepository.ServiceFileRepository;
-import com.senla.hotel.filerepository.impl.ServiceFileRepositoryImpl;
-import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.impl.ServiceServiceImpl;
 import com.senla.hotel.ui.Action;
+import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
@@ -27,11 +24,9 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
 
     private Integer commandNumber = 1;
     private ServiceService serviceService;
-    private ServiceFileRepository serviceFile;
 
     public ServiceItemsBuilderImpl() {
         serviceService = ServiceServiceImpl.getInstance();
-        serviceFile = ServiceFileRepositoryImpl.getInstance();
     }
 
     public static ServiceItemsBuilder getInstance() {
@@ -85,28 +80,16 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
             System.out.println(hotelFormatter.formatServicesCosts(services));
         };
     }
-    
+
     private Action importService() {
-        return () -> {
-            System.out.print("\nInput room id : ");
-            Long id = ConsoleReader.readLong();
-            Service importService = serviceFile.findById(id);
-            try {
-                Service service = serviceService.findById(id);
-                service.setName(importService.getName());
-                service.setCost(importService.getCost());
-            } catch (ServiceException ex) {
-                serviceService.createWithId(id, importService.getName(), importService.getCost());
-            }
-        };
+        return () -> serviceService.importServices();
     }
-    
+
     private Action exportService() {
         return () -> {
             System.out.print("\nInput service id : ");
             Long id = ConsoleReader.readLong();
-            Service exportService = serviceService.findById(id);
-            serviceFile.export(exportService);
+            serviceService.exportService(id);
         };
     }
 }

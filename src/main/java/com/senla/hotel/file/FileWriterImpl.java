@@ -1,4 +1,4 @@
-package com.senla.hotel.writer;
+package com.senla.hotel.file;
 
 import java.io.IOException;
 import java.net.URI;
@@ -14,6 +14,15 @@ import com.senla.hotel.exception.FileException;
 
 public class FileWriterImpl implements FileWriter {
 
+    private static FileWriter instance;
+    
+    public static FileWriter getInstance() {
+        if(instance == null) {
+            instance = new FileWriterImpl();
+        }
+        return instance;
+    }
+    
     @Override
     public void writeResourceFileLines(String path, List<String> lines) {
         try {

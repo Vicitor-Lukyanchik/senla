@@ -9,8 +9,10 @@ public interface ServiceService {
 
     void create(String name, BigDecimal cost);
     
-    void createWithId(Long id, String name, BigDecimal cost);
-
+    void importServices();
+    
+    void exportService(Long id);
+    
     void updateCost(Long id, BigDecimal cost);
 
     Service findById(Long id);
