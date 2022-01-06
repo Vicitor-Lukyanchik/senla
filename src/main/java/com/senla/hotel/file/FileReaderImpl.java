@@ -17,15 +17,6 @@ import com.senla.hotel.exception.FileException;
 
 public class FileReaderImpl implements FileReader {
     
-    private static FileReader instance;
-    
-    public static FileReader getInstance() {
-        if(instance == null) {
-            instance = new FileReaderImpl();
-        }
-        return instance;
-    }
-    
     @Override
     public List<String> readResourceFileLines(String path) {
         try (Stream<String> lines = Files.lines(findResourcePath(path))) {

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -18,17 +19,11 @@ import com.senla.hotel.domain.Service;
 import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
-import com.senla.hotel.file.FileReaderImpl;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.file.FileWriterImpl;
 import com.senla.hotel.parser.CsvParser;
-import com.senla.hotel.parser.CsvParserImpl;
 import com.senla.hotel.repository.LodgerRepository;
 import com.senla.hotel.repository.ReservationRepository;
 import com.senla.hotel.repository.ServiceOrderRepository;
-import com.senla.hotel.repository.impl.LodgerRepositoryImpl;
-import com.senla.hotel.repository.impl.ReservationRepositoryImpl;
-import com.senla.hotel.repository.impl.ServiceOrderRepositoryImpl;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
@@ -37,42 +32,23 @@ public class LodgerServiceImpl implements LodgerService {
 
     private static final String PATH = "lodgers.csv";
 
-    private static LodgerService instance;
+    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);
+    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);
+    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);
 
-    private final FileReader fileReader;
-    private final CsvParser csvParser;
-    private final FileWriter fileWriter;
-
-    private ServiceService serviceService;
-    private RoomService roomService;
-    private LodgerRepository lodgerRepository;
-    private ServiceOrderRepository serviceOrderRepository;
-    private ReservationRepository reservationRepository;
+    private ServiceService serviceService = ApplicationContext.getInstance().getObject(ServiceService.class);
+    private RoomService roomService = ApplicationContext.getInstance().getObject(RoomService.class);
+    private LodgerRepository lodgerRepository = ApplicationContext.getInstance().getObject(LodgerRepository.class);
+    private ServiceOrderRepository serviceOrderRepository = ApplicationContext.getInstance()
+            .getObject(ServiceOrderRepository.class);
+    private ReservationRepository reservationRepository = ApplicationContext.getInstance()
+            .getObject(ReservationRepository.class);
     private Long id = 0l;
     private Long reservationId = 0l;
     private Long serviceOrderId = 0l;
     private List<Lodger> importLodgers = new ArrayList<>();
     private List<Reservation> importReservations = new ArrayList<>();
     private List<ServiceOrder> importServiceOrders = new ArrayList<>();
-
-    public LodgerServiceImpl() {
-        serviceService = ServiceServiceImpl.getInstance();
-        roomService = RoomServiceImpl.getInstance();
-
-        lodgerRepository = LodgerRepositoryImpl.getInstance();
-        serviceOrderRepository = ServiceOrderRepositoryImpl.getInstance();
-        reservationRepository = ReservationRepositoryImpl.getInstance();
-        fileReader = FileReaderImpl.getInstance();
-        csvParser = CsvParserImpl.getInstance();
-        fileWriter = FileWriterImpl.getInstance();
-    }
-
-    public static LodgerService getInstance() {
-        if (instance == null) {
-            instance = new LodgerServiceImpl();
-        }
-        return instance;
-    }
 
     @Override
     public void create(String firstName, String lastName, String phone) {
@@ -348,7 +324,7 @@ public class LodgerServiceImpl implements LodgerService {
         List<String> lines = fileReader.readResourceFileLines(PATH);
         return csvParser.parseServiceOrders(lines);
     }
-    
+
     @Override
     public void exportServiceOrder(Long id) {
         ServiceOrder serviceOrder = findServiceOrderById(id);

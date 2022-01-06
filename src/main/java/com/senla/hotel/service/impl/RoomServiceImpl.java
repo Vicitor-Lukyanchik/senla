@@ -4,44 +4,26 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
-import com.senla.hotel.file.FileReaderImpl;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.file.FileWriterImpl;
 import com.senla.hotel.parser.CsvParser;
-import com.senla.hotel.parser.CsvParserImpl;
 import com.senla.hotel.repository.RoomRepository;
-import com.senla.hotel.repository.impl.RoomRepositoryImpl;
 import com.senla.hotel.service.RoomService;
 
 public class RoomServiceImpl implements RoomService {
 
     private static final String PATH = "rooms.csv";
-    
-    private static RoomService instance;
 
-    private final FileReader fileReader;
-    private final CsvParser csvParser;
-    private final FileWriter fileWriter;
-    private RoomRepository roomRepository;
+    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);
+    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);
+    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);
+
+    private RoomRepository roomRepository = ApplicationContext.getInstance().getObject(RoomRepository.class);
     private Long id = 0l;
-    private List<Room> importRooms = new ArrayList<>();;
-
-    public RoomServiceImpl() {
-        roomRepository = RoomRepositoryImpl.getInstance();
-        fileReader = FileReaderImpl.getInstance();
-        csvParser = CsvParserImpl.getInstance();
-        fileWriter = FileWriterImpl.getInstance();
-    }
-    
-    public static RoomService getInstance() {
-        if (instance == null) {
-            instance = new RoomServiceImpl();
-        }
-        return instance;
-    }
+    private List<Room> importRooms = new ArrayList<>();
 
     @Override
     public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {

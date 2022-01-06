@@ -1,6 +1,7 @@
 package com.senla.hotel.ui.impl;
 
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.Map;
 
 import com.senla.hotel.exception.FileException;
@@ -11,16 +12,7 @@ import com.senla.hotel.ui.Navigator;
 
 public class NavigatorImpl implements Navigator {
 
-    private static Navigator instance;
-
     private Menu currentMenu;
-
-    public static Navigator getInstance() {
-        if (instance == null) {
-            instance = new NavigatorImpl();
-        }
-        return instance;
-    }
 
     @Override
     public void printMenu() {
@@ -43,15 +35,15 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-        } catch (ServiceException ex) {
+        } catch (ServiceException | FileException ex) {
             System.out.println("\nError");
             System.out.println(ex.getMessage());
         } catch (DateTimeParseException ex) {
             System.out.println("\nError");
             System.out.println("Date should be this format : DD.MM.YYYY");
-        } catch (FileException ex) {
+        } catch (InputMismatchException ex) {
             System.out.println("\nError");
-            System.out.println(ex.getMessage());
+            System.out.println("Cost should be this format : SS.CC");
         }
     }
 

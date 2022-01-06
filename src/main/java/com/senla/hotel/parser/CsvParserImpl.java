@@ -15,15 +15,6 @@ import com.senla.hotel.domain.ServiceOrder;
 public class CsvParserImpl implements CsvParser {
 
     private static final String NEXT_COLUMN = ";";
-    
-    private static CsvParser instance;
-    
-    public static CsvParser getInstance() {
-        if(instance == null) {
-            instance = new CsvParserImpl();
-        }
-        return instance;
-    }
 
     @Override
     public List<Room> parseRooms(List<String> rooms) {
