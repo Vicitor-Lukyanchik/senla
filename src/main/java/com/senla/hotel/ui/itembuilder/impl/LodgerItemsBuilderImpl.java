@@ -6,10 +6,10 @@ import java.util.Map;
 
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
-import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.impl.LodgerServiceImpl;
 import com.senla.hotel.ui.Action;
+import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
@@ -46,6 +46,12 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         result.put(commandNumber++, createMenuItem("Find reservation cost", findReservationCost(), rootMenu));
         result.put(commandNumber++, createMenuItem("Order service to lodger", orderServiceToLodger(), rootMenu));
         result.put(commandNumber++, createMenuItem("Put lodger in room", putLodgerInRoom(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Import lodger", importLodger(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Export lodger", exportLodger(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Import reservation", importReservation(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Export reservation", exportReservation(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Import service order", importServiceOrder(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Export service order", exportServiceOrder(), rootMenu));
         return result;
     }
 
@@ -110,7 +116,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
             Long lodgerId = ConsoleReader.readLong();
             System.out.print("Input service id : ");
             Long serviceId = ConsoleReader.readLong();
-            lodgerService.createSeviceOrder(endDate, lodgerId, serviceId);
+            lodgerService.createServiceOrder(endDate, lodgerId, serviceId);
         };
     }
 
@@ -126,6 +132,42 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
             System.out.print("Input room id : ");
             Long roomId = ConsoleReader.readLong();
             lodgerService.createReservation(startDate, endDate, lodgerId, roomId);
+        };
+    }
+
+    private Action importLodger() {
+        return () -> lodgerService.importLodgers();
+    }
+
+    private Action exportLodger() {
+        return () -> {
+            System.out.print("\nInput lodger id : ");
+            Long id = ConsoleReader.readLong();
+            lodgerService.exportLodger(id);
+        };
+    }
+
+    private Action importReservation() {
+        return () -> lodgerService.importReservations();
+    }
+
+    private Action exportReservation() {
+        return () -> {
+            System.out.print("\nInput reservation id : ");
+            Long id = ConsoleReader.readLong();
+            lodgerService.exportReservation(id);
+        };
+    }
+
+    private Action importServiceOrder() {
+        return () -> lodgerService.importServiceOrders();
+    }
+
+    private Action exportServiceOrder() {
+        return () -> {
+            System.out.print("\nInput service order id : ");
+            Long id = ConsoleReader.readLong();
+            lodgerService.exportServiceOrder(id);
         };
     }
 }

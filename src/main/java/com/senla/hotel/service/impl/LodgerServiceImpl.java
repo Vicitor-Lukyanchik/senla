@@ -3,6 +3,7 @@ package com.senla.hotel.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -16,6 +17,12 @@ import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.exception.ServiceException;
+import com.senla.hotel.file.FileReader;
+import com.senla.hotel.file.FileReaderImpl;
+import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.file.FileWriterImpl;
+import com.senla.hotel.parser.CsvParser;
+import com.senla.hotel.parser.CsvParserImpl;
 import com.senla.hotel.repository.LodgerRepository;
 import com.senla.hotel.repository.ReservationRepository;
 import com.senla.hotel.repository.ServiceOrderRepository;
@@ -28,16 +35,25 @@ import com.senla.hotel.service.ServiceService;
 
 public class LodgerServiceImpl implements LodgerService {
 
+    private static final String PATH = "lodgers.csv";
+
     private static LodgerService instance;
+
+    private final FileReader fileReader;
+    private final CsvParser csvParser;
+    private final FileWriter fileWriter;
 
     private ServiceService serviceService;
     private RoomService roomService;
     private LodgerRepository lodgerRepository;
     private ServiceOrderRepository serviceOrderRepository;
     private ReservationRepository reservationRepository;
-    private Long id = 1l;
-    private Long reservationId = 1l;
-    private Long serviceOrderId = 1l;
+    private Long id = 0l;
+    private Long reservationId = 0l;
+    private Long serviceOrderId = 0l;
+    private List<Lodger> importLodgers = new ArrayList<>();
+    private List<Reservation> importReservations = new ArrayList<>();
+    private List<ServiceOrder> importServiceOrders = new ArrayList<>();
 
     public LodgerServiceImpl() {
         serviceService = ServiceServiceImpl.getInstance();
@@ -46,6 +62,9 @@ public class LodgerServiceImpl implements LodgerService {
         lodgerRepository = LodgerRepositoryImpl.getInstance();
         serviceOrderRepository = ServiceOrderRepositoryImpl.getInstance();
         reservationRepository = ReservationRepositoryImpl.getInstance();
+        fileReader = FileReaderImpl.getInstance();
+        csvParser = CsvParserImpl.getInstance();
+        fileWriter = FileWriterImpl.getInstance();
     }
 
     public static LodgerService getInstance() {
@@ -58,8 +77,57 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
-        lodgerRepository.addLodger(new Lodger(id, firstName, lastName, phone));
+        lodgerRepository.addLodger(new Lodger(generateId(), firstName, lastName, phone));
         id++;
+    }
+
+    private Long generateId() {
+        try {
+            while (true) {
+                id++;
+                findById(id);
+            }
+        } catch (ServiceException ex) {
+            return id;
+        }
+    }
+
+    @Override
+    public void importLodgers() {
+        importLodgers = getLodgersFromFile();
+        for (Lodger importLodger : importLodgers) {
+            try {
+                validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
+                Lodger lodger = findById(id);
+                lodger.setFirstName(importLodger.getFirstName());
+                lodger.setLastName(importLodger.getLastName());
+                lodger.setPhoneNumber(importLodger.getPhoneNumber());
+            } catch (ServiceException ex) {
+                validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
+                lodgerRepository.addLodger(new Lodger(importLodger.getId(), importLodger.getFirstName(),
+                        importLodger.getLastName(), importLodger.getPhoneNumber()));
+            }
+        }
+    }
+
+    private List<Lodger> getLodgersFromFile() {
+        List<String> lines = fileReader.readResourceFileLines(PATH);
+        return csvParser.parseLodgers(lines);
+    }
+
+    @Override
+    public void exportLodger(Long id) {
+        Lodger lodger = findById(id);
+        Lodger importLodger = importLodgers.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+        if (importLodger == null) {
+            importLodgers.add(lodger);
+        } else {
+            importLodger.setFirstName(lodger.getFirstName());
+            importLodger.setLastName(lodger.getLastName());
+            importLodger.setPhoneNumber(lodger.getPhoneNumber());
+        }
+        List<String> lines = csvParser.parseLodgersToLines(importLodgers);
+        fileWriter.writeResourceFileLines(PATH, lines);
     }
 
     private void validateLodger(String firstName, String lastName, String phone) {
@@ -79,8 +147,59 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         validateReservation(startDate, endDate, lodgerId, roomId);
-        reservationRepository.addReservation(new Reservation(reservationId, startDate, endDate, lodgerId, roomId));
-        reservationId++;
+        reservationRepository
+                .addReservation(new Reservation(generateReservationId(), startDate, endDate, lodgerId, roomId));
+    }
+
+    private Long generateReservationId() {
+        try {
+            while (true) {
+                reservationId++;
+                findReservationById(reservationId);
+            }
+        } catch (ServiceException ex) {
+            return reservationId;
+        }
+    }
+
+    @Override
+    public void importReservations() {
+        importReservations = getReservationsFromFile();
+        for (Reservation importReservation : importReservations) {
+            try {
+                Reservation reservation = findReservationById(id);
+                reservation.setStartDate(importReservation.getStartDate());
+                reservation.setEndDate(importReservation.getEndDate());
+                reservation.setLodgerId(importReservation.getLodgerId());
+                reservation.setRoomId(importReservation.getRoomId());
+            } catch (ServiceException ex) {
+                reservationRepository.addReservation(
+                        new Reservation(id, importReservation.getStartDate(), importReservation.getEndDate(),
+                                importReservation.getLodgerId(), importReservation.getRoomId()));
+            }
+        }
+    }
+
+    private List<Reservation> getReservationsFromFile() {
+        List<String> lines = fileReader.readResourceFileLines(PATH);
+        return csvParser.parseReservations(lines);
+    }
+
+    @Override
+    public void exportReservation(Long id) {
+        Reservation reservation = findReservationById(id);
+        Reservation importReservation = importReservations.stream().filter(r -> r.getId().equals(id)).findFirst()
+                .orElse(null);
+        if (importReservation == null) {
+            importReservations.add(reservation);
+        } else {
+            importReservation.setLodgerId(reservation.getLodgerId());
+            importReservation.setRoomId(reservation.getRoomId());
+            importReservation.setStartDate(reservation.getStartDate());
+            importReservation.setEndDate(reservation.getEndDate());
+        }
+        List<String> lines = csvParser.parseLodgersToLines(importLodgers);
+        fileWriter.writeResourceFileLines(PATH, lines);
     }
 
     private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
@@ -192,10 +311,69 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void createSeviceOrder(LocalDate date, Long lodgerId, Long serviceId) {
+    public Reservation findReservationById(Long id) {
+        for (Reservation reservation : reservationRepository.getReservations()) {
+            if (reservation.getId().equals(id)) {
+                return reservation;
+            }
+        }
+        throw new ServiceException("There is not reservation with this id");
+    }
+
+    @Override
+    public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         validateServiceOrder(lodgerId, serviceId);
-        serviceOrderRepository.addServiceOrder(new ServiceOrder(serviceId, date, lodgerId, serviceId));
-        serviceOrderId++;
+        serviceOrderRepository.addServiceOrder(new ServiceOrder(generateServiceOrderId(), date, lodgerId, serviceId));
+    }
+
+    @Override
+    public void importServiceOrders() {
+        importServiceOrders = getServiceOrdersFromFile();
+        for (ServiceOrder importReservation : importServiceOrders) {
+            try {
+                validateServiceOrder(importReservation.getLodgerId(), importReservation.getServiceId());
+                ServiceOrder serviceOrders = findServiceOrderById(id);
+                serviceOrders.setDate(importReservation.getDate());
+                serviceOrders.setLodgerId(importReservation.getLodgerId());
+                serviceOrders.setServiceId(importReservation.getServiceId());
+            } catch (ServiceException ex) {
+                validateServiceOrder(importReservation.getLodgerId(), importReservation.getServiceId());
+                serviceOrderRepository.addServiceOrder(new ServiceOrder(id, importReservation.getDate(),
+                        importReservation.getLodgerId(), importReservation.getServiceId()));
+            }
+        }
+    }
+
+    private List<ServiceOrder> getServiceOrdersFromFile() {
+        List<String> lines = fileReader.readResourceFileLines(PATH);
+        return csvParser.parseServiceOrders(lines);
+    }
+    
+    @Override
+    public void exportServiceOrder(Long id) {
+        ServiceOrder serviceOrder = findServiceOrderById(id);
+        ServiceOrder importServiceOrder = importServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst()
+                .orElse(null);
+        if (importServiceOrder == null) {
+            importServiceOrders.add(serviceOrder);
+        } else {
+            importServiceOrder.setLodgerId(serviceOrder.getLodgerId());
+            importServiceOrder.setServiceId(serviceOrder.getServiceId());
+            importServiceOrder.setDate(serviceOrder.getDate());
+        }
+        List<String> lines = csvParser.parseServiceOrdersToLines(importServiceOrders);
+        fileWriter.writeResourceFileLines(PATH, lines);
+    }
+
+    private Long generateServiceOrderId() {
+        try {
+            while (true) {
+                serviceOrderId++;
+                findServiceOrderById(serviceOrderId);
+            }
+        } catch (ServiceException ex) {
+            return serviceOrderId;
+        }
     }
 
     private void validateServiceOrder(Long lodgerId, Long serviceId) {
@@ -203,13 +381,24 @@ public class LodgerServiceImpl implements LodgerService {
         findById(lodgerId);
     }
 
-    private Lodger findById(Long id) {
+    @Override
+    public Lodger findById(Long id) {
         for (Lodger lodger : lodgerRepository.getLodgers()) {
             if (lodger.getId().equals(id)) {
                 return lodger;
             }
         }
         throw new ServiceException("There is not lodger with this id");
+    }
+
+    @Override
+    public ServiceOrder findServiceOrderById(Long id) {
+        for (ServiceOrder ServiceOrder : serviceOrderRepository.getServiceOrders()) {
+            if (ServiceOrder.getId().equals(id)) {
+                return ServiceOrder;
+            }
+        }
+        throw new ServiceException("There is not service order with this id");
     }
 
     @Override

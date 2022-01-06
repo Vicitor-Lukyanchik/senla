@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.senla.hotel.domain.Service;
-import com.senla.hotel.reader.ConsoleReader;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.impl.ServiceServiceImpl;
 import com.senla.hotel.ui.Action;
+import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
@@ -42,6 +42,8 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
         result.put(commandNumber++, createMenuItem("Change service cost", changeServiceCost(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find services", findServices(), rootMenu));
         result.put(commandNumber++, createMenuItem("Find services costs", findServicesCosts(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Import services", importService(), rootMenu));
+        result.put(commandNumber++, createMenuItem("Export services", exportService(), rootMenu));
         return result;
     }
 
@@ -76,6 +78,18 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
         return () -> {
             List<Service> services = serviceService.findAll();
             System.out.println(hotelFormatter.formatServicesCosts(services));
+        };
+    }
+
+    private Action importService() {
+        return () -> serviceService.importServices();
+    }
+
+    private Action exportService() {
+        return () -> {
+            System.out.print("\nInput service id : ");
+            Long id = ConsoleReader.readLong();
+            serviceService.exportService(id);
         };
     }
 }

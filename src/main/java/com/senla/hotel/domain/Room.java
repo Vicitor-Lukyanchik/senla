@@ -67,7 +67,7 @@ public class Room {
         return star;
     }
 
-    public void setStar(int star) {
+    public void setStars(int star) {
         this.star = star;
     }
 

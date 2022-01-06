@@ -1,4 +1,4 @@
-package com.senla.hotel.reader;
+package com.senla.hotel.ui;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
