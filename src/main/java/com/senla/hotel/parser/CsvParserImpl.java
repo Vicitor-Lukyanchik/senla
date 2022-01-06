@@ -11,6 +11,7 @@ import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.domain.ServiceOrder;
+import com.senla.hotel.parser.validator.Validator;
 
 public class CsvParserImpl implements CsvParser {
 
@@ -28,6 +29,7 @@ public class CsvParserImpl implements CsvParser {
     private Room parseRoom(String[] room) {
         Long id = Long.parseLong(room[0]);
         int number = Integer.parseInt(room[1]);
+        Validator.validatePrice(room[2]);
         BigDecimal cost = new BigDecimal(room[2]);
         int capacity = Integer.parseInt(room[3]);
         int stars = Integer.parseInt(room[4]);
@@ -66,6 +68,7 @@ public class CsvParserImpl implements CsvParser {
         Long id = Long.parseLong(lodger[0]);
         String firstName = lodger[1];
         String lastName = lodger[2];
+        Validator.validatePhone(lodger[3]);
         String phone = lodger[3];
         return new Lodger(id, firstName, lastName, phone);
     }
@@ -95,7 +98,9 @@ public class CsvParserImpl implements CsvParser {
 
     private Reservation parseReservation(String[] reservation) {
         Long id = Long.parseLong(reservation[0]);
+        Validator.validateDate(reservation[1]);
         LocalDate startDate = LocalDate.parse(reservation[1], DateTimeFormatter.ofPattern("d.MM.yyyy"));
+        Validator.validateDate(reservation[2]);
         LocalDate endDate = LocalDate.parse(reservation[2], DateTimeFormatter.ofPattern("d.MM.yyyy"));
         Long lodgerId = Long.parseLong(reservation[3]);
         Long roomId = Long.parseLong(reservation[4]);
@@ -127,6 +132,7 @@ public class CsvParserImpl implements CsvParser {
 
     private ServiceOrder parseServiceOrder(String[] serviceOrder) {
         Long id = Long.parseLong(serviceOrder[0]);
+        Validator.validateDate(serviceOrder[1]);
         LocalDate date = LocalDate.parse(serviceOrder[1], DateTimeFormatter.ofPattern("d.MM.yyyy"));
         Long lodgerId = Long.parseLong(serviceOrder[2]);
         Long serviceId = Long.parseLong(serviceOrder[3]);
@@ -159,6 +165,7 @@ public class CsvParserImpl implements CsvParser {
     private Service parseService(String[] service) {
         Long id = Long.parseLong(service[0]);
         String name = service[1];
+        Validator.validatePrice(service[2]);
         BigDecimal cost = new BigDecimal(service[2]);
         return new Service(id, name, cost);
     }

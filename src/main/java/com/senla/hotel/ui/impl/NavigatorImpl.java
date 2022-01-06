@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.senla.hotel.exception.FileException;
 import com.senla.hotel.exception.ServiceException;
+import com.senla.hotel.exception.ValidatorException;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
@@ -35,7 +36,7 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-        } catch (ServiceException | FileException ex) {
+        } catch (ServiceException | FileException | ValidatorException ex) {
             System.out.println("\nError");
             System.out.println(ex.getMessage());
         } catch (DateTimeParseException ex) {
