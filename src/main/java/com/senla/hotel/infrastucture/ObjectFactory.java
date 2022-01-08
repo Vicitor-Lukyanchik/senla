@@ -1,19 +1,20 @@
-package com.senla.hotel.objectfactory;
+package com.senla.hotel.infrastucture;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.senla.hotel.config.Config;
-import com.senla.hotel.configurator.ObjectConfigurator;
-import com.senla.hotel.exception.ConfigException;
+import com.senla.hotel.exception.ObjectConfiguratorException;
+import com.senla.hotel.exception.ObjectFactoryException;
 
 public class ObjectFactory {
 
     private List<ObjectConfigurator> configurators = new ArrayList<>();
-
-    public ObjectFactory(Config config) {
-        for (Class<? extends ObjectConfigurator> aClass : config.getScanner()
+    private ApplicationContext context;
+    
+    public ObjectFactory(ApplicationContext context) {
+        this.context = context;
+        for (Class<? extends ObjectConfigurator> aClass : context.getConfig().getScanner()
                 .getSubTypesOf(ObjectConfigurator.class)) {
             configurators.add(getObjectInstance(aClass));
         }
@@ -21,7 +22,7 @@ public class ObjectFactory {
 
     public <T> T createObject(Class type) {
         T t = (T) getObjectInstance(type);
-        configurators.forEach(objectConfigurator -> objectConfigurator.configurate(t));
+        configurators.forEach(objectConfigurator -> objectConfigurator.configurate(t, context));
         return t;
     }
 
@@ -30,7 +31,10 @@ public class ObjectFactory {
             return implClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
-            throw new ConfigException("Can not create object");
+            throw new ObjectFactoryException("Can not create object");
+        } catch (ObjectConfiguratorException e) {
+            System.out.println("\nERROR\n");
+            throw new ObjectFactoryException(e.getMessage());
         }
     }
 }

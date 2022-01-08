@@ -1,4 +1,4 @@
-package com.senla.hotel.config;
+package com.senla.hotel.infrastucture;
 
 import java.util.Set;
 

@@ -4,9 +4,9 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.ui.Action;
 import com.senla.hotel.ui.ConsoleReader;

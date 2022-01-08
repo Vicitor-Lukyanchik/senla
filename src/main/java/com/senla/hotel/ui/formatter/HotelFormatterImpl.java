@@ -129,7 +129,7 @@ public class HotelFormatterImpl implements HotelFormatter {
     public String formatLastRoomReservations(Map<LocalDate, Lodger> reservations) {
         StringBuilder result = new StringBuilder();
 
-        result.append("\nLast 3 room reservations : ").append(NEXT_LINE);
+        result.append("\nLast room reservations : ").append(NEXT_LINE);
 
         if (!reservations.isEmpty()) {
             result.append("start date").append(TABULATION).append("FI").append(NEXT_LINE);

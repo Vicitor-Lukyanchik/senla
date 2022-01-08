@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.senla.hotel.annotation.Off;
-import com.senla.hotel.context.ApplicationContext;
+import com.senla.hotel.annotation.ConfigProperty;
+import com.senla.hotel.annotation.OffAction;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.ui.Action;
@@ -30,6 +31,8 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);
 
+    @ConfigProperty
+    private int limitRoomLodgers;
     private Integer commandNumber = 1;
     private RoomService roomService = ApplicationContext.getInstance().getObject(RoomService.class);
     private LodgerService lodgerService = ApplicationContext.getInstance().getObject(LodgerService.class);
@@ -66,7 +69,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         return new MenuItem(title, action, nextMenu);
     }
 
-    @Off
+   @OffAction
     private Action addRoom = () -> {
         System.out.print("\nInput room number : ");
         int number = ConsoleReader.readNumber();
@@ -99,9 +102,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     private Action findLastLodgers = () -> {
         System.out.print("\nInput room id : ");
         Long roomId = ConsoleReader.readLong();
-        System.out.print("\nInput how many last lodgers : ");
-        Integer limit = ConsoleReader.readNumber();
-        Map<LocalDate, Lodger> reservations = lodgerService.findLastReservationsByRoomId(roomId, limit);
+        Map<LocalDate, Lodger> reservations = lodgerService.findLastReservationsByRoomId(roomId, limitRoomLodgers);
         System.out.println(hotelFormatter.formatLastRoomReservations(reservations));
     };
 

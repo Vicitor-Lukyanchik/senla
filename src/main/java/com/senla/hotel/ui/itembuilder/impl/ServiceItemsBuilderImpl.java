@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Service;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.ui.Action;
 import com.senla.hotel.ui.ConsoleReader;

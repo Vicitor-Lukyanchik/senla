@@ -1,6 +1,6 @@
 package com.senla.hotel.ui.impl;
 
-import com.senla.hotel.context.ApplicationContext;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.MenuController;

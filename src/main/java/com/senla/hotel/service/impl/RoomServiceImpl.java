@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.RoomRepository;
 import com.senla.hotel.service.RoomService;
@@ -47,6 +47,7 @@ public class RoomServiceImpl implements RoomService {
     public void importRooms() {
         importRooms = getRoomsFromFile();
         for(Room importRoom : importRooms) {
+            validateStars(importRoom.getStars());
             try {
                 Room room = findById(id);
                 room.setNumber(importRoom.getNumber());
@@ -55,7 +56,6 @@ public class RoomServiceImpl implements RoomService {
                 room.setStars(importRoom.getStars());
                 room.setRepaired(importRoom.isRepaired());
             } catch (ServiceException ex) {
-                validateStars(importRoom.getStars());
                 roomRepository.addRoom(new Room(importRoom.getId(), importRoom.getNumber(), importRoom.getCost(), importRoom.getCapacity(),
                         importRoom.getStars(), importRoom.isRepaired()));
             }

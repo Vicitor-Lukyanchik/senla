@@ -1,11 +1,7 @@
-package com.senla.hotel.context;
+package com.senla.hotel.infrastucture;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.senla.hotel.config.Config;
-import com.senla.hotel.config.JavaConfig;
-import com.senla.hotel.objectfactory.ObjectFactory;
 
 public class ApplicationContext {
 
@@ -13,7 +9,7 @@ public class ApplicationContext {
     
     private Map<Class, Object> cache = new HashMap<>();
     private Config config = new JavaConfig("com.senla.hotel");
-    private ObjectFactory factory = new ObjectFactory(config);
+    private ObjectFactory factory;
     
     public static ApplicationContext getInstance() {
         if(instance == null) {
@@ -39,5 +35,9 @@ public class ApplicationContext {
 
     public Config getConfig() {
         return config;
+    }
+
+    public void setFactory(ObjectFactory factory) {
+        this.factory = factory;
     }
 }

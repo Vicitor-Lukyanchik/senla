@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -20,6 +19,7 @@ import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.LodgerRepository;
 import com.senla.hotel.repository.ReservationRepository;
@@ -72,14 +72,13 @@ public class LodgerServiceImpl implements LodgerService {
     public void importLodgers() {
         importLodgers = getLodgersFromFile();
         for (Lodger importLodger : importLodgers) {
+            validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
             try {
-                validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
-                Lodger lodger = findById(id);
+                Lodger lodger = findById(importLodger.getId());
                 lodger.setFirstName(importLodger.getFirstName());
                 lodger.setLastName(importLodger.getLastName());
                 lodger.setPhoneNumber(importLodger.getPhoneNumber());
             } catch (ServiceException ex) {
-                validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
                 lodgerRepository.addLodger(new Lodger(importLodger.getId(), importLodger.getFirstName(),
                         importLodger.getLastName(), importLodger.getPhoneNumber()));
             }
@@ -142,16 +141,18 @@ public class LodgerServiceImpl implements LodgerService {
     public void importReservations() {
         importReservations = getReservationsFromFile();
         for (Reservation importReservation : importReservations) {
+            validateReservation(importReservation.getStartDate(), importReservation.getEndDate(),
+                    importReservation.getLodgerId(), importReservation.getRoomId());
             try {
-                Reservation reservation = findReservationById(id);
+                Reservation reservation = findReservationById(importReservation.getId());
                 reservation.setStartDate(importReservation.getStartDate());
                 reservation.setEndDate(importReservation.getEndDate());
                 reservation.setLodgerId(importReservation.getLodgerId());
                 reservation.setRoomId(importReservation.getRoomId());
             } catch (ServiceException ex) {
-                reservationRepository.addReservation(
-                        new Reservation(id, importReservation.getStartDate(), importReservation.getEndDate(),
-                                importReservation.getLodgerId(), importReservation.getRoomId()));
+                reservationRepository.addReservation(new Reservation(importReservation.getId(),
+                        importReservation.getStartDate(), importReservation.getEndDate(),
+                        importReservation.getLodgerId(), importReservation.getRoomId()));
             }
         }
     }
@@ -236,8 +237,9 @@ public class LodgerServiceImpl implements LodgerService {
     public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
         List<Reservation> reservations = reservationRepository.getReservations().stream()
-                .filter(r -> roomId.equals(r.getRoomId())).sorted(Comparator.comparing(Reservation::getStartDate))
-                .limit(limit).collect(Collectors.toList());
+                .filter(r -> roomId.equals(r.getRoomId()))
+                .sorted(Comparator.comparing(Reservation::getStartDate).reversed()).limit(limit)
+                .collect(Collectors.toList());
 
         for (Reservation reservation : reservations) {
             result.put(reservation.getStartDate(), findById(reservation.getLodgerId()));
@@ -305,17 +307,18 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void importServiceOrders() {
         importServiceOrders = getServiceOrdersFromFile();
-        for (ServiceOrder importReservation : importServiceOrders) {
+        for (ServiceOrder importServiceOrder : importServiceOrders) {
             try {
-                validateServiceOrder(importReservation.getLodgerId(), importReservation.getServiceId());
-                ServiceOrder serviceOrders = findServiceOrderById(id);
-                serviceOrders.setDate(importReservation.getDate());
-                serviceOrders.setLodgerId(importReservation.getLodgerId());
-                serviceOrders.setServiceId(importReservation.getServiceId());
+                validateServiceOrder(importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
+                ServiceOrder serviceOrder = findServiceOrderById(importServiceOrder.getId());
+                serviceOrder.setDate(importServiceOrder.getDate());
+                serviceOrder.setLodgerId(importServiceOrder.getLodgerId());
+                serviceOrder.setServiceId(importServiceOrder.getServiceId());
             } catch (ServiceException ex) {
-                validateServiceOrder(importReservation.getLodgerId(), importReservation.getServiceId());
-                serviceOrderRepository.addServiceOrder(new ServiceOrder(id, importReservation.getDate(),
-                        importReservation.getLodgerId(), importReservation.getServiceId()));
+                validateServiceOrder(importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
+                serviceOrderRepository
+                        .addServiceOrder(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
+                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
             }
         }
     }

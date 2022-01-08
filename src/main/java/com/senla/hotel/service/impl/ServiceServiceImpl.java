@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.senla.hotel.context.ApplicationContext;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.ServiceRepository;
 import com.senla.hotel.service.ServiceService;
@@ -47,12 +47,12 @@ public class ServiceServiceImpl implements ServiceService {
     public void importServices() {
         importServices = getServicesFromFile();
         for (Service importService : importServices) {
+            validateService(importService.getName());
             try {
                 Service service = findById(id);
                 service.setName(importService.getName());
                 service.setCost(importService.getCost());
             } catch (ServiceException ex) {
-                validateService(importService.getName());
                 serviceRepository.addService(
                         new Service(importService.getId(), importService.getName(), importService.getCost()));
             }
