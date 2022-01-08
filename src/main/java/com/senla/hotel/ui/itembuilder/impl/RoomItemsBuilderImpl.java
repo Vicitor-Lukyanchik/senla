@@ -2,7 +2,6 @@ package com.senla.hotel.ui.itembuilder.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -27,10 +26,11 @@ import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private static final boolean DEFAULT_REPAIRED = false;
-    private static final LocalDate DATE_NOW = LocalDate.parse("02.10.2021", DateTimeFormatter.ofPattern("d.MM.yyyy"));
 
     private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);
 
+    @ConfigProperty(propertyName = "date.now", type = "date")
+    private LocalDate LOCAL_DATE_NOW;
     @ConfigProperty
     private int limitRoomLodgers;
     private Integer commandNumber = 1;
@@ -43,24 +43,28 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         result.put(commandNumber++, createMenuItem("Add room", addRoom, rootMenu));
         result.put(commandNumber++, createMenuItem("Change room cost", changeRoomCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Change room status", changeRoomStatus, rootMenu));
-        result.put(commandNumber++, createMenuItem("Find count not settled rooms", findCountNotSettledRooms, rootMenu));
-        result.put(commandNumber++, createMenuItem("Find last lodgers, who lived in room", findLastLodgers, rootMenu));
-        result.put(commandNumber++, createMenuItem("Find not settled rooms", findNotSettledRooms, rootMenu));
-        result.put(commandNumber++,
-                createMenuItem("Find not settled rooms on date", findNotSettledRoomsOnDate, rootMenu));
+
         result.put(commandNumber++, createMenuItem("Find room", findRoom, rootMenu));
         result.put(commandNumber++, createMenuItem("Find rooms", findRooms, rootMenu));
         result.put(commandNumber++, createMenuItem("Find rooms costs", findRoomsCosts, rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by capacity", sortRoomsByCapacity, rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by cost", sortRoomsByCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Sort rooms by stars", sortRoomsByStars, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find last lodgers, who lived in room", findLastLodgers, rootMenu));
+
+        result.put(commandNumber++, createMenuItem("Find count not settled rooms", findCountNotSettledRooms, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find not settled rooms", findNotSettledRooms, rootMenu));
+        result.put(commandNumber++,
+                createMenuItem("Find not settled rooms on date", findNotSettledRoomsOnDate, rootMenu));
+
         result.put(commandNumber++,
                 createMenuItem("Sort not settled rooms by capacity", sortNotSettledRoomsByCapacity, rootMenu));
         result.put(commandNumber++,
                 createMenuItem("Sort not settled rooms by cost", sortNotSettledRoomsByCost, rootMenu));
         result.put(commandNumber++,
                 createMenuItem("Sort not settled rooms by stars", sortNotSettledRoomsByStars, rootMenu));
-        result.put(commandNumber++, createMenuItem("Import rooms", importRoom, rootMenu));
+
+        result.put(commandNumber++, createMenuItem("Import rooms", importRooms, rootMenu));
         result.put(commandNumber++, createMenuItem("Export room", exportRoom, rootMenu));
         return result;
     }
@@ -69,7 +73,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         return new MenuItem(title, action, nextMenu);
     }
 
-   @OffAction
+    @OffAction
     private Action addRoom = () -> {
         System.out.print("\nInput room number : ");
         int number = ConsoleReader.readNumber();
@@ -97,7 +101,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action findCountNotSettledRooms = () -> System.out
-            .println("\nCount not settled rooms : " + lodgerService.findAllNotSettledRoomOnDate(DATE_NOW).size());
+            .println("\nCount not settled rooms : " + lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW).size());
 
     private Action findLastLodgers = () -> {
         System.out.print("\nInput room id : ");
@@ -107,7 +111,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action findNotSettledRooms = () -> {
-        List<Room> rooms = lodgerService.findAllNotSettledRoomOnDate(DATE_NOW);
+        List<Room> rooms = lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW);
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
@@ -151,17 +155,17 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action sortNotSettledRoomsByCapacity = () -> {
-        List<Room> rooms = sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+        List<Room> rooms = sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
     private Action sortNotSettledRoomsByCost = () -> {
-        List<Room> rooms = sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+        List<Room> rooms = sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
     private Action sortNotSettledRoomsByStars = () -> {
-        List<Room> rooms = sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(DATE_NOW));
+        List<Room> rooms = sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
@@ -177,7 +181,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         return rooms.stream().sorted(Comparator.comparing(Room::getCapacity)).collect(Collectors.toList());
     }
 
-    private Action importRoom = () -> roomService.importRooms();
+    private Action importRooms = () -> roomService.importRooms();
 
     private Action exportRoom = () -> {
         System.out.print("\nInput room id : ");

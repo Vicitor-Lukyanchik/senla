@@ -2,6 +2,8 @@ package com.senla.hotel.infrastucture.configurator;
 
 import java.awt.List;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -17,6 +19,8 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
     private static final String REGEX = ";";
     private static final String POINT = ".";
     private static final String STRING_TYPE = "string";
+    private static final String DATE_TYPE = "date";
+    private static final String DATE_PATTERN = "d.MM.yyyy";
     private static final String PROPERTY_PATH = "config.properties";
 
     private FileReader fileReader;
@@ -85,6 +89,10 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
             return (T[]) parseToBoolean(values);
         } else if (field.getAnnotation(ConfigProperty.class).type().equals(STRING_TYPE)) {
             return (T[]) values;
+        } else if (field.getAnnotation(ConfigProperty.class).type().equals(DATE_TYPE)) {
+            LocalDate[] result = new LocalDate[1];
+            result[0] = LocalDate.parse(values[0], DateTimeFormatter.ofPattern(DATE_PATTERN));
+            return (T[]) result;
         }
         throw new ObjectConfiguratorException(
                 "There is not type with name: " + field.getAnnotation(ConfigProperty.class).type());

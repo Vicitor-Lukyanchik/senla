@@ -25,18 +25,19 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
     public Map<Integer, MenuItem> buildLodgerItems(Menu rootMenu) {
         Map<Integer, MenuItem> result = new LinkedHashMap<>();
         result.put(commandNumber++, createMenuItem("Add lodger", addLodger, rootMenu));
-        result.put(commandNumber++, createMenuItem("Evict lodger from room", evictLodger, rootMenu));
         result.put(commandNumber++, createMenuItem("Find count lodgers", findCountLodgers, rootMenu));
-        result.put(commandNumber++, createMenuItem("Find lodgers services", findLodgersServices, rootMenu));
+        result.put(commandNumber++, createMenuItem("Put lodger in room", putLodgerInRoom, rootMenu));
+        result.put(commandNumber++, createMenuItem("Evict lodger from room", evictLodger, rootMenu));
         result.put(commandNumber++, createMenuItem("Find lodgers rooms", findLodgersRooms, rootMenu));
         result.put(commandNumber++, createMenuItem("Find reservation cost", findReservationCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Order service to lodger", orderServiceToLodger, rootMenu));
-        result.put(commandNumber++, createMenuItem("Put lodger in room", putLodgerInRoom, rootMenu));
-        result.put(commandNumber++, createMenuItem("Import lodgers", importLodger, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find lodgers services", findLodgersServices, rootMenu));
+
+        result.put(commandNumber++, createMenuItem("Import lodgers", importLodgers, rootMenu));
+        result.put(commandNumber++, createMenuItem("Import reservations", importReservations, rootMenu));
+        result.put(commandNumber++, createMenuItem("Import service orders", importServiceOrders, rootMenu));
         result.put(commandNumber++, createMenuItem("Export lodger", exportLodger, rootMenu));
-        result.put(commandNumber++, createMenuItem("Import reservations", importReservation, rootMenu));
         result.put(commandNumber++, createMenuItem("Export reservation", exportReservation, rootMenu));
-        result.put(commandNumber++, createMenuItem("Import service orders", importServiceOrder, rootMenu));
         result.put(commandNumber++, createMenuItem("Export service order", exportServiceOrder, rootMenu));
         return result;
     }
@@ -108,7 +109,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         lodgerService.createReservation(startDate, endDate, lodgerId, roomId);
     };
 
-    private Action importLodger = () -> lodgerService.importLodgers();
+    private Action importLodgers = () -> lodgerService.importLodgers();
 
     private Action exportLodger = () -> {
         System.out.print("\nInput lodger id : ");
@@ -116,7 +117,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         lodgerService.exportLodger(id);
     };
 
-    private Action importReservation = () -> lodgerService.importReservations();
+    private Action importReservations = () -> lodgerService.importReservations();
 
     private Action exportReservation = () -> {
         System.out.print("\nInput reservation id : ");
@@ -124,7 +125,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         lodgerService.exportReservation(id);
     };
 
-    private Action importServiceOrder = () -> lodgerService.importServiceOrders();
+    private Action importServiceOrders = () -> lodgerService.importServiceOrders();
 
     private Action exportServiceOrder = () -> {
         System.out.print("\nInput service order id : ");

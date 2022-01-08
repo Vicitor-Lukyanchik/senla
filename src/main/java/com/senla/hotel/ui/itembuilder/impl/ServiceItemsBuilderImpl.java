@@ -25,9 +25,9 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
     public Map<Integer, MenuItem> buildServiceItems(Menu rootMenu) {
         Map<Integer, MenuItem> result = new LinkedHashMap<>();
         result.put(commandNumber++, createMenuItem("Add service", addService, rootMenu));
-        result.put(commandNumber++, createMenuItem("Change service cost", changeServiceCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Find services", findServices, rootMenu));
         result.put(commandNumber++, createMenuItem("Find services costs", findServicesCosts, rootMenu));
+        result.put(commandNumber++, createMenuItem("Change service cost", changeServiceCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Import services", importService, rootMenu));
         result.put(commandNumber++, createMenuItem("Export service", exportService, rootMenu));
         return result;
