@@ -5,9 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Service;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.ui.Action;
 import com.senla.hotel.ui.ConsoleReader;
@@ -19,9 +19,10 @@ import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
 @Singleton
 public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
 
-    private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);
-    
-    private ServiceService serviceService = ApplicationContext.getInstance().getObject(ServiceService.class);
+    @InjectByType
+    private HotelFormatter hotelFormatter;
+    @InjectByType
+    private ServiceService serviceService;
     private Integer commandNumber = 1;
 
     public Map<Integer, MenuItem> buildServiceItems(Menu rootMenu) {

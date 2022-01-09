@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
@@ -20,7 +21,6 @@ import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.LodgerRepository;
 import com.senla.hotel.repository.ReservationRepository;
@@ -34,17 +34,22 @@ public class LodgerServiceImpl implements LodgerService {
 
     private static final String PATH = "lodgers.csv";
 
-    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);
-    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);
-    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);
-
-    private ServiceService serviceService = ApplicationContext.getInstance().getObject(ServiceService.class);
-    private RoomService roomService = ApplicationContext.getInstance().getObject(RoomService.class);
-    private LodgerRepository lodgerRepository = ApplicationContext.getInstance().getObject(LodgerRepository.class);
-    private ServiceOrderRepository serviceOrderRepository = ApplicationContext.getInstance()
-            .getObject(ServiceOrderRepository.class);
-    private ReservationRepository reservationRepository = ApplicationContext.getInstance()
-            .getObject(ReservationRepository.class);
+    @InjectByType
+    private FileReader fileReader;
+    @InjectByType
+    private CsvParser csvParser;
+    @InjectByType
+    private FileWriter fileWriter;
+    @InjectByType
+    private ServiceService serviceService;
+    @InjectByType
+    private RoomService roomService;
+    @InjectByType
+    private LodgerRepository lodgerRepository;
+    @InjectByType
+    private ServiceOrderRepository serviceOrderRepository;
+    @InjectByType
+    private ReservationRepository reservationRepository;
     private Long id = 0l;
     private Long reservationId = 0l;
     private Long serviceOrderId = 0l;

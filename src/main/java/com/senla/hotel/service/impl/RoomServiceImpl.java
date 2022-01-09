@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.RoomRepository;
 import com.senla.hotel.service.RoomService;
@@ -19,11 +19,14 @@ public class RoomServiceImpl implements RoomService {
 
     private static final String PATH = "rooms.csv";
 
-    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);
-    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);
-    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);
-
-    private RoomRepository roomRepository = ApplicationContext.getInstance().getObject(RoomRepository.class);
+    @InjectByType
+    private FileReader fileReader;
+    @InjectByType
+    private CsvParser csvParser;
+    @InjectByType
+    private FileWriter fileWriter;
+    @InjectByType
+    private RoomRepository roomRepository;
     private Long id = 0l;
     private List<Room> importRooms = new ArrayList<>();
 

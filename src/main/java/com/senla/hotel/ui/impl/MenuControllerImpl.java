@@ -1,7 +1,7 @@
 package com.senla.hotel.ui.impl;
 
+import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.MenuController;
@@ -10,8 +10,10 @@ import com.senla.hotel.ui.Navigator;
 @Singleton
 public class MenuControllerImpl implements MenuController {
 
-    private Builder builder = ApplicationContext.getInstance().getObject(Builder.class);
-    private Navigator navigator = ApplicationContext.getInstance().getObject(Navigator.class);
+    @InjectByType
+    private Builder builder;
+    @InjectByType
+    private Navigator navigator;
 
     @Override
     public void run() {

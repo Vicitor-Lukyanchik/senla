@@ -29,12 +29,12 @@ public class ObjectFactory {
     private <T> T getObjectInstance(Class<? extends T> implClass) {
         try {
             return implClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new ObjectFactoryException("Can not create object");
         } catch (ObjectConfiguratorException e) {
             System.out.println("\nERROR\n");
             throw new ObjectFactoryException(e.getMessage());
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+                | NoSuchMethodException | SecurityException e) {
+            throw new ObjectFactoryException("Can not create object");
         }
     }
 }

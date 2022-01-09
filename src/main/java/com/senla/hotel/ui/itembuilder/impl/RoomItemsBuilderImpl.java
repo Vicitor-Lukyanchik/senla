@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.senla.hotel.annotation.ConfigProperty;
+import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.OffAction;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.ui.Action;
@@ -28,16 +28,19 @@ import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private static final boolean DEFAULT_REPAIRED = false;
-
-    private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);
-
+    
+    @InjectByType
+    private HotelFormatter hotelFormatter;
+    @InjectByType
+    private RoomService roomService;
+    @InjectByType
+    private LodgerService lodgerService;
     @ConfigProperty(propertyName = "date.now", type = "date")
     private LocalDate LOCAL_DATE_NOW;
     @ConfigProperty
     private int limitRoomLodgers;
     private Integer commandNumber = 1;
-    private RoomService roomService = ApplicationContext.getInstance().getObject(RoomService.class);
-    private LodgerService lodgerService = ApplicationContext.getInstance().getObject(LodgerService.class);
+
 
     public Map<Integer, MenuItem> buildRoomItems(Menu rootMenu) {
         Map<Integer, MenuItem> result = new LinkedHashMap<>();
