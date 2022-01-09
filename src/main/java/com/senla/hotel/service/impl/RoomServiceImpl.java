@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
@@ -13,6 +14,7 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.RoomRepository;
 import com.senla.hotel.service.RoomService;
 
+@Singleton
 public class RoomServiceImpl implements RoomService {
 
     private static final String PATH = "rooms.csv";

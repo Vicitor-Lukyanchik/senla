@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.ServiceService;
@@ -15,6 +16,7 @@ import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
 
+@Singleton
 public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
 
     private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);

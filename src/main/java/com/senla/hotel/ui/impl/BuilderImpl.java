@@ -3,6 +3,7 @@ package com.senla.hotel.ui.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.Menu;
@@ -11,6 +12,7 @@ import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
 
+@Singleton
 public class BuilderImpl implements Builder {
 
     private Menu rootMenu = null;

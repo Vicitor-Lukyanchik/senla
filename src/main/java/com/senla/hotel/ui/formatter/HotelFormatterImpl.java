@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 
+@Singleton
 public class HotelFormatterImpl implements HotelFormatter {
 
     public static final String SPASE = " ";

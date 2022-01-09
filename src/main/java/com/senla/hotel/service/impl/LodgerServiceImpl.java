@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -28,6 +29,7 @@ import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
 
+@Singleton
 public class LodgerServiceImpl implements LodgerService {
 
     private static final String PATH = "lodgers.csv";

@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.FileException;
 
+@Singleton
 public class FileWriterImpl implements FileWriter {
     
     @Override

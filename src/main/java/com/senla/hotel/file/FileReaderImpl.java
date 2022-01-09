@@ -13,8 +13,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.FileException;
 
+@Singleton
 public class FileReaderImpl implements FileReader {
     
     @Override

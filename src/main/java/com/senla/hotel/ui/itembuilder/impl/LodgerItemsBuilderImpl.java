@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.infrastucture.ApplicationContext;
@@ -15,6 +16,7 @@ import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 
+@Singleton
 public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
     private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);

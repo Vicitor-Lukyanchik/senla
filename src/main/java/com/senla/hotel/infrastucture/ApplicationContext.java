@@ -3,6 +3,8 @@ package com.senla.hotel.infrastucture;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
+
 public class ApplicationContext {
 
     private static ApplicationContext instance;
@@ -28,8 +30,9 @@ public class ApplicationContext {
             implClass = config.getImplClass(type);
         }
         T t = factory.createObject(implClass);
-        //will check annotation Singleton
-        cache.put(type, t);
+        if(implClass.isAnnotationPresent(Singleton.class)) {
+            cache.put(type, t);
+        }
         return t;
     }
 
