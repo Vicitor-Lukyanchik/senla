@@ -28,7 +28,7 @@ import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private static final boolean DEFAULT_REPAIRED = false;
-    
+
     @InjectByType
     private HotelFormatter hotelFormatter;
     @InjectByType
@@ -40,7 +40,6 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     @ConfigProperty
     private int limitRoomLodgers;
     private Integer commandNumber = 1;
-
 
     public Map<Integer, MenuItem> buildRoomItems(Menu rootMenu) {
         Map<Integer, MenuItem> result = new LinkedHashMap<>();

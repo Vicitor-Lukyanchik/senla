@@ -32,7 +32,9 @@ import com.senla.hotel.service.ServiceService;
 @Singleton
 public class LodgerServiceImpl implements LodgerService {
 
-    private static final String PATH = "lodgers.csv";
+    private static final String LODGERS_PATH = "csv/lodgers.csv";
+    private static final String RESERVATIONS_PATH = "csv/reservations.csv";
+    private static final String SERVICE_ORDERS_PATH = "csv/service_orders.csv";
 
     @InjectByType
     private FileReader fileReader;
@@ -93,7 +95,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<Lodger> getLodgersFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(LODGERS_PATH);
         return csvParser.parseLodgers(lines);
     }
 
@@ -109,7 +111,7 @@ public class LodgerServiceImpl implements LodgerService {
             importLodger.setPhoneNumber(lodger.getPhoneNumber());
         }
         List<String> lines = csvParser.parseLodgersToLines(importLodgers);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private void validateLodger(String firstName, String lastName, String phone) {
@@ -165,7 +167,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<Reservation> getReservationsFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(RESERVATIONS_PATH);
         return csvParser.parseReservations(lines);
     }
 
@@ -183,7 +185,7 @@ public class LodgerServiceImpl implements LodgerService {
             importReservation.setEndDate(reservation.getEndDate());
         }
         List<String> lines = csvParser.parseLodgersToLines(importLodgers);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
@@ -331,7 +333,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<ServiceOrder> getServiceOrdersFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(SERVICE_ORDERS_PATH);
         return csvParser.parseServiceOrders(lines);
     }
 
@@ -348,7 +350,7 @@ public class LodgerServiceImpl implements LodgerService {
             importServiceOrder.setDate(serviceOrder.getDate());
         }
         List<String> lines = csvParser.parseServiceOrdersToLines(importServiceOrders);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private Long generateServiceOrderId() {

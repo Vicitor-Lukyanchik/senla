@@ -12,7 +12,6 @@ import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.domain.ServiceOrder;
-import com.senla.hotel.parser.validator.Validator;
 
 @Singleton
 public class CsvParserImpl implements CsvParser {

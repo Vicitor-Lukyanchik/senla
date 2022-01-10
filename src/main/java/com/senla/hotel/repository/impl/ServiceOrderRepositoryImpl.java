@@ -19,4 +19,8 @@ public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
     public void addServiceOrder(ServiceOrder serviceOrder) {
         serviceOrders.add(serviceOrder);
     }
+
+    public void setServiceOrders(List<ServiceOrder> serviceOrders) {
+        this.serviceOrders = serviceOrders;
+    }
 }

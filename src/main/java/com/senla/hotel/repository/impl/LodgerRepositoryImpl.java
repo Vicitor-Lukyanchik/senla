@@ -19,4 +19,8 @@ public class LodgerRepositoryImpl implements LodgerRepository {
     public void addLodger(Lodger lodger) {
         lodgers.add(lodger);
     }
+
+    public void setLodgers(List<Lodger> lodgers) {
+        this.lodgers = lodgers;
+    }
 }

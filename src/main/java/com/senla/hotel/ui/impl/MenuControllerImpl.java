@@ -5,6 +5,7 @@ import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.MenuController;
+import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
 
 @Singleton
@@ -23,7 +24,14 @@ public class MenuControllerImpl implements MenuController {
             navigator.printMenu();
             int commandNumber = ConsoleReader.readNumber();
             navigator.navigate(commandNumber);
-            navigator.setCurrentMenu(navigator.getCurrentMenu().getMenuItems().get(commandNumber).getNextMenu());
+            chooseNextMenu(commandNumber);
+        }
+    }
+
+    private void chooseNextMenu(int commandNumber) {
+        MenuItem n = navigator.getCurrentMenu().getMenuItems().get(commandNumber);
+        if (n != null) {
+            navigator.setCurrentMenu(n.getNextMenu());
         }
     }
 }

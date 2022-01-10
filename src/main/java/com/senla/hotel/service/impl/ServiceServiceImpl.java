@@ -17,7 +17,7 @@ import com.senla.hotel.service.ServiceService;
 @Singleton
 public class ServiceServiceImpl implements ServiceService {
 
-    private static final String PATH = "services.csv";
+    private static final String SERVICESPATH = "scv/services.csv";
 
     @InjectByType
     private FileReader fileReader;
@@ -65,24 +65,24 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     private List<Service> getServicesFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(SERVICESPATH);
         return csvParser.parseServices(lines);
     }
 
     @Override
     public void exportService(Long id) {
-            Service service = findById(id);
-            Service importService = importServices.stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
-            if(importService == null) {
-                importServices.add(service);
-            } else {
-                importService.setName(service.getName());
-                importService.setCost(service.getCost());
-            }
+        Service service = findById(id);
+        Service importService = importServices.stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
+        if (importService == null) {
+            importServices.add(service);
+        } else {
+            importService.setName(service.getName());
+            importService.setCost(service.getCost());
+        }
         List<String> lines = csvParser.parseServicesToLines(importServices);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(SERVICESPATH, lines);
     }
-    
+
     private void validateService(String name) {
         if (name.equals("")) {
             throw new ServiceException("Service neme can not be empty");

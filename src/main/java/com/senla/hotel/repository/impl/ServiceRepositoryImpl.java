@@ -10,13 +10,17 @@ import com.senla.hotel.repository.ServiceRepository;
 @Singleton
 public class ServiceRepositoryImpl implements ServiceRepository {
 
-    private List<Service> service = new ArrayList<>();
+    private List<Service> services = new ArrayList<>();
 
     public List<Service> getServices() {
-        return new ArrayList<>(service);
+        return new ArrayList<>(services);
     }
 
     public void addService(Service service) {
-        this.service.add(service);
+        this.services.add(service);
+    }
+
+    public void setServices(List<Service> service) {
+        this.services = service;
     }
 }

@@ -4,14 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.senla.hotel.exception.ObjectConfiguratorException;
 import com.senla.hotel.exception.ObjectFactoryException;
 
 public class ObjectFactory {
 
     private List<ObjectConfigurator> configurators = new ArrayList<>();
     private ApplicationContext context;
-    
+
     public ObjectFactory(ApplicationContext context) {
         this.context = context;
         for (Class<? extends ObjectConfigurator> aClass : context.getConfig().getScanner()
@@ -29,9 +28,6 @@ public class ObjectFactory {
     private <T> T getObjectInstance(Class<? extends T> implClass) {
         try {
             return implClass.getDeclaredConstructor().newInstance();
-        } catch (ObjectConfiguratorException e) {
-            System.out.println("\nERROR\n");
-            throw new ObjectFactoryException(e.getMessage());
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {
             throw new ObjectFactoryException("Can not create object");

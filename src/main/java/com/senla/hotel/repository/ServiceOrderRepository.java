@@ -8,4 +8,6 @@ public interface ServiceOrderRepository {
     List<ServiceOrder> getServiceOrders();
 
     void addServiceOrder(ServiceOrder serviceOrder);
+
+    void setServiceOrders(List<ServiceOrder> serviceOrders);
 }

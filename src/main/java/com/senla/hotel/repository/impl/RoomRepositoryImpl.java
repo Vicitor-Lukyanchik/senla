@@ -19,4 +19,8 @@ public class RoomRepositoryImpl implements RoomRepository {
     public void addRoom(Room room) {
         rooms.add(room);
     }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
 }

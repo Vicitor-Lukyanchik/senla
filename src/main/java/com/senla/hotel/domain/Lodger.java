@@ -1,6 +1,8 @@
 package com.senla.hotel.domain;
 
-public class Lodger {
+import java.io.Serializable;
+
+public class Lodger implements Serializable {
 
     private Long id;
     private String firstName;

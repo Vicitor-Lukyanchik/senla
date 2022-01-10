@@ -1,6 +1,8 @@
 package com.senla.hotel.file;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -15,11 +17,20 @@ import com.senla.hotel.exception.FileException;
 
 @Singleton
 public class FileWriterImpl implements FileWriter {
-    
+
     @Override
     public void writeResourceFileLines(String path, List<String> lines) {
         try {
             Files.write(findResourcePath(path), lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new FileException("File does not exist: " + path, e);
+        }
+    }
+
+    @Override
+    public <T> void writeObjectOnResourceFileLines(String path, List<T> object) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(findResourcePath(path).toString()))) {
+            oos.writeObject(object);
         } catch (IOException e) {
             throw new FileException("File does not exist: " + path, e);
         }

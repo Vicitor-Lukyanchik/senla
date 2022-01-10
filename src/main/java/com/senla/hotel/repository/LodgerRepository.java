@@ -8,4 +8,6 @@ public interface LodgerRepository {
     List<Lodger> getLodgers();
 
     void addLodger(Lodger lodger);
+
+    void setLodgers(List<Lodger> lodgers);
 }
