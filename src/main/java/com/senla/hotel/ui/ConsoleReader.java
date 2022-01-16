@@ -11,6 +11,9 @@ public class ConsoleReader {
 
     private static Scanner scanner = new Scanner(System.in);
 
+    private ConsoleReader() {
+    }
+
     public static String readLine() {
         return scanner.nextLine();
     }

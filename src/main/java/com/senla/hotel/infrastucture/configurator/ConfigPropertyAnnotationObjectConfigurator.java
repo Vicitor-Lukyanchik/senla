@@ -23,7 +23,6 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
     private static final String DATE_PATTERN = "d.MM.yyyy";
     private static final String PROPERTY_PATH = "config.properties";
 
-    private FileReader fileReader;
     private ApplicationContext context;
 
     @Override
@@ -51,7 +50,7 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
         if (!annotation.propertyName().equals(EMPTY_LINE)) {
             propertyName = annotation.propertyName();
         }
-        fileReader = context.getObject(FileReader.class);
+        FileReader fileReader = context.getObject(FileReader.class);
         Properties properties = fileReader.readProperties(PROPERTY_PATH);
         String property = properties.getProperty(propertyName);
         return requireProperty(property, annotation);

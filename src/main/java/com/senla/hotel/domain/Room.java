@@ -1,8 +1,9 @@
 package com.senla.hotel.domain;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Room {
+public class Room implements Serializable {
 
     private Long id;
     private int number;

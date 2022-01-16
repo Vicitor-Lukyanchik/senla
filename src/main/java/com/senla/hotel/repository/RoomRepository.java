@@ -9,4 +9,6 @@ public interface RoomRepository {
     List<Room> getRooms();
 
     void addRoom(Room room);
+
+    void setRooms(List<Room> rooms);
 }

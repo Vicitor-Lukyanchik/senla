@@ -8,4 +8,6 @@ public interface ReservationRepository {
     List<Reservation> getReservations();
 
     void addReservation(Reservation reservation);
+
+    void setReservations(List<Reservation> reservations);
 }

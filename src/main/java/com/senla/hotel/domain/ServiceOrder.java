@@ -1,8 +1,9 @@
 package com.senla.hotel.domain;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class ServiceOrder {
+public class ServiceOrder implements Serializable {
 
     private Long id;
     private LocalDate date;

@@ -4,6 +4,7 @@ import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.FileException;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.exception.ValidatorException;
@@ -11,6 +12,7 @@ import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
 
+@Singleton
 public class NavigatorImpl implements Navigator {
 
     private Menu currentMenu;

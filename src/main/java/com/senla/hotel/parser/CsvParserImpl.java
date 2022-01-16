@@ -6,13 +6,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.domain.ServiceOrder;
-import com.senla.hotel.parser.validator.Validator;
 
+@Singleton
 public class CsvParserImpl implements CsvParser {
 
     private static final String NEXT_COLUMN = ";";

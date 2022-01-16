@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
 
+@Singleton
 public class HotelFormatterImpl implements HotelFormatter {
 
     public static final String SPASE = " ";
@@ -81,18 +83,6 @@ public class HotelFormatterImpl implements HotelFormatter {
             for (Service service : services) {
                 result.append(service.getName()).append(TABULATION).append(service.getCost()).append(NEXT_LINE);
             }
-        }
-        return result.toString();
-    }
-
-    @Override
-    public String formatLodgers(List<Lodger> lodgers) {
-        StringBuilder result = new StringBuilder();
-
-        result.append("\nLodgers:").append(NEXT_LINE);
-        for (Lodger lodger : lodgers) {
-            result.append(lodger.getId()).append(SPASE).append(lodger.getFirstLastName()).append(SPASE)
-                    .append(lodger.getPhoneNumber()).append(SPASE).append(NEXT_LINE);
         }
         return result.toString();
     }

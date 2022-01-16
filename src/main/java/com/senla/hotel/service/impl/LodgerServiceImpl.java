@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -19,7 +21,6 @@ import com.senla.hotel.domain.ServiceOrder;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.repository.LodgerRepository;
 import com.senla.hotel.repository.ReservationRepository;
@@ -28,21 +29,29 @@ import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
 
+@Singleton
 public class LodgerServiceImpl implements LodgerService {
 
-    private static final String PATH = "lodgers.csv";
+    private static final String LODGERS_PATH = "csv/lodgers.csv";
+    private static final String RESERVATIONS_PATH = "csv/reservations.csv";
+    private static final String SERVICE_ORDERS_PATH = "csv/service_orders.csv";
 
-    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);
-    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);
-    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);
-
-    private ServiceService serviceService = ApplicationContext.getInstance().getObject(ServiceService.class);
-    private RoomService roomService = ApplicationContext.getInstance().getObject(RoomService.class);
-    private LodgerRepository lodgerRepository = ApplicationContext.getInstance().getObject(LodgerRepository.class);
-    private ServiceOrderRepository serviceOrderRepository = ApplicationContext.getInstance()
-            .getObject(ServiceOrderRepository.class);
-    private ReservationRepository reservationRepository = ApplicationContext.getInstance()
-            .getObject(ReservationRepository.class);
+    @InjectByType
+    private FileReader fileReader;
+    @InjectByType
+    private CsvParser csvParser;
+    @InjectByType
+    private FileWriter fileWriter;
+    @InjectByType
+    private ServiceService serviceService;
+    @InjectByType
+    private RoomService roomService;
+    @InjectByType
+    private LodgerRepository lodgerRepository;
+    @InjectByType
+    private ServiceOrderRepository serviceOrderRepository;
+    @InjectByType
+    private ReservationRepository reservationRepository;
     private Long id = 0l;
     private Long reservationId = 0l;
     private Long serviceOrderId = 0l;
@@ -86,7 +95,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<Lodger> getLodgersFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(LODGERS_PATH);
         return csvParser.parseLodgers(lines);
     }
 
@@ -102,7 +111,7 @@ public class LodgerServiceImpl implements LodgerService {
             importLodger.setPhoneNumber(lodger.getPhoneNumber());
         }
         List<String> lines = csvParser.parseLodgersToLines(importLodgers);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private void validateLodger(String firstName, String lastName, String phone) {
@@ -158,7 +167,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<Reservation> getReservationsFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(RESERVATIONS_PATH);
         return csvParser.parseReservations(lines);
     }
 
@@ -176,7 +185,7 @@ public class LodgerServiceImpl implements LodgerService {
             importReservation.setEndDate(reservation.getEndDate());
         }
         List<String> lines = csvParser.parseLodgersToLines(importLodgers);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
@@ -324,7 +333,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private List<ServiceOrder> getServiceOrdersFromFile() {
-        List<String> lines = fileReader.readResourceFileLines(PATH);
+        List<String> lines = fileReader.readResourceFileLines(SERVICE_ORDERS_PATH);
         return csvParser.parseServiceOrders(lines);
     }
 
@@ -341,7 +350,7 @@ public class LodgerServiceImpl implements LodgerService {
             importServiceOrder.setDate(serviceOrder.getDate());
         }
         List<String> lines = csvParser.parseServiceOrdersToLines(importServiceOrders);
-        fileWriter.writeResourceFileLines(PATH, lines);
+        fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
     private Long generateServiceOrderId() {

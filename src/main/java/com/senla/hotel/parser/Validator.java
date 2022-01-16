@@ -1,4 +1,4 @@
-package com.senla.hotel.parser.validator;
+package com.senla.hotel.parser;
 
 import com.senla.hotel.exception.ValidatorException;
 
@@ -16,13 +16,13 @@ public class Validator {
             throw new ValidatorException("Price should be this format : D.CC");
         }
     }
-    
+
     public static void validateDate(String date) {
         if (!date.matches(REGEX_DATE)) {
             throw new ValidatorException("Date should be this format : DD.MM.YYYY");
         }
     }
-    
+
     public static void validatePhone(String phone) {
         if (!phone.matches(REGEX_PHONE)) {
             throw new ValidatorException("Phone number should be this format : DDDDDDD");

@@ -3,9 +3,11 @@ package com.senla.hotel.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.repository.ReservationRepository;
 
+@Singleton
 public class ReservationRepositoryImpl implements ReservationRepository {
 
     private List<Reservation> reservations = new ArrayList<>();
@@ -16,5 +18,9 @@ public class ReservationRepositoryImpl implements ReservationRepository {
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }
