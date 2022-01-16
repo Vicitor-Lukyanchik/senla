@@ -3,41 +3,23 @@ package com.senla.hotel.ui.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
-import com.senla.hotel.ui.itembuilder.impl.LodgerItemsBuilderImpl;
-import com.senla.hotel.ui.itembuilder.impl.RoomItemsBuilderImpl;
-import com.senla.hotel.ui.itembuilder.impl.ServiceItemsBuilderImpl;
 
 public class BuilderImpl implements Builder {
-
-    private static Builder instance;
 
     private Menu rootMenu = null;
     private Menu roomMenu = new Menu();
     private Menu serviceMenu = new Menu();
     private Menu lodgerMenu = new Menu();
-
-    private RoomItemsBuilder roomItemsBuilder;
-    private ServiceItemsBuilder serviceItemsBuilder;
-    private LodgerItemsBuilder lodgerItemsBuilder;
-
-    public BuilderImpl() {
-        roomItemsBuilder = RoomItemsBuilderImpl.getInstance();
-        serviceItemsBuilder = ServiceItemsBuilderImpl.getInstance();
-        lodgerItemsBuilder = LodgerItemsBuilderImpl.getInstance();
-    }
-
-    public static Builder getInstance() {
-        if (instance == null) {
-            instance = new BuilderImpl();
-        }
-        return instance;
-    }
+    private RoomItemsBuilder roomItemsBuilder = ApplicationContext.getInstance().getObject(RoomItemsBuilder.class);
+    private ServiceItemsBuilder serviceItemsBuilder = ApplicationContext.getInstance().getObject(ServiceItemsBuilder.class);
+    private LodgerItemsBuilder lodgerItemsBuilder = ApplicationContext.getInstance().getObject(LodgerItemsBuilder.class);
 
     private void buildMenu() {
         buildRootMenu();

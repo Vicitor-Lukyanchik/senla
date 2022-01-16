@@ -7,43 +7,23 @@ import java.util.List;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
-import com.senla.hotel.file.FileReaderImpl;
 import com.senla.hotel.file.FileWriter;
-import com.senla.hotel.file.FileWriterImpl;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.parser.CsvParser;
-import com.senla.hotel.parser.CsvParserImpl;
 import com.senla.hotel.repository.ServiceRepository;
-import com.senla.hotel.repository.impl.ServiceRepositoryImpl;
 import com.senla.hotel.service.ServiceService;
 
 public class ServiceServiceImpl implements ServiceService {
 
     private static final String PATH = "services.csv";
 
-    private static ServiceService instance;
+    private final FileReader fileReader = ApplicationContext.getInstance().getObject(FileReader.class);;
+    private final CsvParser csvParser = ApplicationContext.getInstance().getObject(CsvParser.class);;
+    private final FileWriter fileWriter = ApplicationContext.getInstance().getObject(FileWriter.class);;
 
-    private final FileReader fileReader;
-    private final CsvParser csvParser;
-    private final FileWriter fileWriter;
-
-    private ServiceRepository serviceRepository;
+    private ServiceRepository serviceRepository = ApplicationContext.getInstance().getObject(ServiceRepository.class);;
     private Long id = 0l;
-
     private List<Service> importServices = new ArrayList<>();
-
-    public ServiceServiceImpl() {
-        serviceRepository = ServiceRepositoryImpl.getInstance();
-        fileReader = FileReaderImpl.getInstance();
-        csvParser = CsvParserImpl.getInstance();
-        fileWriter = FileWriterImpl.getInstance();
-    }
-
-    public static ServiceService getInstance() {
-        if (instance == null) {
-            instance = new ServiceServiceImpl();
-        }
-        return instance;
-    }
 
     @Override
     public void create(String name, BigDecimal cost) {
@@ -67,12 +47,12 @@ public class ServiceServiceImpl implements ServiceService {
     public void importServices() {
         importServices = getServicesFromFile();
         for (Service importService : importServices) {
+            validateService(importService.getName());
             try {
                 Service service = findById(id);
                 service.setName(importService.getName());
                 service.setCost(importService.getCost());
             } catch (ServiceException ex) {
-                validateService(importService.getName());
                 serviceRepository.addService(
                         new Service(importService.getId(), importService.getName(), importService.getCost()));
             }

@@ -1,5 +1,6 @@
 package com.senla.hotel.ui.impl;
 
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.MenuController;
@@ -7,13 +8,8 @@ import com.senla.hotel.ui.Navigator;
 
 public class MenuControllerImpl implements MenuController {
 
-    private Builder builder;
-    private Navigator navigator;
-
-    public MenuControllerImpl() {
-        this.builder = BuilderImpl.getInstance();
-        this.navigator = NavigatorImpl.getInstance();
-    }
+    private Builder builder = ApplicationContext.getInstance().getObject(Builder.class);
+    private Navigator navigator = ApplicationContext.getInstance().getObject(Navigator.class);
 
     @Override
     public void run() {

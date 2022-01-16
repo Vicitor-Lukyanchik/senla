@@ -8,15 +8,7 @@ import com.senla.hotel.repository.ServiceRepository;
 
 public class ServiceRepositoryImpl implements ServiceRepository {
 
-    private static ServiceRepository instance;
     private List<Service> service = new ArrayList<>();
-
-    public static ServiceRepository getInstance() {
-        if (instance == null) {
-            instance = new ServiceRepositoryImpl();
-        }
-        return instance;
-    }
 
     public List<Service> getServices() {
         return new ArrayList<>(service);

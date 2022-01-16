@@ -1,49 +1,35 @@
 package com.senla.hotel.ui.itembuilder.impl;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.senla.hotel.domain.Service;
+import com.senla.hotel.infrastucture.ApplicationContext;
 import com.senla.hotel.service.ServiceService;
-import com.senla.hotel.service.impl.ServiceServiceImpl;
 import com.senla.hotel.ui.Action;
 import com.senla.hotel.ui.ConsoleReader;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
-import com.senla.hotel.ui.formatter.HotelFormatterImpl;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
 
 public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
 
-    private static ServiceItemsBuilder instance;
-
-    private final HotelFormatter hotelFormatter = new HotelFormatterImpl();
-
+    private final HotelFormatter hotelFormatter = ApplicationContext.getInstance().getObject(HotelFormatter.class);
+    
+    private ServiceService serviceService = ApplicationContext.getInstance().getObject(ServiceService.class);
     private Integer commandNumber = 1;
-    private ServiceService serviceService;
-
-    public ServiceItemsBuilderImpl() {
-        serviceService = ServiceServiceImpl.getInstance();
-    }
-
-    public static ServiceItemsBuilder getInstance() {
-        if (instance == null) {
-            instance = new ServiceItemsBuilderImpl();
-        }
-        return instance;
-    }
 
     public Map<Integer, MenuItem> buildServiceItems(Menu rootMenu) {
-        Map<Integer, MenuItem> result = new HashMap<>();
-        result.put(commandNumber++, createMenuItem("Add service", addService(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Change service cost", changeServiceCost(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Find services", findServices(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Find services costs", findServicesCosts(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Import services", importService(), rootMenu));
-        result.put(commandNumber++, createMenuItem("Export services", exportService(), rootMenu));
+        Map<Integer, MenuItem> result = new LinkedHashMap<>();
+        result.put(commandNumber++, createMenuItem("Add service", addService, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find services", findServices, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find services costs", findServicesCosts, rootMenu));
+        result.put(commandNumber++, createMenuItem("Change service cost", changeServiceCost, rootMenu));
+        result.put(commandNumber++, createMenuItem("Import services", importService, rootMenu));
+        result.put(commandNumber++, createMenuItem("Export service", exportService, rootMenu));
         return result;
     }
 
@@ -51,45 +37,35 @@ public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
         return new MenuItem(title, action, nextMenu);
     }
 
-    private Action addService() {
-        return () -> {
-            System.out.print("\nInput service name : ");
-            ConsoleReader.readLine();
-            String name = ConsoleReader.readLine();
-            System.out.print("Input service cost : ");
-            BigDecimal cost = ConsoleReader.readBigDecimal();
-            serviceService.create(name, cost);
-        };
-    }
+    private Action addService = () -> {
+        System.out.print("\nInput service name : ");
+        ConsoleReader.readLine();
+        String name = ConsoleReader.readLine();
+        System.out.print("Input service cost : ");
+        BigDecimal cost = ConsoleReader.readBigDecimal();
+        serviceService.create(name, cost);
+    };
 
-    private Action changeServiceCost() {
-        return () -> {
-            List<Service> services = serviceService.findAll();
-            System.out.println(hotelFormatter.formatServicesCosts(services));
-        };
-    }
+    private Action changeServiceCost = () -> {
+        System.out.print("\nInput service id : ");
+        Long id = ConsoleReader.readLong();
+        System.out.print("Input new service cost : ");
+        BigDecimal cost = ConsoleReader.readBigDecimal();
+        serviceService.updateCost(id, cost);
+    };
 
-    private Action findServices() {
-        return () -> System.out.println(hotelFormatter.formatServices(serviceService.findAll()));
+    private Action findServices = () -> System.out.println(hotelFormatter.formatServices(serviceService.findAll()));
 
-    }
+    private Action findServicesCosts = () -> {
+        List<Service> services = serviceService.findAll();
+        System.out.println(hotelFormatter.formatServicesCosts(services));
+    };
 
-    private Action findServicesCosts() {
-        return () -> {
-            List<Service> services = serviceService.findAll();
-            System.out.println(hotelFormatter.formatServicesCosts(services));
-        };
-    }
+    private Action importService = () -> serviceService.importServices();
 
-    private Action importService() {
-        return () -> serviceService.importServices();
-    }
-
-    private Action exportService() {
-        return () -> {
-            System.out.print("\nInput service id : ");
-            Long id = ConsoleReader.readLong();
-            serviceService.exportService(id);
-        };
-    }
+    private Action exportService = () -> {
+        System.out.print("\nInput service id : ");
+        Long id = ConsoleReader.readLong();
+        serviceService.exportService(id);
+    };
 }

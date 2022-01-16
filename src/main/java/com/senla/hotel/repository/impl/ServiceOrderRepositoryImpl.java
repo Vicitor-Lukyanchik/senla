@@ -8,15 +8,7 @@ import com.senla.hotel.repository.ServiceOrderRepository;
 
 public class ServiceOrderRepositoryImpl implements ServiceOrderRepository {
 
-    private static ServiceOrderRepository instance;
     private List<ServiceOrder> serviceOrders = new ArrayList<>();
-
-    public static ServiceOrderRepository getInstance() {
-        if (instance == null) {
-            instance = new ServiceOrderRepositoryImpl();
-        }
-        return instance;
-    }
 
     public List<ServiceOrder> getServiceOrders() {
         return new ArrayList<>(serviceOrders);
