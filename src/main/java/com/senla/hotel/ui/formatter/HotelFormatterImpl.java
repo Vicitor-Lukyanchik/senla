@@ -88,18 +88,6 @@ public class HotelFormatterImpl implements HotelFormatter {
     }
 
     @Override
-    public String formatLodgers(List<Lodger> lodgers) {
-        StringBuilder result = new StringBuilder();
-
-        result.append("\nLodgers:").append(NEXT_LINE);
-        for (Lodger lodger : lodgers) {
-            result.append(lodger.getId()).append(SPASE).append(lodger.getFirstLastName()).append(SPASE)
-                    .append(lodger.getPhoneNumber()).append(SPASE).append(NEXT_LINE);
-        }
-        return result.toString();
-    }
-
-    @Override
     public String formatLodgerReversationsCost(Map<Integer, BigDecimal> reservations) {
         StringBuilder result = new StringBuilder();
 

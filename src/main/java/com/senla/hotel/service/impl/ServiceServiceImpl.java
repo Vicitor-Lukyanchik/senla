@@ -17,7 +17,7 @@ import com.senla.hotel.service.ServiceService;
 @Singleton
 public class ServiceServiceImpl implements ServiceService {
 
-    private static final String SERVICESPATH = "scv/services.csv";
+    private static final String SERVICESPATH = "csv/services.csv";
 
     @InjectByType
     private FileReader fileReader;

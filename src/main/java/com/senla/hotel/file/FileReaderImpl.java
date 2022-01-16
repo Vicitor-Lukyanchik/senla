@@ -43,9 +43,9 @@ public class FileReaderImpl implements FileReader {
     }
 
     @Override
-    public <T> List<T> readObject(String path) {
+    public <T> T readObject(String path) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(findResourcePath(path).toString()))) {
-            return (ArrayList<T>) ois.readObject();
+            return (T) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new FileException("File does not exist: " + path, e);
         }

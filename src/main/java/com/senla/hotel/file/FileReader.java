@@ -8,5 +8,5 @@ public interface FileReader {
 
     Properties readProperties(String path);
 
-    <T> List<T> readObject(String path);
+    <T> T readObject(String path);
 }

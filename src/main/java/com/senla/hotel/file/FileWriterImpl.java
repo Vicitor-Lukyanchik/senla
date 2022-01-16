@@ -28,7 +28,7 @@ public class FileWriterImpl implements FileWriter {
     }
 
     @Override
-    public <T> void writeObjectOnResourceFileLines(String path, List<T> object) {
+    public <T> void writeObjectOnResourceFileLines(String path, T object) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(findResourcePath(path).toString()))) {
             oos.writeObject(object);
         } catch (IOException e) {
