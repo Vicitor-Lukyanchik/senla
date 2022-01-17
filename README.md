@@ -1,2 +1,0 @@
-# Victor Lukyanchik
-
