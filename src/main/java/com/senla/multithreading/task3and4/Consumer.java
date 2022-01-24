@@ -1,4 +1,6 @@
-package com.senla.multithreading.task3;
+package com.senla.multithreading.task3and4;
+
+import static com.senla.multithreading.task3and4.Sleeper.sleep;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +31,6 @@ public class Consumer implements Runnable {
     private void printNumbers() {
         for (Integer number : numbers) {
             System.out.print(number + " ");
-        }
-    }
-
-    private void sleep(int milis) {
-        try {
-            Thread.sleep(milis);
-        } catch (InterruptedException e) {
         }
     }
 }

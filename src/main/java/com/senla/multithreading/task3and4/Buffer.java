@@ -1,4 +1,4 @@
-package com.senla.multithreading.task3;
+package com.senla.multithreading.task3and4;
 
 import java.util.ArrayList;
 import java.util.List;

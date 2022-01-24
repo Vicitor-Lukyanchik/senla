@@ -1,4 +1,6 @@
-package com.senla.multithreading.task3;
+package com.senla.multithreading.task3and4;
+
+import static com.senla.multithreading.task3and4.Sleeper.sleep;
 
 import java.util.Random;
 
@@ -25,12 +27,5 @@ public class Producer implements Runnable {
     private int getRandomNumber() {
         Random randomer = new Random();
         return randomer.nextInt(MAX_NUMBER);
-    }
-    
-    private void sleep(int milis) {
-        try {
-            Thread.sleep(milis);
-        } catch (InterruptedException e) {
-        }
     }
 }
