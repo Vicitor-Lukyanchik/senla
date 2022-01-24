@@ -2,20 +2,35 @@ package com.senla.multithreading.task1;
 
 import java.util.Scanner;
 
-public class MyThread extends Thread {
-
-    private volatile boolean flag = true;
+public class MyThread implements Runnable {
 
     @Override
     public void run() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("BLOCKED");
-        sc.nextLine();
-        while (flag) {
-        }
-    }
+        System.out.println("RUNNABLE");
 
-    public void off() {
-        flag = false;
+        synchronized (this) {
+            try {
+                System.out.println("WAITING");
+                wait();
+            } catch (InterruptedException e) {
+            }
+        }
+
+        try {
+            System.out.println("TIMED_WAITING");
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("BLOCKED");
+        scanner.nextLine();
+        scanner.close();
+
+        System.out.println("TERMINATED");
+    }
+    
+    public synchronized void notifyThread() {
+        notifyAll();
     }
 }
