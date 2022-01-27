@@ -1,0 +1,18 @@
+INSERT INTO product (maker, model, type) values ('Asus', 'PC1', 'pc');
+INSERT INTO product (maker, model, type) values ('Samsung', 'PC2', 'pc');
+INSERT INTO product (maker, model, type) values ('Lenovo', 'PC3', 'pc');
+INSERT INTO product (maker, model, type) values ('Samsung', 'PR1', 'printer');
+INSERT INTO product (maker, model, type) values ('Xiaomi', 'PR2', 'printer');
+INSERT INTO product (maker, model, type) values ('Huawei', 'PR3', 'printer');
+INSERT INTO product (maker, model, type) values ('Samsung', 'LT1', 'laptop');
+INSERT INTO product (maker, model, type) values ('Redmi', 'LT3', 'laptop');
+INSERT INTO product (maker, model, type) values ('Mac', 'LT2', 'laptop');
+INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES (1, 'PC1', 2660, 6000, 128, '4x', 1000);
+INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES (2, 'PC2', 2440, 4000, 64, '4x', 800);
+INSERT INTO pc (code, model, speed, ram, hd, cd, price) VALUES (3, 'PC3', 2880, 8000, 256, '4x', 1300);
+INSERT INTO printer (code, model, color, type, price) VALUES (1, 'PR1', 'n', 'Laser', 500);
+INSERT INTO printer (code, model, color, type, price) VALUES (2, 'PR2', 'y', 'Jet', 700);
+INSERT INTO printer (code, model, color, type, price) VALUES (3, 'PR3', 'y', 'Matrix', 900);
+INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES (1, 'LT1', 1440, 6000, 64, 400, 5);
+INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES (2, 'LT2', 840, 4000, 32, 200, 3);
+INSERT INTO laptop (code, model, speed, ram, hd, price, screen) VALUES (3, 'LT3', 1640, 8000, 128, 800, 6);
