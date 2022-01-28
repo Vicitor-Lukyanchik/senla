@@ -73,8 +73,7 @@ public class Reservation implements Serializable {
     public boolean isReserved() {
         return isReserved;
     }
-
-    public void isNotReserved() {
-        isReserved = false;
+    public void setReserved(boolean isReserved) {
+        this.isReserved = isReserved;
     }
 }

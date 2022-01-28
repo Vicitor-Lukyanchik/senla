@@ -99,6 +99,21 @@ public class LodgerServiceImpl implements LodgerService {
         return csvParser.parseLodgers(lines);
     }
 
+    private void validateLodger(String firstName, String lastName, String phone) {
+        if (firstName.length() > 25 || lastName.length() > 25) {
+            throw new ServiceException("First-last name length can not be more than 25");
+        }
+        if (firstName.length() < 2 || lastName.length() < 2) {
+            throw new ServiceException("First-last name length can not be less than 2");
+        }
+        if (Character.isUpperCase(firstName.charAt(0)) || Character.isUpperCase(lastName.charAt(0))) {
+            throw new ServiceException("First letter should be uppercase");
+        }
+        if (phone.length() != 7) {
+            throw new ServiceException("Phone number length should be 7");
+        }
+    }
+
     @Override
     public void exportLodger(Long id) {
         Lodger lodger = findById(id);
@@ -112,15 +127,6 @@ public class LodgerServiceImpl implements LodgerService {
         }
         List<String> lines = csvParser.parseLodgersToLines(importLodgers);
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
-    }
-
-    private void validateLodger(String firstName, String lastName, String phone) {
-        if (firstName.length() > 25 || lastName.length() > 25) {
-            throw new ServiceException("First-last name length can not be more than 25");
-        }
-        if (phone.length() != 7) {
-            throw new ServiceException("Phone number length should be 7");
-        }
     }
 
     @Override
@@ -221,7 +227,7 @@ public class LodgerServiceImpl implements LodgerService {
                 .findFirst().orElseThrow(() -> new ServiceException("There is not room with this id"));
 
         if (reservation.isReserved()) {
-            reservation.isNotReserved();
+            reservation.setReserved(false);
         } else {
             throw new ServiceException("This reservation is closed");
         }

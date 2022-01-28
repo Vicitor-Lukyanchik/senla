@@ -7,16 +7,15 @@ public class MyThread implements Runnable {
         synchronized (this) {
             try {
                 wait();
+                Thread.sleep(1000);
+                wait(1000);
+
             } catch (InterruptedException e) {
             }
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
         }
     }
 
     public synchronized void notifyThread() {
-        notifyAll();
+        notify();
     }
 }

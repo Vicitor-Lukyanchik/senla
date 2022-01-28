@@ -12,18 +12,16 @@ public class Application {
         System.out.println(thread.getState());
 
         //Wait
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-        System.out.println(thread.getState());
-        myThread.notifyThread();
-
-        //Blocked
+        sleep(500);
         System.out.println(thread.getState());
         myThread.notifyThread();
 
         //Timed-waiting
+        sleep(500);
+        System.out.println(thread.getState());
+        myThread.notifyThread();
+
+        //Blocked
         System.out.println(thread.getState());
         myThread.notifyThread();
 
@@ -33,5 +31,12 @@ public class Application {
         } catch (InterruptedException e) {
         }
         System.out.println(thread.getState());
+    }
+
+    private static void sleep(long milis) {
+        try {
+            Thread.sleep(milis);
+        } catch (InterruptedException e) {
+        }
     }
 }
