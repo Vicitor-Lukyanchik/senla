@@ -21,7 +21,7 @@ public class ObjectFactory {
 
     public <T> T createObject(Class type) {
         T t = (T) getObjectInstance(type);
-        configurators.forEach(objectConfigurator -> objectConfigurator.configurate(t, context));
+        configurators.forEach(objectConfigurator -> objectConfigurator.configure(t, context));
         return t;
     }
 

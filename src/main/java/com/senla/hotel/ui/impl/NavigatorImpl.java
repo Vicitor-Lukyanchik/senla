@@ -5,6 +5,7 @@ import java.util.InputMismatchException;
 import java.util.Map;
 
 import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.FileException;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.exception.ValidatorException;

@@ -26,17 +26,17 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
     private ApplicationContext context;
 
     @Override
-    public void configurate(Object t, ApplicationContext context) {
+    public void configure(Object t, ApplicationContext context) {
         for (Field field : t.getClass().getDeclaredFields()) {
             ConfigProperty annotation = field.getAnnotation(ConfigProperty.class);
             if (annotation != null) {
                 this.context = context;
-                configurateField(t, field, annotation);
+                configureField(t, field, annotation);
             }
         }
     }
 
-    private void configurateField(Object t, Field field, ConfigProperty annotation) {
+    private void configureField(Object t, Field field, ConfigProperty annotation) {
         if (annotation.configName().equals(EMPTY_LINE)) {
             String propertyName = t.getClass().getSimpleName() + POINT + field.getName();
             String property = getProperty(context, annotation, propertyName);
@@ -89,9 +89,7 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
         } else if (field.getAnnotation(ConfigProperty.class).type().equals(STRING_TYPE)) {
             return (T[]) values;
         } else if (field.getAnnotation(ConfigProperty.class).type().equals(DATE_TYPE)) {
-            LocalDate[] result = new LocalDate[1];
-            result[0] = LocalDate.parse(values[0], DateTimeFormatter.ofPattern(DATE_PATTERN));
-            return (T[]) result;
+            return parseToDate(values);
         }
         throw new ObjectConfiguratorException(
                 "There is not type with name: " + field.getAnnotation(ConfigProperty.class).type());
@@ -119,5 +117,11 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
             result[i] = Boolean.valueOf(Boolean.parseBoolean(values[i]));
         }
         return result;
+    }
+
+    private <T> T[] parseToDate(String[] values) {
+        LocalDate[] result = new LocalDate[1];
+        result[0] = LocalDate.parse(values[0], DateTimeFormatter.ofPattern(DATE_PATTERN));
+        return (T[]) result;
     }
 }

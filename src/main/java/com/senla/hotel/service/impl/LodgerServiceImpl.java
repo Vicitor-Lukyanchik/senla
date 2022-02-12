@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.dao.LodgerDao;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -47,7 +48,7 @@ public class LodgerServiceImpl implements LodgerService {
     @InjectByType
     private RoomService roomService;
     @InjectByType
-    private LodgerRepository lodgerRepository;
+    private LodgerDao lodgerDao;
     @InjectByType
     private ServiceOrderRepository serviceOrderRepository;
     @InjectByType
@@ -62,7 +63,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
-        lodgerRepository.addLodger(new Lodger(generateId(), firstName, lastName, phone));
+        lodgerDao.create(firstName, lastName, phone);
         id++;
     }
 
@@ -88,8 +89,8 @@ public class LodgerServiceImpl implements LodgerService {
                 lodger.setLastName(importLodger.getLastName());
                 lodger.setPhoneNumber(importLodger.getPhoneNumber());
             } catch (ServiceException ex) {
-                lodgerRepository.addLodger(new Lodger(importLodger.getId(), importLodger.getFirstName(),
-                        importLodger.getLastName(), importLodger.getPhoneNumber()));
+                lodgerDao.createWithId(importLodger.getId(), importLodger.getFirstName(),
+                        importLodger.getLastName(), importLodger.getPhoneNumber());
             }
         }
     }
@@ -131,7 +132,7 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public List<Lodger> findAll() {
-        return lodgerRepository.getLodgers();
+        return lodgerDao.findAll();
     }
 
     @Override
@@ -377,7 +378,7 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public Lodger findById(Long id) {
-        for (Lodger lodger : lodgerRepository.getLodgers()) {
+        for (Lodger lodger : lodgerDao.findAll()) {
             if (lodger.getId().equals(id)) {
                 return lodger;
             }

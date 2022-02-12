@@ -1,5 +1,6 @@
 package com.senla.hotel.infrastucture;
 
+import com.senla.hotel.exception.FileException;
 import com.senla.hotel.serializer.Serializer;
 
 public class Application {
@@ -12,10 +13,14 @@ public class Application {
         ApplicationContext context = new ApplicationContext(config);
         ObjectFactory factory = new ObjectFactory(context);
         context.setFactory(factory);
-
-        Serializer serializer = context.getObject(Serializer.class);
-        serializer.deserialize();
-
+        serialise(context);
         return context;
+    }
+
+    private static void serialise(ApplicationContext context){
+        Serializer serializer = context.getObject(Serializer.class);
+        try {
+            serializer.deserialize();
+        } catch (FileException ex) {}
     }
 }

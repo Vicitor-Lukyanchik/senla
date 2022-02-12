@@ -11,7 +11,7 @@ import com.senla.hotel.ui.Action;
 public class OffActionAnnotationObjectConfigurator implements ObjectConfigurator {
 
     @Override
-    public void configurate(Object t, ApplicationContext context) {
+    public void configure(Object t, ApplicationContext context) {
         Class implClass = t.getClass();
         for (Field field : implClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(OffAction.class)) {
