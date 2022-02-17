@@ -1,7 +1,8 @@
-package com.senla.hotel.dao;
+package com.senla.hotel.dao.impl;
 
 import com.senla.hotel.annotation.ConfigProperty;
 import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.dao.ConnectionProvider;
 import com.senla.hotel.exception.DAOException;
 
 import java.sql.Connection;

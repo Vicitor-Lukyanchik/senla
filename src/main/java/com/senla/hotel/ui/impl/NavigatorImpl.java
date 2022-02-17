@@ -39,7 +39,7 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-        } catch (ServiceException | FileException | ValidatorException ex) {
+        } catch (ServiceException | FileException | ValidatorException | DAOException ex) {
             System.out.println("\nError");
             System.out.println(ex.getMessage());
         } catch (DateTimeParseException ex) {
@@ -47,7 +47,7 @@ public class NavigatorImpl implements Navigator {
             System.out.println("Date should be this format : DD.MM.YYYY");
         } catch (InputMismatchException ex) {
             System.out.println("\nError");
-            System.out.println("Cost should be this format : SS.CC");
+            System.out.println("Cost should be this format : SS,CC");
         }
     }
 

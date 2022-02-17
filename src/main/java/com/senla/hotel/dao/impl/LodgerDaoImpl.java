@@ -30,6 +30,7 @@ public class LodgerDaoImpl implements LodgerDao {
             throw new DAOException("Can not create lodger", e);
         }
     }
+
     public void createWithId(Long id, String firstName, String lastName, String phone){
         String sql = "INSERT INTO lodgers (id, firstName, last_name, phone_number) VALUES (?, ?, ?, ?)";
 
@@ -42,6 +43,21 @@ public class LodgerDaoImpl implements LodgerDao {
             statement.execute();
         } catch (SQLException e) {
             throw new DAOException("Can not create lodger with id", e);
+        }
+    }
+
+    public void update(Long id, String firstName, String lastName, String phone){
+        String sql = "UPDATE lodgers SET first_name = ?, last_name = ?, phone_number = ? WHERE l.id = ?";
+
+        try (Connection connection = connectionProvider.openConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            statement.setString(3, phone);
+            statement.setLong(4, id);
+            statement.execute();
+        } catch (SQLException e) {
+            throw new DAOException("Can not update lodger", e);
         }
     }
 
@@ -62,12 +78,16 @@ public class LodgerDaoImpl implements LodgerDao {
         return lodgers;
     }
 
-    private Lodger buildLodger(ResultSet resultSet) throws SQLException {
+    private Lodger buildLodger(ResultSet resultSet) {
         Lodger lodger = new Lodger();
-        lodger.setId(resultSet.getLong("id"));
-        lodger.setFirstName(resultSet.getString("first_name"));
-        lodger.setLastName(resultSet.getString("last_name"));
-        lodger.setPhoneNumber(resultSet.getString("phone_number"));
+        try {
+            lodger.setId(resultSet.getLong("id"));
+            lodger.setFirstName(resultSet.getString("first_name"));
+            lodger.setLastName(resultSet.getString("last_name"));
+            lodger.setPhoneNumber(resultSet.getString("phone_number"));
+        } catch (SQLException ex){
+            throw new DAOException("Can not parse lodger from resultSet");
+        }
         return lodger;
     }
 }

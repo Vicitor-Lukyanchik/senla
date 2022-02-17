@@ -34,7 +34,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         result.put(commandNumber++, createMenuItem("Find lodgers rooms", findLodgersRooms, rootMenu));
         result.put(commandNumber++, createMenuItem("Find reservation cost", findReservationCost, rootMenu));
         result.put(commandNumber++, createMenuItem("Order service to lodger", orderServiceToLodger, rootMenu));
-        result.put(commandNumber++, createMenuItem("Find lodgers services", findLodgersServices, rootMenu));
+        result.put(commandNumber++, createMenuItem("Find lodger services", findLodgersServices, rootMenu));
 
         result.put(commandNumber++, createMenuItem("Import lodgers", importLodgers, rootMenu));
         result.put(commandNumber++, createMenuItem("Import reservations", importReservations, rootMenu));
@@ -65,7 +65,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         Long lodgerId = ConsoleReader.readLong();
         System.out.print("Input room id : ");
         Long roomId = ConsoleReader.readLong();
-        lodgerService.updateReservationIsReserved(lodgerId, roomId);
+        lodgerService.updateReservationReserved(lodgerId, roomId);
     };
 
     private Action findCountLodgers = () -> System.out.println("\nCount lodgers : " + lodgerService.findAll().size());

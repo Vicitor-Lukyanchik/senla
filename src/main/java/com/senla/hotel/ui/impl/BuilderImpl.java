@@ -8,7 +8,6 @@ import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
-import com.senla.hotel.ui.itembuilder.ExitItemsBuilder;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
@@ -31,15 +30,12 @@ public class BuilderImpl implements Builder {
     private ServiceItemsBuilder serviceItemsBuilder;
     @InjectByType
     private LodgerItemsBuilder lodgerItemsBuilder;
-    @InjectByType
-    private ExitItemsBuilder exitItemsBuilder;
 
     private void buildMenu() {
         buildRootMenu();
         buildRoomMenu();
         buildServiceMenu();
         buildLodgerMenu();
-        buildExitMenu();
     }
 
     private void buildRootMenu() {
@@ -55,7 +51,7 @@ public class BuilderImpl implements Builder {
         rootMenuItems.put(3, new MenuItem("Commands with lodgers", lodgerMenu));
         rootMenuItems.get(3).setAction(() -> {
         });
-        rootMenuItems.put(4, new MenuItem("Exit", exitMenu));
+        rootMenuItems.put(4, new MenuItem("Exit", null));
         rootMenuItems.get(4).setAction(() -> {
         });
         rootMenu.setMenuItems(rootMenuItems);
@@ -74,11 +70,6 @@ public class BuilderImpl implements Builder {
     private void buildLodgerMenu() {
         lodgerMenu.setName("Lodger menu");
         lodgerMenu.setMenuItems(lodgerItemsBuilder.buildLodgerItems(rootMenu));
-    }
-
-    private void buildExitMenu() {
-        exitMenu.setName("Exit menu");
-        exitMenu.setMenuItems(exitItemsBuilder.buildExitItems());
     }
 
     @Override

@@ -27,7 +27,7 @@ public interface LodgerService {
 
     void exportReservation(Long id);
 
-    void updateReservationIsReserved(Long lodgerId, Long roomId);
+    void updateReservationReserved(Long lodgerId, Long roomId);
 
     Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId);
 

@@ -3,7 +3,7 @@ package com.senla.hotel.domain;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Service implements Serializable {
+public class Service {
 
     private Long id;
     private String name;

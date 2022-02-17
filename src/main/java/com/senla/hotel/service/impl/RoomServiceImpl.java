@@ -6,12 +6,12 @@ import java.util.List;
 
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
-import com.senla.hotel.repository.RoomRepository;
 import com.senla.hotel.service.RoomService;
 
 @Singleton
@@ -26,43 +26,26 @@ public class RoomServiceImpl implements RoomService {
     @InjectByType
     private FileWriter fileWriter;
     @InjectByType
-    private RoomRepository roomRepository;
-    private Long id = 0l;
-    private List<Room> importRooms = new ArrayList<>();
+    private RoomDao roomDao;
+    private List<Room> csvRooms = new ArrayList<>();
 
     @Override
     public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
         validateStars(stars);
-        roomRepository.addRoom(new Room(generateId(), number, cost, capacity, stars, isRepaired));
-        id++;
-    }
-
-    private Long generateId() {
-        try {
-            while (true) {
-                id++;
-                findById(id);
-            }
-        } catch (ServiceException ex) {
-            return id;
-        }
+        roomDao.create(number, cost, capacity, stars, isRepaired);
     }
 
     @Override
     public void importRooms() {
-        importRooms = getRoomsFromFile();
-        for (Room importRoom : importRooms) {
+        csvRooms = getRoomsFromFile();
+        for (Room importRoom : csvRooms) {
             validateStars(importRoom.getStars());
             try {
-                Room room = findById(id);
-                room.setNumber(importRoom.getNumber());
-                room.setCost(importRoom.getCost());
-                room.setCapacity(importRoom.getCapacity());
-                room.setStars(importRoom.getStars());
-                room.setRepaired(importRoom.isRepaired());
+                findById(importRoom.getId());
+                updateRoom(importRoom);
             } catch (ServiceException ex) {
-                roomRepository.addRoom(new Room(importRoom.getId(), importRoom.getNumber(), importRoom.getCost(),
-                        importRoom.getCapacity(), importRoom.getStars(), importRoom.isRepaired()));
+                roomDao.createWithId(importRoom.getId(), importRoom.getNumber(), importRoom.getCost(),
+                        importRoom.getCapacity(), importRoom.getStars(), importRoom.isRepaired());
             }
         }
     }
@@ -75,18 +58,22 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void exportRoom(Long id) {
         Room room = findById(id);
-        Room importRoom = importRooms.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
-        if (importRoom == null) {
-            importRooms.add(room);
+        Room exportRoom = csvRooms.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+        if (exportRoom == null) {
+            csvRooms.add(room);
         } else {
-            importRoom.setNumber(room.getNumber());
-            importRoom.setCapacity(room.getCapacity());
-            importRoom.setCost(room.getCost());
-            importRoom.setStars(room.getStars());
-            importRoom.setRepaired(room.isRepaired());
+            updateExportRoom(room, exportRoom);
         }
-        List<String> lines = csvParser.parseRoomsToLines(importRooms);
+        List<String> lines = csvParser.parseRoomsToLines(csvRooms);
         fileWriter.writeResourceFileLines(ROOMS_PATH, lines);
+    }
+
+    private void updateExportRoom(Room room, Room exportRoom) {
+        exportRoom.setNumber(room.getNumber());
+        exportRoom.setCapacity(room.getCapacity());
+        exportRoom.setCost(room.getCost());
+        exportRoom.setStars(room.getStars());
+        exportRoom.setRepaired(room.isRepaired());
     }
 
     private void validateStars(int stars) {
@@ -99,26 +86,33 @@ public class RoomServiceImpl implements RoomService {
     public void updateStatus(Long id) {
         Room room = findById(id);
         room.setRepaired(!room.isRepaired());
+        updateRoom(room);
     }
 
     @Override
     public void updateCost(Long id, BigDecimal cost) {
         Room room = findById(id);
         room.setCost(cost);
+        updateRoom(room);
     }
 
     @Override
     public Room findById(Long id) {
-        for (Room room : roomRepository.getRooms()) {
+        for (Room room : roomDao.findAll()) {
             if (room.getId().equals(id)) {
                 return room;
             }
         }
-        throw new ServiceException("There is not room with this number");
+        throw new ServiceException("There is not room with this id " + id);
+    }
+
+    private void updateRoom(Room room){
+        roomDao.update(room.getId(), room.getNumber(), room.getCost(),
+                room.getCapacity(), room.getStars(), room.isRepaired());
     }
 
     @Override
     public List<Room> findAll() {
-        return roomRepository.getRooms();
+        return roomDao.findAll();
     }
 }

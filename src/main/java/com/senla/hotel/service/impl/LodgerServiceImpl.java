@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.LodgerDao;
+import com.senla.hotel.dao.ReservationDao;
+import com.senla.hotel.dao.ServiceOrderDao;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Reservation;
 import com.senla.hotel.domain.Room;
@@ -23,9 +25,6 @@ import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
-import com.senla.hotel.repository.LodgerRepository;
-import com.senla.hotel.repository.ReservationRepository;
-import com.senla.hotel.repository.ServiceOrderRepository;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
@@ -50,44 +49,28 @@ public class LodgerServiceImpl implements LodgerService {
     @InjectByType
     private LodgerDao lodgerDao;
     @InjectByType
-    private ServiceOrderRepository serviceOrderRepository;
+    private ServiceOrderDao serviceOrderDao;
     @InjectByType
-    private ReservationRepository reservationRepository;
-    private Long id = 0l;
-    private Long reservationId = 0l;
-    private Long serviceOrderId = 0l;
-    private List<Lodger> importLodgers = new ArrayList<>();
-    private List<Reservation> importReservations = new ArrayList<>();
-    private List<ServiceOrder> importServiceOrders = new ArrayList<>();
+    private ReservationDao reservationDao;
+    private List<Lodger> csvLodgers = new ArrayList<>();
+    private List<Reservation> csvReservations = new ArrayList<>();
+    private List<ServiceOrder> csvServiceOrders = new ArrayList<>();
 
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
         lodgerDao.create(firstName, lastName, phone);
-        id++;
-    }
-
-    private Long generateId() {
-        try {
-            while (true) {
-                id++;
-                findById(id);
-            }
-        } catch (ServiceException ex) {
-            return id;
-        }
     }
 
     @Override
     public void importLodgers() {
-        importLodgers = getLodgersFromFile();
-        for (Lodger importLodger : importLodgers) {
+        csvLodgers = getLodgersFromFile();
+        for (Lodger importLodger : csvLodgers) {
             validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
             try {
-                Lodger lodger = findById(importLodger.getId());
-                lodger.setFirstName(importLodger.getFirstName());
-                lodger.setLastName(importLodger.getLastName());
-                lodger.setPhoneNumber(importLodger.getPhoneNumber());
+                findById(importLodger.getId());
+                lodgerDao.update(importLodger.getId(), importLodger.getFirstName(), importLodger.getLastName(),
+                        importLodger.getPhoneNumber());
             } catch (ServiceException ex) {
                 lodgerDao.createWithId(importLodger.getId(), importLodger.getFirstName(),
                         importLodger.getLastName(), importLodger.getPhoneNumber());
@@ -118,15 +101,15 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void exportLodger(Long id) {
         Lodger lodger = findById(id);
-        Lodger importLodger = importLodgers.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
+        Lodger importLodger = csvLodgers.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
         if (importLodger == null) {
-            importLodgers.add(lodger);
+            csvLodgers.add(lodger);
         } else {
             importLodger.setFirstName(lodger.getFirstName());
             importLodger.setLastName(lodger.getLastName());
             importLodger.setPhoneNumber(lodger.getPhoneNumber());
         }
-        List<String> lines = csvParser.parseLodgersToLines(importLodgers);
+        List<String> lines = csvParser.parseLodgersToLines(csvLodgers);
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
@@ -138,37 +121,22 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         validateReservation(startDate, endDate, lodgerId, roomId);
-        reservationRepository
-                .addReservation(new Reservation(generateReservationId(), startDate, endDate, lodgerId, roomId));
-    }
-
-    private Long generateReservationId() {
-        try {
-            while (true) {
-                reservationId++;
-                findReservationById(reservationId);
-            }
-        } catch (ServiceException ex) {
-            return reservationId;
-        }
+        reservationDao.create(startDate, endDate, lodgerId, roomId);
     }
 
     @Override
     public void importReservations() {
-        importReservations = getReservationsFromFile();
-        for (Reservation importReservation : importReservations) {
+        csvReservations = getReservationsFromFile();
+        for (Reservation importReservation : csvReservations) {
             validateReservation(importReservation.getStartDate(), importReservation.getEndDate(),
                     importReservation.getLodgerId(), importReservation.getRoomId());
             try {
-                Reservation reservation = findReservationById(importReservation.getId());
-                reservation.setStartDate(importReservation.getStartDate());
-                reservation.setEndDate(importReservation.getEndDate());
-                reservation.setLodgerId(importReservation.getLodgerId());
-                reservation.setRoomId(importReservation.getRoomId());
+                findReservationById(importReservation.getId());
+                updateReservation(importReservation);
             } catch (ServiceException ex) {
-                reservationRepository.addReservation(new Reservation(importReservation.getId(),
+                reservationDao.createWithId(importReservation.getId(),
                         importReservation.getStartDate(), importReservation.getEndDate(),
-                        importReservation.getLodgerId(), importReservation.getRoomId()));
+                        importReservation.getLodgerId(), importReservation.getRoomId());
             }
         }
     }
@@ -181,17 +149,17 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void exportReservation(Long id) {
         Reservation reservation = findReservationById(id);
-        Reservation importReservation = importReservations.stream().filter(r -> r.getId().equals(id)).findFirst()
+        Reservation exportReservation = csvReservations.stream().filter(r -> r.getId().equals(id)).findFirst()
                 .orElse(null);
-        if (importReservation == null) {
-            importReservations.add(reservation);
+        if (exportReservation == null) {
+            csvReservations.add(reservation);
         } else {
-            importReservation.setLodgerId(reservation.getLodgerId());
-            importReservation.setRoomId(reservation.getRoomId());
-            importReservation.setStartDate(reservation.getStartDate());
-            importReservation.setEndDate(reservation.getEndDate());
+            exportReservation.setLodgerId(reservation.getLodgerId());
+            exportReservation.setRoomId(reservation.getRoomId());
+            exportReservation.setStartDate(reservation.getStartDate());
+            exportReservation.setEndDate(reservation.getEndDate());
         }
-        List<String> lines = csvParser.parseLodgersToLines(importLodgers);
+        List<String> lines = csvParser.parseLodgersToLines(csvLodgers);
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
@@ -202,7 +170,7 @@ public class LodgerServiceImpl implements LodgerService {
         }
 
         Room room = roomService.findById(roomId);
-        List<Reservation> roomReservations = reservationRepository.getReservations().stream()
+        List<Reservation> roomReservations = reservationDao.findAll().stream()
                 .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
         if (isRoomSettledOnDates(roomReservations, startDate, endDate)) {
             throw new ServiceException("Room is settled on this dates");
@@ -222,22 +190,29 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void updateReservationIsReserved(Long lodgerId, Long roomId) {
-        Reservation reservation = reservationRepository.getReservations().stream().filter(
+    public void updateReservationReserved(Long lodgerId, Long roomId) {
+        Reservation reservation = reservationDao.findAll().stream().filter(
                 lodgerRoom -> roomId.equals(lodgerRoom.getRoomId()) && lodgerId.equals(lodgerRoom.getLodgerId()))
-                .findFirst().orElseThrow(() -> new ServiceException("There is not room with this id"));
+                .findFirst().orElseThrow(() -> new ServiceException("There is not room or lodger with this id"));
 
         if (reservation.isReserved()) {
             reservation.setReserved(false);
+            updateReservation(reservation);
         } else {
             throw new ServiceException("This reservation is closed");
         }
     }
 
+    private void updateReservation(Reservation importReservation) {
+        reservationDao.update(importReservation.getId(),
+                importReservation.getStartDate(), importReservation.getEndDate(),
+                importReservation.getLodgerId(), importReservation.getRoomId());
+    }
+
     @Override
     public Map<Lodger, Room> findAllNowLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
-        List<Reservation> reservations = reservationRepository.getReservations();
+        List<Reservation> reservations = reservationDao.findAll();
 
         for (Reservation reservation : reservations) {
             if (reservation.isReserved()) {
@@ -252,7 +227,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
-        List<Reservation> reservations = reservationRepository.getReservations().stream()
+        List<Reservation> reservations = reservationDao.findAll().stream()
                 .filter(r -> roomId.equals(r.getRoomId()))
                 .sorted(Comparator.comparing(Reservation::getStartDate).reversed()).limit(limit)
                 .collect(Collectors.toList());
@@ -265,7 +240,8 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId) {
-        List<Reservation> reservations = reservationRepository.getReservations().stream()
+        findById(lodgerId);
+        List<Reservation> reservations = reservationDao.findAll().stream()
                 .filter(r -> lodgerId.equals(r.getLodgerId()) && r.isReserved()).collect(Collectors.toList());
         Map<Integer, BigDecimal> result = new LinkedHashMap<>();
 
@@ -280,7 +256,7 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public List<Room> findAllNotSettledRoomOnDate(LocalDate date) {
-        List<Reservation> reservations = reservationRepository.getReservations();
+        List<Reservation> reservations = reservationDao.findAll();
         List<Room> result = new LinkedList<>();
 
         for (Room room : roomService.findAll()) {
@@ -306,35 +282,31 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public Reservation findReservationById(Long id) {
-        for (Reservation reservation : reservationRepository.getReservations()) {
+        for (Reservation reservation : reservationDao.findAll()) {
             if (reservation.getId().equals(id)) {
                 return reservation;
             }
         }
-        throw new ServiceException("There is not reservation with this id");
+        throw new ServiceException("There is not reservation with this id " + id);
     }
 
     @Override
     public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         validateServiceOrder(lodgerId, serviceId);
-        serviceOrderRepository.addServiceOrder(new ServiceOrder(generateServiceOrderId(), date, lodgerId, serviceId));
+        serviceOrderDao.create(date, lodgerId, serviceId);
     }
 
     @Override
     public void importServiceOrders() {
-        importServiceOrders = getServiceOrdersFromFile();
-        for (ServiceOrder importServiceOrder : importServiceOrders) {
+        csvServiceOrders = getServiceOrdersFromFile();
+        for (ServiceOrder importServiceOrder : csvServiceOrders) {
+            validateServiceOrder(importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
             try {
-                validateServiceOrder(importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
-                ServiceOrder serviceOrder = findServiceOrderById(importServiceOrder.getId());
-                serviceOrder.setDate(importServiceOrder.getDate());
-                serviceOrder.setLodgerId(importServiceOrder.getLodgerId());
-                serviceOrder.setServiceId(importServiceOrder.getServiceId());
+                findServiceOrderById(importServiceOrder.getId());
+                updateServiceOrder(importServiceOrder);
             } catch (ServiceException ex) {
-                validateServiceOrder(importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
-                serviceOrderRepository
-                        .addServiceOrder(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
-                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
+                serviceOrderDao.createWithId(importServiceOrder.getId(), importServiceOrder.getDate(),
+                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
             }
         }
     }
@@ -344,36 +316,53 @@ public class LodgerServiceImpl implements LodgerService {
         return csvParser.parseServiceOrders(lines);
     }
 
+    private void updateServiceOrder(ServiceOrder importServiceOrder) {
+        serviceOrderDao.update(importServiceOrder.getId(), importServiceOrder.getDate(),
+                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
+    }
+
     @Override
     public void exportServiceOrder(Long id) {
         ServiceOrder serviceOrder = findServiceOrderById(id);
-        ServiceOrder importServiceOrder = importServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst()
+        ServiceOrder exportServiceOrder = csvServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst()
                 .orElse(null);
-        if (importServiceOrder == null) {
-            importServiceOrders.add(serviceOrder);
+        if (exportServiceOrder == null) {
+            csvServiceOrders.add(serviceOrder);
         } else {
-            importServiceOrder.setLodgerId(serviceOrder.getLodgerId());
-            importServiceOrder.setServiceId(serviceOrder.getServiceId());
-            importServiceOrder.setDate(serviceOrder.getDate());
+            exportServiceOrder.setLodgerId(serviceOrder.getLodgerId());
+            exportServiceOrder.setServiceId(serviceOrder.getServiceId());
+            exportServiceOrder.setDate(serviceOrder.getDate());
         }
-        List<String> lines = csvParser.parseServiceOrdersToLines(importServiceOrders);
+        List<String> lines = csvParser.parseServiceOrdersToLines(csvServiceOrders);
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
-    }
-
-    private Long generateServiceOrderId() {
-        try {
-            while (true) {
-                serviceOrderId++;
-                findServiceOrderById(serviceOrderId);
-            }
-        } catch (ServiceException ex) {
-            return serviceOrderId;
-        }
     }
 
     private void validateServiceOrder(Long lodgerId, Long serviceId) {
         serviceService.findById(serviceId);
         findById(lodgerId);
+    }
+
+    @Override
+    public ServiceOrder findServiceOrderById(Long id) {
+        for (ServiceOrder ServiceOrder : serviceOrderDao.findAll()) {
+            if (ServiceOrder.getId().equals(id)) {
+                return ServiceOrder;
+            }
+        }
+        throw new ServiceException("There is not service order with this id " + id);
+    }
+
+    @Override
+    public List<Service> findServiceOrderByLodgerId(Long lodgerId) {
+        findById(lodgerId);
+        List<ServiceOrder> serviceOrders = serviceOrderDao.findAll().stream()
+                .filter(s -> lodgerId.equals(s.getLodgerId())).collect(Collectors.toList());
+
+        List<Service> result = new LinkedList<>();
+        for (ServiceOrder serviceOrder : serviceOrders) {
+            result.add(serviceService.findById(serviceOrder.getServiceId()));
+        }
+        return result;
     }
 
     @Override
@@ -383,28 +372,6 @@ public class LodgerServiceImpl implements LodgerService {
                 return lodger;
             }
         }
-        throw new ServiceException("There is not lodger with this id");
-    }
-
-    @Override
-    public ServiceOrder findServiceOrderById(Long id) {
-        for (ServiceOrder ServiceOrder : serviceOrderRepository.getServiceOrders()) {
-            if (ServiceOrder.getId().equals(id)) {
-                return ServiceOrder;
-            }
-        }
-        throw new ServiceException("There is not service order with this id");
-    }
-
-    @Override
-    public List<Service> findServiceOrderByLodgerId(Long lodgerId) {
-        List<ServiceOrder> serviceOrders = serviceOrderRepository.getServiceOrders().stream()
-                .filter(s -> lodgerId.equals(s.getLodgerId())).collect(Collectors.toList());
-
-        List<Service> result = new LinkedList<>();
-        for (ServiceOrder serviceOrder : serviceOrders) {
-            result.add(serviceService.findById(serviceOrder.getServiceId()));
-        }
-        return result;
+        throw new ServiceException("There is not lodger with this id " + id);
     }
 }

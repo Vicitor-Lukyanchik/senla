@@ -1,9 +1,9 @@
 package com.senla.hotel.domain;
 
-import java.io.Serializable;
+import java.sql.Date;
 import java.time.LocalDate;
 
-public class Reservation implements Serializable {
+public class Reservation {
 
     private Long id;
     private LocalDate startDate;

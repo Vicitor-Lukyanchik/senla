@@ -10,7 +10,7 @@ INSERT INTO lodgers (first_name, last_name, phone_number) VALUES
 ('Andrey', 'Avdeev', '2764431');
 
 --ROOMS
-INSERT INTO rooms (number, price, capacity, star, repaired) VALUES
+INSERT INTO rooms (number, cost, capacity, stars, repaired) VALUES
 (101, 20.00, 1, 3, false),
 (102, 25.00, 1, 4, false),
 (103, 35.00, 1, 5, false),
@@ -28,7 +28,7 @@ INSERT INTO reservations (start_date, end_date, lodger_id, room_id) VALUES
 ('27.02.2022', '03.03.2022', 6, 1);
 
 --SERVICE
-INSERT INTO services (name, price) VALUES ('Clean', 5.00),
+INSERT INTO services (name, cost) VALUES ('Clean', 5.00),
 ('Wash clothes', 3.50),
 ('Wash dishes', 2.50),
 ('Make breakfast', 5.00),

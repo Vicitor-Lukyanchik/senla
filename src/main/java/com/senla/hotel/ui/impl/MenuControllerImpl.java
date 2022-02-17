@@ -8,6 +8,8 @@ import com.senla.hotel.ui.MenuController;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
 
+import java.util.InputMismatchException;
+
 @Singleton
 public class MenuControllerImpl implements MenuController {
 
