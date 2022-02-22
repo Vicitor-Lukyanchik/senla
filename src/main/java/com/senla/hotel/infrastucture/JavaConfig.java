@@ -1,10 +1,9 @@
 package com.senla.hotel.infrastucture;
 
-import java.util.Set;
-
+import com.senla.hotel.exception.ConfigException;
 import org.reflections.Reflections;
 
-import com.senla.hotel.exception.ConfigException;
+import java.util.Set;
 
 public class JavaConfig implements Config {
 

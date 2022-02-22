@@ -7,64 +7,81 @@ import com.senla.hotel.dao.ServiceDao;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.senla.hotel.dao.TableColumns.*;
+
 @Singleton
 public class ServiceDaoImpl implements ServiceDao {
+
+    private static final String SERVICE_TABLE = "services";
+    private static final String SERVICE_SEQUENCE = "nextval('services_id_seq')";
+    private static final String INSERT_SERVICE = "INSERT INTO" + SERVICE_TABLE +
+            "(" + SERVICE_ID +"," + SERVICE_NAME + "," + SERVICE_COST + ") " +
+            "VALUES (" + SERVICE_SEQUENCE + ", ?, ?)";
+
+    private static final String INSERT_SERVICE_WITH_ID = "INSERT INTO" + SERVICE_TABLE +
+            "(" + SERVICE_ID +", " + SERVICE_NAME + ", " + SERVICE_COST + ") " +
+            "VALUES (?, ?, ?)";
+
+    private static final String UPDATE_SERVICE = "UPDATE " + SERVICE_TABLE +
+            " SET " + SERVICE_NAME + " = ?, " + SERVICE_COST + " = ? " +
+            "WHERE " + SERVICE_ID + " = ?";
+
+    private static final String SELECT_SERVICES = "SELECT " + SERVICE_ID + ", " + SERVICE_NAME + ", " + SERVICE_COST 
+            + " FROM " + SERVICE_TABLE;
 
     @InjectByType
     private ConnectionProvider connectionProvider;
 
-    public void create(String name, BigDecimal cost){
-        String sql = "INSERT INTO services (id, name, cost) VALUES (nextval('services_id_seq'), ?, ?)";
-
+    public void create(Service service){
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, name);
-            statement.setBigDecimal(2, cost);
+             PreparedStatement statement = connection.prepareStatement(INSERT_SERVICE, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setString(1, service.getName());
+            statement.setBigDecimal(2, service.getCost());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not create service", e);
         }
     }
 
-    public void createWithId(Long id, String name, BigDecimal cost){
-        String sql = "INSERT INTO Services (id, name, cost) VALUES (?, ?, ?)";
-
+    public void createWithId(Service service){
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setLong(1, id);
-            statement.setString(2, name);
-            statement.setBigDecimal(3, cost);
+             PreparedStatement statement = connection.prepareStatement(INSERT_SERVICE_WITH_ID, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setLong(1, service.getId());
+            statement.setString(2, service.getName());
+            statement.setBigDecimal(3, service.getCost());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not create service with id", e);
         }
     }
 
-    public void update(Long id, String name, BigDecimal cost){
-        String sql = "UPDATE services SET name = ?, cost = ? WHERE l.id = ?";
-
+    public void update(Service service){
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, name);
-            statement.setBigDecimal(2, cost);
-            statement.setLong(3, id);
+             PreparedStatement statement = connection.prepareStatement(UPDATE_SERVICE, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setString(1, service.getName());
+            statement.setBigDecimal(2, service.getCost());
+            statement.setLong(3, service.getId());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not update service", e);
         }
     }
 
     public List<Service> findAll(){
-        String sql = "SELECT s.id, s.name, s.cost FROM services s";
         List<Service> services = new LinkedList<>();
 
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(SELECT_SERVICES)) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     services.add(buildService(resultSet));
@@ -79,9 +96,9 @@ public class ServiceDaoImpl implements ServiceDao {
     private Service buildService(ResultSet resultSet) {
         Service service = new Service();
         try {
-            service.setId(resultSet.getLong("id"));
-            service.setName(resultSet.getString("name"));
-            service.setCost(resultSet.getBigDecimal("cost"));
+            service.setId(resultSet.getLong(SERVICE_ID));
+            service.setName(resultSet.getString(SERVICE_NAME));
+            service.setCost(resultSet.getBigDecimal(SERVICE_COST));
         } catch (SQLException ex){
             throw new DAOException("Can not parse service from resultSet");
         }

@@ -11,62 +11,80 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.senla.hotel.dao.TableColumns.*;
+
 @Singleton
 public class LodgerDaoImpl implements LodgerDao {
+
+    private static final String LODGER_TABLE = "lodgers";
+    private static final String LODGER_SEQUENCE = "nextval('lodgers_id_seq')";
+    private static final String INSERT_LODGER = "INSERT INTO" + LODGER_TABLE +
+            "(" + LODGER_ID +"," + LODGER_FIRST_NAME + "," + LODGER_LAST_NAME + "," + LODGER_PHONE + ") " +
+            "VALUES (" + LODGER_SEQUENCE + ", ?, ?, ?)";
+
+    private static final String INSERT_LODGER_WITH_ID = "INSERT INTO" + LODGER_TABLE +
+            "(" + LODGER_ID +", " + LODGER_FIRST_NAME + ", " + LODGER_LAST_NAME + ", " + LODGER_PHONE + ") " +
+            "VALUES (?, ?, ?, ?)";
+
+    private static final String UPDATE_LODGER = "UPDATE " + LODGER_TABLE +
+            " SET " + LODGER_FIRST_NAME + " = ?, " + LODGER_LAST_NAME + " = ?, " + LODGER_PHONE + " = ? " +
+            "WHERE " + LODGER_ID + " = ?";
+
+    private static final String SELECT_LODGERS = "SELECT " + LODGER_ID + ", " + LODGER_FIRST_NAME + ", " +
+            LODGER_LAST_NAME + ", " + LODGER_PHONE + " FROM " + LODGER_TABLE;
 
     @InjectByType
     private ConnectionProvider connectionProvider;
 
-    public void create(String firstName, String lastName, String phone){
-        String sql = "INSERT INTO lodgers (id, firstName, last_name, phone_number) VALUES (nextval('lodgers_id_seq'), ?, ?, ?)";
-
+    public void create(Lodger lodger) {
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, phone);
+             PreparedStatement statement = connection.prepareStatement(INSERT_LODGER, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setString(1, lodger.getFirstName());
+            statement.setString(2, lodger.getLastName());
+            statement.setString(3, lodger.getPhoneNumber());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not create lodger", e);
         }
     }
 
-    public void createWithId(Long id, String firstName, String lastName, String phone){
-        String sql = "INSERT INTO lodgers (id, firstName, last_name, phone_number) VALUES (?, ?, ?, ?)";
-
+    public void createWithId(Lodger lodger){
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setLong(1, id);
-            statement.setString(2, firstName);
-            statement.setString(3, lastName);
-            statement.setString(4, phone);
+             PreparedStatement statement = connection.prepareStatement(INSERT_LODGER_WITH_ID, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setLong(1, lodger.getId());
+            statement.setString(2, lodger.getFirstName());
+            statement.setString(3, lodger.getLastName());
+            statement.setString(4, lodger.getPhoneNumber());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not create lodger with id", e);
         }
     }
 
-    public void update(Long id, String firstName, String lastName, String phone){
-        String sql = "UPDATE lodgers SET first_name = ?, last_name = ?, phone_number = ? WHERE l.id = ?";
-
+    public void update(Lodger lodger){
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            statement.setString(1, firstName);
-            statement.setString(2, lastName);
-            statement.setString(3, phone);
-            statement.setLong(4, id);
+             PreparedStatement statement = connection.prepareStatement(UPDATE_LODGER, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            statement.setString(1, lodger.getFirstName());
+            statement.setString(2, lodger.getLastName());
+            statement.setString(3, lodger.getPhoneNumber());
+            statement.setLong(4, lodger.getId());
             statement.execute();
+            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not update lodger", e);
         }
     }
 
     public List<Lodger> findAll(){
-        String sql = "SELECT l.id, l.first_name, l.last_name, l.phone_number FROM lodgers l";
         List<Lodger> lodgers = new LinkedList<>();
 
         try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+             PreparedStatement statement = connection.prepareStatement(SELECT_LODGERS)) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     lodgers.add(buildLodger(resultSet));
@@ -81,10 +99,10 @@ public class LodgerDaoImpl implements LodgerDao {
     private Lodger buildLodger(ResultSet resultSet) {
         Lodger lodger = new Lodger();
         try {
-            lodger.setId(resultSet.getLong("id"));
-            lodger.setFirstName(resultSet.getString("first_name"));
-            lodger.setLastName(resultSet.getString("last_name"));
-            lodger.setPhoneNumber(resultSet.getString("phone_number"));
+            lodger.setId(resultSet.getLong(LODGER_ID));
+            lodger.setFirstName(resultSet.getString(LODGER_FIRST_NAME));
+            lodger.setLastName(resultSet.getString(LODGER_LAST_NAME));
+            lodger.setPhoneNumber(resultSet.getString(LODGER_PHONE));
         } catch (SQLException ex){
             throw new DAOException("Can not parse lodger from resultSet");
         }

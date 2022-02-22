@@ -1,26 +1,11 @@
 package com.senla.hotel.service.impl;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.LodgerDao;
 import com.senla.hotel.dao.ReservationDao;
 import com.senla.hotel.dao.ServiceOrderDao;
-import com.senla.hotel.domain.Lodger;
-import com.senla.hotel.domain.Reservation;
-import com.senla.hotel.domain.Room;
-import com.senla.hotel.domain.Service;
-import com.senla.hotel.domain.ServiceOrder;
+import com.senla.hotel.domain.*;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
@@ -28,6 +13,12 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 public class LodgerServiceImpl implements LodgerService {
@@ -59,7 +50,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
-        lodgerDao.create(firstName, lastName, phone);
+        lodgerDao.create(new Lodger(firstName, lastName, phone));
     }
 
     @Override
@@ -69,11 +60,11 @@ public class LodgerServiceImpl implements LodgerService {
             validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
             try {
                 findById(importLodger.getId());
-                lodgerDao.update(importLodger.getId(), importLodger.getFirstName(), importLodger.getLastName(),
-                        importLodger.getPhoneNumber());
+                lodgerDao.update(new Lodger(importLodger.getId(), importLodger.getFirstName(), importLodger.getLastName(),
+                        importLodger.getPhoneNumber()));
             } catch (ServiceException ex) {
-                lodgerDao.createWithId(importLodger.getId(), importLodger.getFirstName(),
-                        importLodger.getLastName(), importLodger.getPhoneNumber());
+                lodgerDao.createWithId(new Lodger(importLodger.getId(), importLodger.getFirstName(),
+                        importLodger.getLastName(), importLodger.getPhoneNumber()));
             }
         }
     }
@@ -90,7 +81,7 @@ public class LodgerServiceImpl implements LodgerService {
         if (firstName.length() < 2 || lastName.length() < 2) {
             throw new ServiceException("First-last name length can not be less than 2");
         }
-        if (Character.isUpperCase(firstName.charAt(0)) || Character.isUpperCase(lastName.charAt(0))) {
+        if (!Character.isUpperCase(firstName.charAt(0)) || !Character.isUpperCase(lastName.charAt(0))) {
             throw new ServiceException("First letter should be uppercase");
         }
         if (phone.length() != 7) {
@@ -121,7 +112,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         validateReservation(startDate, endDate, lodgerId, roomId);
-        reservationDao.create(startDate, endDate, lodgerId, roomId);
+        reservationDao.create(new Reservation(startDate, endDate, lodgerId, roomId));
     }
 
     @Override
@@ -134,9 +125,9 @@ public class LodgerServiceImpl implements LodgerService {
                 findReservationById(importReservation.getId());
                 updateReservation(importReservation);
             } catch (ServiceException ex) {
-                reservationDao.createWithId(importReservation.getId(),
+                reservationDao.createWithId(new Reservation(importReservation.getId(),
                         importReservation.getStartDate(), importReservation.getEndDate(),
-                        importReservation.getLodgerId(), importReservation.getRoomId());
+                        importReservation.getLodgerId(), importReservation.getRoomId()));
             }
         }
     }
@@ -203,10 +194,10 @@ public class LodgerServiceImpl implements LodgerService {
         }
     }
 
-    private void updateReservation(Reservation importReservation) {
-        reservationDao.update(importReservation.getId(),
-                importReservation.getStartDate(), importReservation.getEndDate(),
-                importReservation.getLodgerId(), importReservation.getRoomId());
+    private void updateReservation(Reservation reservation) {
+        reservationDao.update(new Reservation(reservation.getId(),
+                reservation.getStartDate(), reservation.getEndDate(),
+                reservation.getLodgerId(), reservation.getRoomId()));
     }
 
     @Override
@@ -293,7 +284,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         validateServiceOrder(lodgerId, serviceId);
-        serviceOrderDao.create(date, lodgerId, serviceId);
+        serviceOrderDao.create(new ServiceOrder(date, lodgerId, serviceId));
     }
 
     @Override
@@ -305,8 +296,8 @@ public class LodgerServiceImpl implements LodgerService {
                 findServiceOrderById(importServiceOrder.getId());
                 updateServiceOrder(importServiceOrder);
             } catch (ServiceException ex) {
-                serviceOrderDao.createWithId(importServiceOrder.getId(), importServiceOrder.getDate(),
-                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
+                serviceOrderDao.createWithId(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
+                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
             }
         }
     }
@@ -317,8 +308,8 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     private void updateServiceOrder(ServiceOrder importServiceOrder) {
-        serviceOrderDao.update(importServiceOrder.getId(), importServiceOrder.getDate(),
-                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId());
+        serviceOrderDao.update(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
+                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
     }
 
     @Override

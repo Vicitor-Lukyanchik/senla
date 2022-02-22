@@ -1,9 +1,9 @@
 package com.senla.hotel.infrastucture;
 
+import com.senla.hotel.annotation.Singleton;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.senla.hotel.annotation.Singleton;
 
 public class ApplicationContext {
 

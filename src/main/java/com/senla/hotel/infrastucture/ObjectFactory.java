@@ -1,10 +1,10 @@
 package com.senla.hotel.infrastucture;
 
+import com.senla.hotel.exception.ObjectFactoryException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.senla.hotel.exception.ObjectFactoryException;
 
 public class ObjectFactory {
 

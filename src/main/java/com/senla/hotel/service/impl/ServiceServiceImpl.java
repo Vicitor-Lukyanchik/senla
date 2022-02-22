@@ -1,9 +1,5 @@
 package com.senla.hotel.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.ServiceDao;
@@ -13,6 +9,10 @@ import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Singleton
 public class ServiceServiceImpl implements ServiceService {
@@ -33,7 +33,7 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public void create(String name, BigDecimal cost) {
         validateService(name);
-        serviceDao.create(name, cost);
+        serviceDao.create(new Service(name, cost));
     }
 
     @Override
@@ -43,9 +43,10 @@ public class ServiceServiceImpl implements ServiceService {
             validateService(importService.getName());
             try {
                 findById(importService.getId());
-                serviceDao.update(importService.getId(), importService.getName(), importService.getCost());
+                serviceDao.update(new Service(importService.getId(), importService.getName(), importService.getCost()));
             } catch (ServiceException ex) {
-                serviceDao.createWithId(importService.getId(), importService.getName(), importService.getCost());
+                serviceDao.createWithId(new Service(importService.getId(), importService.getName(),
+                        importService.getCost()));
             }
         }
     }
@@ -79,6 +80,7 @@ public class ServiceServiceImpl implements ServiceService {
     public void updateCost(Long id, BigDecimal cost) {
         Service service = findById(id);
         service.setCost(cost);
+        serviceDao.update(new Service(service.getId(), service.getName(), service.getCost()));
     }
 
     @Override

@@ -1,9 +1,5 @@
 package com.senla.hotel.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.RoomDao;
@@ -13,6 +9,10 @@ import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.RoomService;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Singleton
 public class RoomServiceImpl implements RoomService {
@@ -32,7 +32,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired) {
         validateStars(stars);
-        roomDao.create(number, cost, capacity, stars, isRepaired);
+        roomDao.create(new Room(number, cost, capacity, stars, isRepaired));
     }
 
     @Override
@@ -44,8 +44,8 @@ public class RoomServiceImpl implements RoomService {
                 findById(importRoom.getId());
                 updateRoom(importRoom);
             } catch (ServiceException ex) {
-                roomDao.createWithId(importRoom.getId(), importRoom.getNumber(), importRoom.getCost(),
-                        importRoom.getCapacity(), importRoom.getStars(), importRoom.isRepaired());
+                roomDao.createWithId(new Room(importRoom.getId(), importRoom.getNumber(), importRoom.getCost(),
+                        importRoom.getCapacity(), importRoom.getStars(), importRoom.isRepaired()));
             }
         }
     }
@@ -107,8 +107,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private void updateRoom(Room room){
-        roomDao.update(room.getId(), room.getNumber(), room.getCost(),
-                room.getCapacity(), room.getStars(), room.isRepaired());
+        roomDao.update(new Room(room.getId(), room.getNumber(), room.getCost(),
+                room.getCapacity(), room.getStars(), room.isRepaired()));
     }
 
     @Override
