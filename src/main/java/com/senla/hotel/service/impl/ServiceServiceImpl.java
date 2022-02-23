@@ -3,7 +3,7 @@ package com.senla.hotel.service.impl;
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.ServiceDao;
-import com.senla.hotel.dao.connection.Transaction;
+import com.senla.hotel.service.connection.Transaction;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.ServiceException;

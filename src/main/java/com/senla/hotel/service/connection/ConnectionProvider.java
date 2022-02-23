@@ -1,4 +1,4 @@
-package com.senla.hotel.dao.connection;
+package com.senla.hotel.service.connection;
 
 import com.senla.hotel.annotation.ConfigProperty;
 import com.senla.hotel.annotation.Singleton;

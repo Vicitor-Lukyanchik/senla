@@ -1,4 +1,4 @@
-package com.senla.hotel.dao;
+package com.senla.hotel.dao.constant;
 
 import com.senla.hotel.annotation.Singleton;
 

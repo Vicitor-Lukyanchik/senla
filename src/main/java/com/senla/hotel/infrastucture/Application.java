@@ -1,6 +1,6 @@
 package com.senla.hotel.infrastucture;
 
-import com.senla.hotel.dao.connection.ConnectionPool;
+import com.senla.hotel.service.connection.ConnectionPool;
 
 public class Application {
 

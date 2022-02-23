@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.senla.hotel.dao.TableColumns.*;
+import static com.senla.hotel.dao.constant.TableColumns.*;
 
 @Singleton
 public class LodgerDaoImpl implements LodgerDao {

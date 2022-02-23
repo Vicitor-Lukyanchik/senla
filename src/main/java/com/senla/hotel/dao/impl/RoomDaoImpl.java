@@ -1,6 +1,5 @@
 package com.senla.hotel.dao.impl;
 
-import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.domain.Room;
@@ -10,7 +9,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.senla.hotel.dao.TableColumns.*;
+import static com.senla.hotel.dao.constant.TableColumns.*;
 
 @Singleton
 public class RoomDaoImpl implements RoomDao {

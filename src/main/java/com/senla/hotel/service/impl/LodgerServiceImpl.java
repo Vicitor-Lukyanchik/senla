@@ -5,7 +5,7 @@ import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.LodgerDao;
 import com.senla.hotel.dao.ReservationDao;
 import com.senla.hotel.dao.ServiceOrderDao;
-import com.senla.hotel.dao.connection.Transaction;
+import com.senla.hotel.service.connection.Transaction;
 import com.senla.hotel.domain.*;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.ServiceException;
