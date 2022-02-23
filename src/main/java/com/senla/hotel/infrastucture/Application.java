@@ -1,5 +1,7 @@
 package com.senla.hotel.infrastucture;
 
+import com.senla.hotel.dao.connection.ConnectionPool;
+
 public class Application {
 
     private Application() {
@@ -10,6 +12,12 @@ public class Application {
         ApplicationContext context = new ApplicationContext(config);
         ObjectFactory factory = new ObjectFactory(context);
         context.setFactory(factory);
+        createConnectionPool(context);
         return context;
+    }
+
+    private static void createConnectionPool(ApplicationContext context) {
+        ConnectionPool connectionPool = context.getObject(ConnectionPool.class);
+        connectionPool.create();
     }
 }

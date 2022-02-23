@@ -28,8 +28,7 @@ public class ObjectFactory {
     private <T> T getObjectInstance(Class<? extends T> implClass) {
         try {
             return implClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
+        } catch (Exception e) {
             throw new ObjectFactoryException("Can not create object");
         }
     }

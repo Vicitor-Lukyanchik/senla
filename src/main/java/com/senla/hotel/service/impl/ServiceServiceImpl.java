@@ -3,7 +3,9 @@ package com.senla.hotel.service.impl;
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.ServiceDao;
+import com.senla.hotel.dao.connection.Transaction;
 import com.senla.hotel.domain.Service;
+import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
@@ -28,12 +30,23 @@ public class ServiceServiceImpl implements ServiceService {
     private FileWriter fileWriter;
     @InjectByType
     private ServiceDao serviceDao;
+    @InjectByType
+    private Transaction transaction;
     private List<Service> csvServices = new ArrayList<>();
 
     @Override
     public void create(String name, BigDecimal cost) {
         validateService(name);
-        serviceDao.create(new Service(name, cost));
+        try {
+            transaction.begin();
+            serviceDao.create(new Service(name, cost), transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -43,11 +56,23 @@ public class ServiceServiceImpl implements ServiceService {
             validateService(importService.getName());
             try {
                 findById(importService.getId());
-                serviceDao.update(new Service(importService.getId(), importService.getName(), importService.getCost()));
+                update(importService);
             } catch (ServiceException ex) {
-                serviceDao.createWithId(new Service(importService.getId(), importService.getName(),
-                        importService.getCost()));
+                createWithId(importService);
             }
+        }
+    }
+
+    private void createWithId(Service importService) {
+        try {
+            transaction.begin();
+            serviceDao.createWithId(importService, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
         }
     }
 
@@ -80,12 +105,25 @@ public class ServiceServiceImpl implements ServiceService {
     public void updateCost(Long id, BigDecimal cost) {
         Service service = findById(id);
         service.setCost(cost);
-        serviceDao.update(new Service(service.getId(), service.getName(), service.getCost()));
+        update(service);
+    }
+
+    private void update(Service service) {
+        try {
+            transaction.begin();
+            serviceDao.update(service, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
     public Service findById(Long id) {
-        for (Service service : serviceDao.findAll()) {
+        for (Service service : findAll()) {
             if (service.getId().equals(id)) {
                 return service;
             }
@@ -95,6 +133,9 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public List<Service> findAll() {
-        return serviceDao.findAll();
+        transaction.begin();
+        List<Service> result = serviceDao.findAll(transaction.getConnection());
+        transaction.end();
+        return result;
     }
 }

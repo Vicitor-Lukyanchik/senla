@@ -1,8 +1,7 @@
-package com.senla.hotel.dao.impl;
+package com.senla.hotel.dao.connection;
 
 import com.senla.hotel.annotation.ConfigProperty;
 import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.dao.ConnectionProvider;
 import com.senla.hotel.exception.DAOException;
 
 import java.sql.Connection;
@@ -10,7 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Singleton
-public class ConnectionProviderImpl implements ConnectionProvider {
+public class ConnectionProvider {
 
     @ConfigProperty(propertyName = "database.url", type = "string")
     private String url;
@@ -19,8 +18,8 @@ public class ConnectionProviderImpl implements ConnectionProvider {
     @ConfigProperty(propertyName = "database.password", type = "string")
     private String password;
 
-    @Override
-    public Connection openConnection() {
+
+    public Connection getConnection() {
         try {
             return DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {

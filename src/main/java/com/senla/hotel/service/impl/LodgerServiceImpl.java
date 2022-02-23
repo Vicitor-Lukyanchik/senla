@@ -5,7 +5,9 @@ import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.LodgerDao;
 import com.senla.hotel.dao.ReservationDao;
 import com.senla.hotel.dao.ServiceOrderDao;
+import com.senla.hotel.dao.connection.Transaction;
 import com.senla.hotel.domain.*;
+import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.ServiceException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
@@ -43,6 +45,8 @@ public class LodgerServiceImpl implements LodgerService {
     private ServiceOrderDao serviceOrderDao;
     @InjectByType
     private ReservationDao reservationDao;
+    @InjectByType
+    private Transaction transaction;
     private List<Lodger> csvLodgers = new ArrayList<>();
     private List<Reservation> csvReservations = new ArrayList<>();
     private List<ServiceOrder> csvServiceOrders = new ArrayList<>();
@@ -50,7 +54,16 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void create(String firstName, String lastName, String phone) {
         validateLodger(firstName, lastName, phone);
-        lodgerDao.create(new Lodger(firstName, lastName, phone));
+        try {
+            transaction.begin();
+            lodgerDao.create(new Lodger(firstName, lastName, phone), transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -60,11 +73,9 @@ public class LodgerServiceImpl implements LodgerService {
             validateLodger(importLodger.getFirstName(), importLodger.getLastName(), importLodger.getPhoneNumber());
             try {
                 findById(importLodger.getId());
-                lodgerDao.update(new Lodger(importLodger.getId(), importLodger.getFirstName(), importLodger.getLastName(),
-                        importLodger.getPhoneNumber()));
-            } catch (ServiceException ex) {
-                lodgerDao.createWithId(new Lodger(importLodger.getId(), importLodger.getFirstName(),
-                        importLodger.getLastName(), importLodger.getPhoneNumber()));
+                update(importLodger);
+            } catch (ServiceException e) {
+                createWithId(importLodger);
             }
         }
     }
@@ -89,6 +100,32 @@ public class LodgerServiceImpl implements LodgerService {
         }
     }
 
+    private void update(Lodger lodger) {
+        try {
+            transaction.begin();
+            lodgerDao.update(lodger, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
+    }
+
+    private void createWithId(Lodger importLodger) {
+        try {
+            transaction.begin();
+            lodgerDao.createWithId(importLodger, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
+    }
+
     @Override
     public void exportLodger(Long id) {
         Lodger lodger = findById(id);
@@ -105,14 +142,18 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public List<Lodger> findAll() {
-        return lodgerDao.findAll();
-    }
-
-    @Override
     public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         validateReservation(startDate, endDate, lodgerId, roomId);
-        reservationDao.create(new Reservation(startDate, endDate, lodgerId, roomId));
+        try {
+            transaction.begin();
+            reservationDao.create(new Reservation(startDate, endDate, lodgerId, roomId), transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -124,10 +165,8 @@ public class LodgerServiceImpl implements LodgerService {
             try {
                 findReservationById(importReservation.getId());
                 updateReservation(importReservation);
-            } catch (ServiceException ex) {
-                reservationDao.createWithId(new Reservation(importReservation.getId(),
-                        importReservation.getStartDate(), importReservation.getEndDate(),
-                        importReservation.getLodgerId(), importReservation.getRoomId()));
+            } catch (ServiceException e) {
+                createReservationWithId(importReservation);
             }
         }
     }
@@ -135,6 +174,46 @@ public class LodgerServiceImpl implements LodgerService {
     private List<Reservation> getReservationsFromFile() {
         List<String> lines = fileReader.readResourceFileLines(RESERVATIONS_PATH);
         return csvParser.parseReservations(lines);
+    }
+
+    private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
+        findById(lodgerId);
+        if (startDate.isAfter(endDate)) {
+            throw new ServiceException("Start date can not be after than end date");
+        }
+
+        Room room = roomService.findById(roomId);
+        List<Reservation> roomReservations = findAllReservations().stream()
+                .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
+        if (isRoomSettledOnDates(roomReservations, startDate, endDate)) {
+            throw new ServiceException("Room is settled on this dates");
+        }
+    }
+
+    private void createReservationWithId(Reservation importReservation) {
+        try {
+            transaction.begin();
+            reservationDao.createWithId(importReservation, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
+    }
+
+    private void updateReservation(Reservation reservation) {
+        try {
+            transaction.begin();
+            reservationDao.update(reservation, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -154,19 +233,6 @@ public class LodgerServiceImpl implements LodgerService {
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
-    private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
-        findById(lodgerId);
-        if (startDate.isAfter(endDate)) {
-            throw new ServiceException("Start date can not be after than end date");
-        }
-
-        Room room = roomService.findById(roomId);
-        List<Reservation> roomReservations = reservationDao.findAll().stream()
-                .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
-        if (isRoomSettledOnDates(roomReservations, startDate, endDate)) {
-            throw new ServiceException("Room is settled on this dates");
-        }
-    }
 
     private boolean isRoomSettledOnDates(List<Reservation> roomReservations, LocalDate startDate, LocalDate endDate) {
         if (roomReservations.isEmpty()) {
@@ -182,28 +248,31 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public void updateReservationReserved(Long lodgerId, Long roomId) {
-        Reservation reservation = reservationDao.findAll().stream().filter(
-                lodgerRoom -> roomId.equals(lodgerRoom.getRoomId()) && lodgerId.equals(lodgerRoom.getLodgerId()))
+        Reservation reservation = findAllReservations().stream().filter(
+                        lodgerRoom -> roomId.equals(lodgerRoom.getRoomId()) && lodgerId.equals(lodgerRoom.getLodgerId()))
                 .findFirst().orElseThrow(() -> new ServiceException("There is not room or lodger with this id"));
 
         if (reservation.isReserved()) {
             reservation.setReserved(false);
-            updateReservation(reservation);
+            try {
+                transaction.begin();
+                reservationDao.update(reservation, transaction.getConnection());
+                transaction.commit();
+            } catch (DAOException e) {
+                transaction.rollback();
+                throw new ServiceException(e.getMessage());
+            } finally {
+                transaction.end();
+            }
         } else {
             throw new ServiceException("This reservation is closed");
         }
     }
 
-    private void updateReservation(Reservation reservation) {
-        reservationDao.update(new Reservation(reservation.getId(),
-                reservation.getStartDate(), reservation.getEndDate(),
-                reservation.getLodgerId(), reservation.getRoomId()));
-    }
-
     @Override
     public Map<Lodger, Room> findAllNowLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
-        List<Reservation> reservations = reservationDao.findAll();
+        List<Reservation> reservations = findAllReservations();
 
         for (Reservation reservation : reservations) {
             if (reservation.isReserved()) {
@@ -218,7 +287,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
-        List<Reservation> reservations = reservationDao.findAll().stream()
+        List<Reservation> reservations = findAllReservations().stream()
                 .filter(r -> roomId.equals(r.getRoomId()))
                 .sorted(Comparator.comparing(Reservation::getStartDate).reversed()).limit(limit)
                 .collect(Collectors.toList());
@@ -232,7 +301,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId) {
         findById(lodgerId);
-        List<Reservation> reservations = reservationDao.findAll().stream()
+        List<Reservation> reservations = findAllReservations().stream()
                 .filter(r -> lodgerId.equals(r.getLodgerId()) && r.isReserved()).collect(Collectors.toList());
         Map<Integer, BigDecimal> result = new LinkedHashMap<>();
 
@@ -247,11 +316,9 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public List<Room> findAllNotSettledRoomOnDate(LocalDate date) {
-        List<Reservation> reservations = reservationDao.findAll();
         List<Room> result = new LinkedList<>();
-
         for (Room room : roomService.findAll()) {
-            List<Reservation> roomReservations = reservations.stream().filter(r -> room.getId().equals(r.getRoomId()))
+            List<Reservation> roomReservations = findAllReservations().stream().filter(r -> room.getId().equals(r.getRoomId()))
                     .collect(Collectors.toList());
             if (isRoomNotSettledOnDate(roomReservations, date)) {
                 result.add(room);
@@ -273,7 +340,7 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public Reservation findReservationById(Long id) {
-        for (Reservation reservation : reservationDao.findAll()) {
+        for (Reservation reservation : findAllReservations()) {
             if (reservation.getId().equals(id)) {
                 return reservation;
             }
@@ -281,10 +348,27 @@ public class LodgerServiceImpl implements LodgerService {
         throw new ServiceException("There is not reservation with this id " + id);
     }
 
+    private List<Reservation> findAllReservations() {
+        transaction.begin();
+        List<Reservation> result = reservationDao.findAll(transaction.getConnection());
+        transaction.commit();
+        transaction.end();
+        return result;
+    }
+
     @Override
     public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
         validateServiceOrder(lodgerId, serviceId);
-        serviceOrderDao.create(new ServiceOrder(date, lodgerId, serviceId));
+        try {
+            transaction.begin();
+            serviceOrderDao.create(new ServiceOrder(date, lodgerId, serviceId), transaction.getConnection());
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -296,8 +380,7 @@ public class LodgerServiceImpl implements LodgerService {
                 findServiceOrderById(importServiceOrder.getId());
                 updateServiceOrder(importServiceOrder);
             } catch (ServiceException ex) {
-                serviceOrderDao.createWithId(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
-                                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
+                createServiceOrderWithId(importServiceOrder);
             }
         }
     }
@@ -307,9 +390,35 @@ public class LodgerServiceImpl implements LodgerService {
         return csvParser.parseServiceOrders(lines);
     }
 
-    private void updateServiceOrder(ServiceOrder importServiceOrder) {
-        serviceOrderDao.update(new ServiceOrder(importServiceOrder.getId(), importServiceOrder.getDate(),
-                importServiceOrder.getLodgerId(), importServiceOrder.getServiceId()));
+    private void validateServiceOrder(Long lodgerId, Long serviceId) {
+        serviceService.findById(serviceId);
+        findById(lodgerId);
+    }
+
+    private void createServiceOrderWithId(ServiceOrder importServiceOrder) {
+        try {
+            transaction.begin();
+            serviceOrderDao.createWithId(importServiceOrder, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
+    }
+
+    private void updateServiceOrder(ServiceOrder serviceOrder) {
+        try {
+            transaction.begin();
+            serviceOrderDao.update(serviceOrder, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
+        }
     }
 
     @Override
@@ -328,14 +437,9 @@ public class LodgerServiceImpl implements LodgerService {
         fileWriter.writeResourceFileLines(LODGERS_PATH, lines);
     }
 
-    private void validateServiceOrder(Long lodgerId, Long serviceId) {
-        serviceService.findById(serviceId);
-        findById(lodgerId);
-    }
-
     @Override
     public ServiceOrder findServiceOrderById(Long id) {
-        for (ServiceOrder ServiceOrder : serviceOrderDao.findAll()) {
+        for (ServiceOrder ServiceOrder : findAllServiceOrders()) {
             if (ServiceOrder.getId().equals(id)) {
                 return ServiceOrder;
             }
@@ -346,7 +450,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public List<Service> findServiceOrderByLodgerId(Long lodgerId) {
         findById(lodgerId);
-        List<ServiceOrder> serviceOrders = serviceOrderDao.findAll().stream()
+        List<ServiceOrder> serviceOrders = findAllServiceOrders().stream()
                 .filter(s -> lodgerId.equals(s.getLodgerId())).collect(Collectors.toList());
 
         List<Service> result = new LinkedList<>();
@@ -356,13 +460,28 @@ public class LodgerServiceImpl implements LodgerService {
         return result;
     }
 
+    public List<ServiceOrder> findAllServiceOrders() {
+        transaction.begin();
+        List<ServiceOrder> result = serviceOrderDao.findAll(transaction.getConnection());
+        transaction.end();
+        return result;
+    }
+
     @Override
     public Lodger findById(Long id) {
-        for (Lodger lodger : lodgerDao.findAll()) {
+        for (Lodger lodger : findAll()) {
             if (lodger.getId().equals(id)) {
                 return lodger;
             }
         }
         throw new ServiceException("There is not lodger with this id " + id);
+    }
+
+    @Override
+    public List<Lodger> findAll() {
+        transaction.begin();
+        List<Lodger> result = lodgerDao.findAll(transaction.getConnection());
+        transaction.end();
+        return result;
     }
 }

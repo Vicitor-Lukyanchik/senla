@@ -2,7 +2,6 @@ package com.senla.hotel.dao.impl;
 
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.dao.ConnectionProvider;
 import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.DAOException;
@@ -18,13 +17,13 @@ public class RoomDaoImpl implements RoomDao {
 
     private static final String ROOM_TABLE = "rooms";
     private static final String ROOM_SEQUENCE = "nextval('rooms_id_seq')";
-    private static final String INSERT_ROOM = "INSERT INTO" + ROOM_TABLE +
-            "(" + ROOM_ID +"," + ROOM_NUMBER + "," + ROOM_COST + "," + ROOM_CAPACITY +
+    private static final String INSERT_ROOM = "INSERT INTO " + ROOM_TABLE +
+            "(" + ROOM_ID + "," + ROOM_NUMBER + "," + ROOM_COST + "," + ROOM_CAPACITY +
             "," + ROOM_STARS + "," + ROOM_REPAIRED + ") " +
             "VALUES (" + ROOM_SEQUENCE + ", ?, ?, ?, ?, ?)";
 
-    private static final String INSERT_ROOM_WITH_ID = "INSERT INTO" + ROOM_TABLE +
-            "(" + ROOM_ID +", " + ROOM_NUMBER + ", " + ROOM_COST + ", " + ROOM_CAPACITY +
+    private static final String INSERT_ROOM_WITH_ID = "INSERT INTO " + ROOM_TABLE +
+            "(" + ROOM_ID + ", " + ROOM_NUMBER + ", " + ROOM_COST + ", " + ROOM_CAPACITY +
             ", " + ROOM_STARS + ", " + ROOM_REPAIRED + ") " +
             "VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -36,29 +35,21 @@ public class RoomDaoImpl implements RoomDao {
     private static final String SELECT_ROOMS = "SELECT " + ROOM_ID + ", " + ROOM_NUMBER + ", " + ROOM_COST +
             ", " + ROOM_CAPACITY + ", " + ROOM_STARS + ", " + ROOM_REPAIRED + " FROM " + ROOM_TABLE;
 
-    @InjectByType
-    private ConnectionProvider connectionProvider;
-
-    public void create(Room room){
-        try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_ROOM, Statement.RETURN_GENERATED_KEYS)) {
-            connection.setAutoCommit(false);
+    public void create(Room room, Connection connection) {
+        try (PreparedStatement statement = connection.prepareStatement(INSERT_ROOM, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, room.getNumber());
             statement.setBigDecimal(2, room.getCost());
             statement.setInt(3, room.getCapacity());
             statement.setInt(4, room.getStars());
             statement.setBoolean(5, room.isRepaired());
             statement.execute();
-            connection.setAutoCommit(false);
         } catch (SQLException e) {
             throw new DAOException("Can not create room", e);
         }
     }
 
-    public void createWithId(Room room){
-        try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(INSERT_ROOM_WITH_ID, Statement.RETURN_GENERATED_KEYS)) {
-            connection.setAutoCommit(false);
+    public void createWithId(Room room, Connection connection) {
+        try (PreparedStatement statement = connection.prepareStatement(INSERT_ROOM_WITH_ID, Statement.RETURN_GENERATED_KEYS)) {
             statement.setLong(1, room.getId());
             statement.setInt(2, room.getNumber());
             statement.setBigDecimal(3, room.getCost());
@@ -66,16 +57,13 @@ public class RoomDaoImpl implements RoomDao {
             statement.setInt(5, room.getStars());
             statement.setBoolean(6, room.isRepaired());
             statement.execute();
-            connection.setAutoCommit(false);
         } catch (SQLException e) {
             throw new DAOException("Can not create room with id", e);
         }
     }
 
-    public void update(Room room){
-        try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(UPDATE_ROOM, Statement.RETURN_GENERATED_KEYS)) {
-            connection.setAutoCommit(false);
+    public void update(Room room, Connection connection) {
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE_ROOM, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, room.getNumber());
             statement.setBigDecimal(2, room.getCost());
             statement.setInt(3, room.getCapacity());
@@ -83,17 +71,15 @@ public class RoomDaoImpl implements RoomDao {
             statement.setBoolean(5, room.isRepaired());
             statement.setLong(6, room.getId());
             statement.execute();
-            connection.commit();
         } catch (SQLException e) {
             throw new DAOException("Can not update room", e);
         }
     }
 
-    public List<Room> findAll(){
+    public List<Room> findAll(Connection connection) {
         List<Room> rooms = new LinkedList<>();
 
-        try (Connection connection = connectionProvider.openConnection();
-             PreparedStatement statement = connection.prepareStatement(SELECT_ROOMS)) {
+        try (PreparedStatement statement = connection.prepareStatement(SELECT_ROOMS)) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     rooms.add(buildRoom(resultSet));
@@ -114,7 +100,7 @@ public class RoomDaoImpl implements RoomDao {
             room.setCapacity(resultSet.getInt(ROOM_CAPACITY));
             room.setStars(resultSet.getInt(ROOM_STARS));
             room.setRepaired(resultSet.getBoolean(ROOM_REPAIRED));
-        } catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new DAOException("Can not parse room from resultSet");
         }
         return room;
