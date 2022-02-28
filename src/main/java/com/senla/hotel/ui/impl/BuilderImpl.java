@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.Menu;
@@ -11,11 +12,14 @@ import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class BuilderImpl implements Builder {
 
     private Menu rootMenu = null;
+    @Log
+    private Logger log;
     @InjectByType
     private Menu roomMenu;
     @InjectByType

@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class ConsoleReader {
 
-    private static final DateTimeFormatter DATE_TIME_FORRMATTER = DateTimeFormatter.ofPattern("d.MM.yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d.MM.yyyy");
 
     private static Scanner scanner = new Scanner(System.in);
 
@@ -32,6 +32,6 @@ public class ConsoleReader {
 
     public static LocalDate readDate() {
         String date = scanner.nextLine();
-        return LocalDate.parse(date, DATE_TIME_FORRMATTER);
+        return LocalDate.parse(date, DATE_TIME_FORMATTER);
     }
 }

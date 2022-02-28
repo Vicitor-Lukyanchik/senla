@@ -4,6 +4,7 @@ import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Map;
 
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.FileException;
@@ -12,11 +13,14 @@ import com.senla.hotel.exception.ValidatorException;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class NavigatorImpl implements Navigator {
 
     private Menu currentMenu;
+    @Log
+    private Logger log;
 
     @Override
     public void printMenu() {
@@ -39,15 +43,17 @@ public class NavigatorImpl implements Navigator {
     private void execute(int index) {
         try {
             currentMenu.getMenuItems().get(index).doAction();
-        } catch (ServiceException | FileException | ValidatorException | DAOException ex) {
-            System.out.println("\nError");
-            System.out.println(ex.getMessage());
+        } catch (ServiceException | FileException | ValidatorException | DAOException e) {
+            log.error(e.getMessage());
+            System.out.println("\nError\n" + e.getMessage());
         } catch (DateTimeParseException ex) {
-            System.out.println("\nError");
-            System.out.println("Date should be this format : DD.MM.YYYY");
+            String message = "Date should be this format : DD.MM.YYYY";
+            log.error(message);
+            System.out.println("\nError\n" + message);
         } catch (InputMismatchException ex) {
-            System.out.println("\nError");
-            System.out.println("Cost should be this format : SS,CC");
+            String message = "Cost should be this format : SS,CC";
+            log.error(message);
+            System.out.println("\nError\n" + message);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.senla.hotel.service.impl;
 
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.LodgerDao;
 import com.senla.hotel.dao.ReservationDao;
@@ -15,6 +16,7 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +31,8 @@ public class LodgerServiceImpl implements LodgerService {
     private static final String RESERVATIONS_PATH = "csv/reservations.csv";
     private static final String SERVICE_ORDERS_PATH = "csv/service_orders.csv";
 
+    @Log
+    private Logger log;
     @InjectByType
     private FileReader fileReader;
     @InjectByType
@@ -60,6 +64,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -87,16 +92,24 @@ public class LodgerServiceImpl implements LodgerService {
 
     private void validateLodger(String firstName, String lastName, String phone) {
         if (firstName.length() > 25 || lastName.length() > 25) {
-            throw new ServiceException("First-last name length can not be more than 25");
+            String message = "First-last name length can not be more than 25";
+            log.error(message);
+            throw new ServiceException(message);
         }
         if (firstName.length() < 2 || lastName.length() < 2) {
-            throw new ServiceException("First-last name length can not be less than 2");
+            String message = "First-last name length can not be less than 2";
+            log.error(message);
+            throw new ServiceException(message);
         }
         if (!Character.isUpperCase(firstName.charAt(0)) || !Character.isUpperCase(lastName.charAt(0))) {
-            throw new ServiceException("First letter should be uppercase");
+            String message = "First letter should be uppercase";
+            log.error(message);
+            throw new ServiceException(message);
         }
         if (phone.length() != 7) {
-            throw new ServiceException("Phone number length should be 7");
+            String message = "Phone number length should be 7";
+            log.warn(message);
+            throw new ServiceException(message);
         }
     }
 
@@ -107,6 +120,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -120,6 +134,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -150,6 +165,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -179,14 +195,18 @@ public class LodgerServiceImpl implements LodgerService {
     private void validateReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId) {
         findById(lodgerId);
         if (startDate.isAfter(endDate)) {
-            throw new ServiceException("Start date can not be after than end date");
+            String message = "Start date can not be after than end date";
+            log.error(message);
+            throw new ServiceException(message);
         }
 
         Room room = roomService.findById(roomId);
         List<Reservation> roomReservations = findAllReservations().stream()
                 .filter(r -> room.getId().equals(r.getRoomId())).collect(Collectors.toList());
         if (isRoomSettledOnDates(roomReservations, startDate, endDate)) {
-            throw new ServiceException("Room is settled on this dates");
+            String message = "Room is settled on this dates";
+            log.error(message);
+            throw new ServiceException(message);
         }
     }
 
@@ -197,19 +217,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            transaction.end();
-        }
-    }
-
-    private void updateReservation(Reservation reservation) {
-        try {
-            transaction.begin();
-            reservationDao.update(reservation, transaction.getConnection());
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -254,18 +262,23 @@ public class LodgerServiceImpl implements LodgerService {
 
         if (reservation.isReserved()) {
             reservation.setReserved(false);
-            try {
-                transaction.begin();
-                reservationDao.update(reservation, transaction.getConnection());
-                transaction.commit();
-            } catch (DAOException e) {
-                transaction.rollback();
-                throw new ServiceException(e.getMessage());
-            } finally {
-                transaction.end();
-            }
+            updateReservation(reservation);
         } else {
             throw new ServiceException("This reservation is closed");
+        }
+    }
+
+    private void updateReservation(Reservation reservation) {
+        try {
+            transaction.begin();
+            reservationDao.update(reservation, transaction.getConnection());
+            transaction.commit();
+        } catch (DAOException e) {
+            transaction.rollback();
+            log.error(e.getMessage());
+            throw new ServiceException(e.getMessage());
+        } finally {
+            transaction.end();
         }
     }
 
@@ -365,6 +378,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -402,6 +416,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -415,6 +430,7 @@ public class LodgerServiceImpl implements LodgerService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();

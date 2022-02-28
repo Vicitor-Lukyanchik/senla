@@ -1,8 +1,10 @@
 package com.senla.hotel.service.connection;
 
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.DAOException;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,13 +12,17 @@ import java.sql.SQLException;
 @Singleton
 public class Transaction {
 
+    @Log
+    private Logger log;
     @InjectByType
     private ConnectionPool connectionPool;
     private Connection connection;
 
     public Connection getConnection() {
         if (connection == null){
-            throw new DAOException("Connection can not be null");
+            String message = "Connection can not be null";
+            log.error(message);
+            throw new DAOException(message);
         }
         return connection;
     }
@@ -26,7 +32,10 @@ public class Transaction {
         try {
             connection.setAutoCommit(false);
         } catch (SQLException e) {
-            throw new DAOException("Can not begin connection", e);
+
+            String message = "Can not begin connection";
+            log.error(message);
+            throw new DAOException(message, e);
         }
     }
 
@@ -34,7 +43,9 @@ public class Transaction {
         try {
             connection.commit();
         } catch (SQLException | NullPointerException e) {
-            throw new DAOException("Can not commit in db", e);
+            String message = "Can not commit in db";
+            log.error(message);
+            throw new DAOException(message, e);
         }
     }
 
@@ -42,7 +53,9 @@ public class Transaction {
         try {
             connection.rollback();
         } catch (SQLException | NullPointerException e) {
-            throw new DAOException("Can not rollback connection", e);
+            String message = "Can not rollback connection";
+            log.error(message);
+            throw new DAOException(message, e);
         }
     }
 
@@ -52,7 +65,9 @@ public class Transaction {
             connectionPool.releaseConnection(connection);
             connection = null;
         } catch (SQLException | NullPointerException e) {
-            throw new DAOException("Can not end connection", e);
+            String message = "Can not end connection";
+            log.error(message);
+            throw new DAOException(message, e);
         }
     }
 }

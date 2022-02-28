@@ -1,6 +1,7 @@
 package com.senla.hotel.service.impl;
 
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.ServiceDao;
 import com.senla.hotel.service.connection.Transaction;
@@ -11,6 +12,7 @@ import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class ServiceServiceImpl implements ServiceService {
     private static final String SERVICES_PATH = "csv/services.csv";
     private static final String EMPTY_LINE = "";
 
+    @Log
+    private Logger log;
     @InjectByType
     private FileReader fileReader;
     @InjectByType
@@ -43,6 +47,7 @@ public class ServiceServiceImpl implements ServiceService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -70,6 +75,7 @@ public class ServiceServiceImpl implements ServiceService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -97,7 +103,9 @@ public class ServiceServiceImpl implements ServiceService {
 
     private void validateService(String name) {
         if (name.equals(EMPTY_LINE)) {
-            throw new ServiceException("Service name can not be empty");
+            String message = "Service name can not be empty";
+            log.error(message);
+            throw new ServiceException(message);
         }
     }
 
@@ -115,6 +123,7 @@ public class ServiceServiceImpl implements ServiceService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();

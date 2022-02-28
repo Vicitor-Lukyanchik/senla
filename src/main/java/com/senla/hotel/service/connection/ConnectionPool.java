@@ -1,7 +1,10 @@
 package com.senla.hotel.service.connection;
 
+import com.senla.hotel.annotation.ConfigProperty;
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -10,18 +13,21 @@ import java.util.List;
 @Singleton
 public class ConnectionPool {
 
-    private static final int INITIAL_POOL_SIZE = 10;
-
+    @Log
+    private Logger log;
     @InjectByType
     private ConnectionProvider connectionProvider;
-    private List<Connection> pool;
+    @ConfigProperty(propertyName = "pool.size")
+    private int poolSize;
     private List<Connection> usedConnections = new ArrayList<>();
+    private List<Connection> pool;
 
     public void create() {
-        pool = new ArrayList<>(INITIAL_POOL_SIZE);
-        for (int i = 0; i < INITIAL_POOL_SIZE; i++) {
+        pool = new ArrayList<>(poolSize);
+        for (int i = 0; i < poolSize; i++) {
             pool.add(createConnection());
         }
+        log.info("Create database connection pool");
     }
 
     private Connection createConnection() {

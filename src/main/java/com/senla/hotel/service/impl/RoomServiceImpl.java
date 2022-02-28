@@ -1,6 +1,7 @@
 package com.senla.hotel.service.impl;
 
 import com.senla.hotel.annotation.InjectByType;
+import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.service.connection.Transaction;
@@ -11,6 +12,7 @@ import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.RoomService;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ public class RoomServiceImpl implements RoomService {
 
     private static final String ROOMS_PATH = "csv/rooms.csv";
 
+    @Log
+    private Logger log;
     @InjectByType
     private FileReader fileReader;
     @InjectByType
@@ -69,6 +73,7 @@ public class RoomServiceImpl implements RoomService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();
@@ -103,7 +108,9 @@ public class RoomServiceImpl implements RoomService {
 
     private void validateStars(int stars) {
         if (stars < 1 || stars > 5) {
-            throw new ServiceException("Star can not be less then 1 and more than 5");
+            String message = "Star can not be less then 1 and more than 5";
+            log.error(message);
+            throw new ServiceException(message);
         }
     }
 
@@ -128,6 +135,7 @@ public class RoomServiceImpl implements RoomService {
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
+            log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
             transaction.end();

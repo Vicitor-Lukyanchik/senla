@@ -12,11 +12,11 @@ public class Application {
         ApplicationContext context = new ApplicationContext(config);
         ObjectFactory factory = new ObjectFactory(context);
         context.setFactory(factory);
-        createConnectionPool(context);
+        createDBConnectionPool(context);
         return context;
     }
 
-    private static void createConnectionPool(ApplicationContext context) {
+    private static void createDBConnectionPool(ApplicationContext context) {
         ConnectionPool connectionPool = context.getObject(ConnectionPool.class);
         connectionPool.create();
     }
