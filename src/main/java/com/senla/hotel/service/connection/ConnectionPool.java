@@ -1,9 +1,6 @@
 package com.senla.hotel.service.connection;
 
-import com.senla.hotel.annotation.ConfigProperty;
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.annotation.*;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
@@ -22,7 +19,8 @@ public class ConnectionPool {
     private List<Connection> usedConnections = new ArrayList<>();
     private List<Connection> pool;
 
-    public void create() {
+    @PostConstruct
+    private void create() {
         pool = new ArrayList<>(poolSize);
         for (int i = 0; i < poolSize; i++) {
             pool.add(createConnection());

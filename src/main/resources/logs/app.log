@@ -1,3 +1,11 @@
 2022-02-28 09:46:15 INFO  ConnectionPool:30 - Create database connection pool
 2022-02-28 09:46:15 INFO  MenuControllerImpl:27 - Start app
 2022-02-28 09:46:20 INFO  MenuControllerImpl:36 - End app
+2022-02-28 10:53:47 INFO  MenuControllerImpl:27 - Start app
+2022-02-28 10:55:36 INFO  MenuControllerImpl:27 - Start app
+2022-02-28 10:55:41 INFO  MenuControllerImpl:36 - End app
+2022-02-28 10:55:52 INFO  MenuControllerImpl:27 - Start app
+2022-02-28 10:56:42 INFO  MenuControllerImpl:27 - Start app
+2022-02-28 11:06:15 INFO  ConnectionPool:28 - Create database connection pool
+2022-02-28 11:06:15 INFO  MenuControllerImpl:27 - Start app
+2022-02-28 11:06:33 INFO  MenuControllerImpl:36 - End app

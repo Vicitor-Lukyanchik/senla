@@ -20,15 +20,19 @@ public class ApplicationContext {
         if (cache.containsKey(type)) {
             return (T) cache.get(type);
         }
-
         if (type.isInterface()) {
             implClass = config.getImplClass(type);
         }
+
         T t = factory.createObject(implClass);
-        if (implClass.isAnnotationPresent(Singleton.class)) {
+        addSingleton(type, t);
+        return t;
+    }
+
+    private <T> void addSingleton(Class<T> type, T t) {
+        if (t.getClass().isAnnotationPresent(Singleton.class)) {
             cache.put(type, t);
         }
-        return t;
     }
 
     public Config getConfig() {
