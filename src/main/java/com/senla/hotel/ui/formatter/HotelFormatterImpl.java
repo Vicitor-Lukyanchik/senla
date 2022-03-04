@@ -32,7 +32,7 @@ public class HotelFormatterImpl implements HotelFormatter {
                 result.append(room.getId()).append(SPASE).append(TABULATION).append(room.getNumber()).append(SPASE)
                         .append(TABULATION).append(room.getCost()).append(SPASE).append(TABULATION)
                         .append(room.getCapacity()).append(SPASE).append(TABULATION).append(room.getStars())
-                        .append(SPASE).append(TABULATION).append(room.isRepaired()).append(NEXT_LINE);
+                        .append(NEXT_LINE);
             }
         }
         return result.toString();
@@ -88,7 +88,7 @@ public class HotelFormatterImpl implements HotelFormatter {
     }
 
     @Override
-    public String formatLodgerReversationsCost(Map<Integer, BigDecimal> reservations) {
+    public String formatLodgerReservationsCost(Map<Integer, BigDecimal> reservations) {
         StringBuilder result = new StringBuilder();
 
         result.append("\nLodger room cost:").append(NEXT_LINE);

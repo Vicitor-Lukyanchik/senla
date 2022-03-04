@@ -2,6 +2,7 @@ package com.senla.hotel.infrastucture;
 
 import com.senla.hotel.annotation.Singleton;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class ApplicationContext {
         if (cache.containsKey(type)) {
             return (T) cache.get(type);
         }
-        if (type.isInterface()) {
+        if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
             implClass = config.getImplClass(type);
         }
 

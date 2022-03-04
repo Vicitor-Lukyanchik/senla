@@ -21,8 +21,7 @@ CREATE TABLE rooms(
                       number INT NOT NULL,
                       cost DECIMAL NOT NULL,
                       capacity INT NOT NULL,
-                      stars INT NOT NULL,
-                      repaired BOOLEAN NOT NULL
+                      stars INT NOT NULL
 );
 
 CREATE TABLE reservations(
@@ -30,7 +29,8 @@ CREATE TABLE reservations(
                              start_date DATE NOT NULL,
                              end_date DATE NOT NULL,
                              lodger_id BIGINT NOT NULL REFERENCES lodgers(id),
-                             room_id BIGINT NOT NULL REFERENCES rooms(id)
+                             room_id BIGINT NOT NULL REFERENCES rooms(id),
+                             reserved BOOLEAN NOT NULL
 );
 
 CREATE TABLE services(

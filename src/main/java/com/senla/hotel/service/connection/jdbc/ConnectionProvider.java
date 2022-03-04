@@ -1,4 +1,4 @@
-package com.senla.hotel.service.connection;
+package com.senla.hotel.service.connection.jdbc;
 
 import com.senla.hotel.annotation.ConfigProperty;
 import com.senla.hotel.annotation.Log;

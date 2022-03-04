@@ -34,8 +34,7 @@ public class CsvParserImpl implements CsvParser {
         BigDecimal cost = new BigDecimal(room[2]);
         int capacity = Integer.parseInt(room[3]);
         int stars = Integer.parseInt(room[4]);
-        boolean isRepaired = room[5].equals("true");
-        return new Room(id, number, cost, capacity, stars, isRepaired);
+        return new Room(id, number, cost, capacity, stars);
     }
 
     @Override
@@ -48,12 +47,8 @@ public class CsvParserImpl implements CsvParser {
     }
 
     private String parseLine(Room room) {
-        String isRepaired = "false";
-        if (room.isRepaired()) {
-            isRepaired = "true";
-        }
         return room.getId() + NEXT_COLUMN + room.getNumber() + NEXT_COLUMN + room.getCost() + NEXT_COLUMN
-                + room.getCapacity() + NEXT_COLUMN + room.getStars() + NEXT_COLUMN + isRepaired;
+                + room.getCapacity() + NEXT_COLUMN + room.getStars();
     }
 
     @Override
@@ -105,7 +100,8 @@ public class CsvParserImpl implements CsvParser {
         LocalDate endDate = LocalDate.parse(reservation[2], DateTimeFormatter.ofPattern("d.MM.yyyy"));
         Long lodgerId = Long.parseLong(reservation[3]);
         Long roomId = Long.parseLong(reservation[4]);
-        return new Reservation(id, startDate, endDate, lodgerId, roomId);
+        Boolean reserved = reservation[5].equals("true");
+        return new Reservation(id, startDate, endDate, lodgerId, roomId, reserved);
     }
 
     @Override
@@ -118,6 +114,10 @@ public class CsvParserImpl implements CsvParser {
     }
 
     private String parseReservationLine(Reservation reservation) {
+        String isRepaired = "false";
+        if (reservation.isReserved()) {
+            isRepaired = "true";
+        }
         return reservation.getId() + NEXT_COLUMN + reservation.getStartDate() + NEXT_COLUMN + reservation.getEndDate()
                 + reservation.getLodgerId() + NEXT_COLUMN + reservation.getRoomId() + NEXT_COLUMN;
     }

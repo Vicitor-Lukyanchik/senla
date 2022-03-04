@@ -17,7 +17,6 @@ public class TableColumns {
     public static final String ROOM_COST = "cost";
     public static final String ROOM_CAPACITY = "capacity";
     public static final String ROOM_STARS = "stars";
-    public static final String ROOM_REPAIRED = "repaired";
 
     public static final String SERVICE_ID = "id";
     public static final String SERVICE_NAME = "name";
@@ -28,6 +27,7 @@ public class TableColumns {
     public static final String RESERVATION_END_DATE = "end_date";
     public static final String RESERVATION_LODGER_ID = "lodger_id";
     public static final String RESERVATION_ROOM_ID = "room_id";
+    public static final String RESERVATION_RESERVED = "reserved";
 
     public static final String SERVICE_ORDER_ID = "id";
     public static final String SERVICE_ORDER_DATE = "date";

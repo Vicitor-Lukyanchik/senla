@@ -19,7 +19,7 @@ public interface HotelFormatter {
 
     String formatServicesCosts(List<Service> services);
 
-    String formatLodgerReversationsCost(Map<Integer, BigDecimal> reservations);
+    String formatLodgerReservationsCost(Map<Integer, BigDecimal> reservations);
 
     String formatLodgersRooms(Map<Lodger, Room> lodgersRooms);
 

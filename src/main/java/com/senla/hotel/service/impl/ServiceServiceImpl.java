@@ -3,8 +3,8 @@ package com.senla.hotel.service.impl;
 import com.senla.hotel.annotation.InjectByType;
 import com.senla.hotel.annotation.Log;
 import com.senla.hotel.annotation.Singleton;
+import com.senla.hotel.dao.EntityDao;
 import com.senla.hotel.dao.ServiceDao;
-import com.senla.hotel.service.connection.Transaction;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.ServiceException;
@@ -12,7 +12,10 @@ import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
+import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,25 +35,26 @@ public class ServiceServiceImpl implements ServiceService {
     private CsvParser csvParser;
     @InjectByType
     private FileWriter fileWriter;
+    @InjectByType(clazz = ServiceDao.class)
+    private EntityDao<Service, Long> serviceDao;
     @InjectByType
-    private ServiceDao serviceDao;
-    @InjectByType
-    private Transaction transaction;
+    private HibernateUtil hibernateUtil;
     private List<Service> csvServices = new ArrayList<>();
 
     @Override
     public void create(String name, BigDecimal cost) {
         validateService(name);
+        Session session = hibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
         try {
-            transaction.begin();
-            serviceDao.create(new Service(name, cost), transaction.getConnection());
+            serviceDao.create(new Service(name, cost), session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
-            transaction.end();
+            session.close();
         }
     }
 
@@ -69,16 +73,17 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     private void createWithId(Service importService) {
+        Session session = hibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
         try {
-            transaction.begin();
-            serviceDao.createWithId(importService, transaction.getConnection());
+            serviceDao.createWithId(importService, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
-            transaction.end();
+            session.close();
         }
     }
 
@@ -117,16 +122,17 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     private void update(Service service) {
+        Session session = hibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
         try {
-            transaction.begin();
-            serviceDao.update(service, transaction.getConnection());
+            serviceDao.update(service, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
             log.error(e.getMessage());
             throw new ServiceException(e.getMessage());
         } finally {
-            transaction.end();
+            session.close();
         }
     }
 
@@ -142,9 +148,10 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public List<Service> findAll() {
-        transaction.begin();
-        List<Service> result = serviceDao.findAll(transaction.getConnection());
-        transaction.end();
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        List<Service> result = serviceDao.findAll(session, Service.class);
+        session.close();
         return result;
     }
 }

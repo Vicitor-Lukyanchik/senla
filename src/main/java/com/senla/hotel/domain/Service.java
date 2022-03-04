@@ -1,12 +1,21 @@
 package com.senla.hotel.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+@Entity
+@Table(name = "services")
 public class Service {
 
+    @Id
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "cost")
     private BigDecimal cost;
 
     public Service() {

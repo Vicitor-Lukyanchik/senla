@@ -12,9 +12,10 @@ public class InjectByTypeAnnotationObjectConfigurator implements ObjectConfigura
     @Override
     public void configure(Object t, ApplicationContext context) {
         for (Field field : t.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(InjectByType.class)) {
+            InjectByType annotation = field.getAnnotation(InjectByType.class);
+            if (annotation != null) {
                 field.setAccessible(true);
-                Object object = context.getObject(field.getType());
+                Object object = createObject(context, field, annotation);
                 try {
                     field.set(t, object);
                 } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -22,5 +23,15 @@ public class InjectByTypeAnnotationObjectConfigurator implements ObjectConfigura
                 }
             }
         }
+    }
+
+    private Object createObject(ApplicationContext context, Field field, InjectByType annotation) {
+        Object object = null;
+        if(annotation.clazz().equals(void.class)) {
+            object = context.getObject(field.getType());
+        } else {
+            object = context.getObject(annotation.clazz());
+        }
+        return object;
     }
 }

@@ -25,6 +25,10 @@
             <AppenderRef ref="fileLogger"/>
         </Logger>
 
+        <Logger name="org.hibernate" level="error" additivity="false">
+            <AppenderRef ref="fileLogger"/>
+        </Logger>
+
         <Root level="debug" additivity="true">
             <AppenderRef ref="console"/>
         </Root>

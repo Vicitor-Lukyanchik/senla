@@ -19,6 +19,8 @@ import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 @Singleton
 public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
+    private static final boolean START_RESERVED = false;
+
     @InjectByType
     private HotelFormatter hotelFormatter;
     @InjectByType
@@ -85,7 +87,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         System.out.print("\nInput lodger id : ");
         Long lodgerId = ConsoleReader.readLong();
         System.out.println(
-                hotelFormatter.formatLodgerReversationsCost(lodgerService.findReservationCostByLodgerId(lodgerId)));
+                hotelFormatter.formatLodgerReservationsCost(lodgerService.findReservationCostByLodgerId(lodgerId)));
     };
 
     private Action orderServiceToLodger = () -> {
@@ -109,7 +111,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
         Long lodgerId = ConsoleReader.readLong();
         System.out.print("Input room id : ");
         Long roomId = ConsoleReader.readLong();
-        lodgerService.createReservation(startDate, endDate, lodgerId, roomId);
+        lodgerService.createReservation(startDate, endDate, lodgerId, roomId, START_RESERVED);
     };
 
     private Action importLodgers = () -> lodgerService.importLodgers();

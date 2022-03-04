@@ -46,7 +46,6 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
         result.put(commandNumber++, createMenuItem("Add room", addRoom, rootMenu));
         result.put(commandNumber++, createMenuItem("Change room cost", changeRoomCost, rootMenu));
-        result.put(commandNumber++, createMenuItem("Change room status", changeRoomStatus, rootMenu));
 
         result.put(commandNumber++, createMenuItem("Find room", findRoom, rootMenu));
         result.put(commandNumber++, createMenuItem("Find rooms", findRooms, rootMenu));
@@ -96,12 +95,6 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
         System.out.print("Input new room cost : ");
         BigDecimal cost = ConsoleReader.readBigDecimal();
         roomService.updateCost(id, cost);
-    };
-
-    private Action changeRoomStatus = () -> {
-        System.out.print("\nInput room id : ");
-        Long id = ConsoleReader.readLong();
-        roomService.updateStatus(id);
     };
 
     private Action findCountNotSettledRooms = () -> System.out

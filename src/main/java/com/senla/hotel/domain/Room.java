@@ -1,35 +1,43 @@
 package com.senla.hotel.domain;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
+
+@Entity
+@Table(name="rooms")
 public class Room {
 
+    @Id
     private Long id;
+    @Column(name = "number")
     private int number;
+    @Column(name="cost")
     private BigDecimal cost;
+    @Column(name="capacity")
     private int capacity;
-    private int star;
-    private boolean isRepaired = false;
+    @Column(name="stars")
+    private int stars;
 
     public Room() {
     }
 
-    public Room(int number, BigDecimal cost, int capacity, int star, boolean isRepaired) {
+    public Room(int number, BigDecimal cost, int capacity, int star) {
         this.number = number;
         this.cost = cost;
         this.capacity = capacity;
-        this.star = star;
-        this.isRepaired = isRepaired;
+        this.stars = star;
     }
 
-    public Room(Long id, int number, BigDecimal cost, int capacity, int star, boolean isRepaired) {
+    public Room(Long id, int number, BigDecimal cost, int capacity, int star) {
         this.id = id;
         this.number = number;
         this.cost = cost;
         this.capacity = capacity;
-        this.star = star;
-        this.isRepaired = isRepaired;
+        this.stars = star;
     }
 
     public Long getId() {
@@ -65,18 +73,10 @@ public class Room {
     }
 
     public int getStars() {
-        return star;
+        return stars;
     }
 
     public void setStars(int star) {
-        this.star = star;
-    }
-
-    public boolean isRepaired() {
-        return isRepaired;
-    }
-
-    public void setRepaired(boolean isRepaired) {
-        this.isRepaired = isRepaired;
+        this.stars = star;
     }
 }

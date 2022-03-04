@@ -21,7 +21,7 @@ public interface LodgerService {
 
     List<Lodger> findAll();
 
-    void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId);
+    void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId, Boolean reserved);
 
     void importReservations();
 

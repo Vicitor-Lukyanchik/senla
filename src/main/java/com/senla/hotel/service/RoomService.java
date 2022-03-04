@@ -12,8 +12,6 @@ public interface RoomService {
 
     void exportRoom(Long id);
 
-    void updateStatus(Long id);
-
     void updateCost(Long id, BigDecimal cost);
 
     Room findById(Long id);

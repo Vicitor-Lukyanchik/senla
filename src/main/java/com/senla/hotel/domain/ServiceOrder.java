@@ -1,13 +1,22 @@
 package com.senla.hotel.domain;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 
+@Entity
+@Table(name="service_orders")
 public class ServiceOrder {
 
+    @Id
     private Long id;
+    @Column(name="date")
     private LocalDate date;
+    @Column(name="lodger_id")
     private Long lodgerId;
+    @Column(name="service_id")
     private Long serviceId;
 
     public ServiceOrder() {

@@ -35,7 +35,7 @@ public class ObjectFactory {
                 try {
                     method.invoke(t);
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new ObjectFactoryException("Can not build pre construct method");
+                    throw new ObjectFactoryException("Can not build post construct method");
                 }
             }
         }
