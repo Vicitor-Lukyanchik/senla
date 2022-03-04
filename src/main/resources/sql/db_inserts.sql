@@ -20,12 +20,12 @@ INSERT INTO rooms (number, cost, capacity, stars) VALUES
 
 --RESERVATIONS
 INSERT INTO reservations (start_date, end_date, lodger_id, room_id, reserved) VALUES
-('05.02.2022', '10.02.2022', 1, 2, false),
-('03.02.2022', '07.02.2022', 2, 1, false),
-('01.02.2022', '15.02.2022', 3, 4, false),
-('07.02.2022', '25.02.2022', 4, 5, false),
-('17.03.2022', '23.03.2022', 5, 5, false),
-('27.02.2022', '03.03.2022', 6, 1, false);
+('05.02.2022', '10.02.2022', 1, 2, true),
+('03.02.2022', '07.02.2022', 2, 1, true),
+('01.02.2022', '15.02.2022', 3, 4, true),
+('07.02.2022', '25.02.2022', 4, 5, true),
+('17.03.2022', '23.03.2022', 5, 5, true),
+('27.02.2022', '03.03.2022', 6, 1, true);
 
 --SERVICE
 INSERT INTO services (name, cost) VALUES ('Clean', 5.00),

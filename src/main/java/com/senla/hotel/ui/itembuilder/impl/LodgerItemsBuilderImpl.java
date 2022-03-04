@@ -19,7 +19,7 @@ import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 @Singleton
 public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
-    private static final boolean START_RESERVED = false;
+    private static final boolean START_RESERVED = true;
 
     @InjectByType
     private HotelFormatter hotelFormatter;
