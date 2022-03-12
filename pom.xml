@@ -4,7 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.senla.hotel</groupId>
     <artifactId>hotel</artifactId>
+    <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
+    <modules>
+        <module>spring</module>
+    </modules>
 
     <properties>
         <reflections.version>0.10.2</reflections.version>
