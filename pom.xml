@@ -7,62 +7,49 @@
     <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-        <module>spring</module>
+        <module>entity</module>
+        <module>configurator</module>
+        <module>file</module>
+        <module>parser</module>
+        <module>dao</module>
+        <module>service</module>
+        <module>ui</module>
     </modules>
 
     <properties>
-        <reflections.version>0.10.2</reflections.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.surefire.version>3.0.0-M5</maven.surefire.version>
         <configuration.release>11</configuration.release>
-        <postgresql.version>42.3.2</postgresql.version>
-        <log4j.version>2.17.1</log4j.version>
-        <slf4j.version>1.7.36</slf4j.version>
-        <hibernate.version>5.6.5.Final</hibernate.version>
         <checkstyle.version>3.1.2</checkstyle.version>
-        <checkstyle.location>src/main/resources/checkstyle/checkstyle.xml</checkstyle.location>
+        <checkstyle.location>src/main/resources/checkstyle.xml</checkstyle.location>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>${reflections.version}</version>
+            <groupId>com.senla.hotel</groupId>
+            <artifactId>configurator</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
+            <groupId>com.senla.hotel</groupId>
+            <artifactId>entity</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <groupId>com.senla.hotel</groupId>
+            <artifactId>service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.6.5.Final</version>
+            <groupId>com.senla.hotel</groupId>
+            <artifactId>ui</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -98,7 +85,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
                 <configuration>
-                    <configLocation>${checkstyle.location}</configLocation>
+                    <configLocation>src/main/resources/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>
