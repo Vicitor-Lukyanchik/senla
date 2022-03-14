@@ -28,6 +28,7 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
     private static final String DATE_PATTERN = "d.MM.yyyy";
     private static final String PROPERTY_PATH = "config.properties";
 
+    private Properties properties = null;
     private ApplicationContext context;
 
     @Override
@@ -55,7 +56,9 @@ public class ConfigPropertyAnnotationObjectConfigurator implements ObjectConfigu
         if (!annotation.propertyName().equals(EMPTY_LINE)) {
             propertyName = annotation.propertyName();
         }
-        Properties properties = getProperties(context);
+        if (properties == null) {
+            properties = getProperties(context);
+        }
         String property = properties.getProperty(propertyName);
         return requireProperty(property, annotation);
     }
