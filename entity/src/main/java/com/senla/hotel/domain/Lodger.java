@@ -1,6 +1,5 @@
 package com.senla.hotel.domain;
 
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;

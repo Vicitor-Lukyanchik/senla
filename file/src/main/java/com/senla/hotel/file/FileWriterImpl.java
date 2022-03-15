@@ -1,9 +1,9 @@
 package com.senla.hotel.file;
 
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.FileException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,11 +17,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class FileWriterImpl implements FileWriter {
-
-    @Log
-    private Logger log;
 
     @Override
     public void writeResourceFileLines(String path, List<String> lines) {

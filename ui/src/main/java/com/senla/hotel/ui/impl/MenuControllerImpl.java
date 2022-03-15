@@ -1,19 +1,19 @@
 package com.senla.hotel.ui.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.ui.*;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class MenuControllerImpl implements MenuController {
 
-    @Log
-    private Logger log;
-    @InjectByType
+    @Autowired
     private Builder builder;
-    @InjectByType
+    @Autowired
     private Navigator navigator;
 
     @Override

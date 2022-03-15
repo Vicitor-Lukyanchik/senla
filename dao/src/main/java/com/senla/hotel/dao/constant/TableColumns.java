@@ -1,8 +1,10 @@
 package com.senla.hotel.dao.constant;
 
-import com.senla.hotel.annotation.Singleton;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Singleton
+@Component
+@Scope(value = "singleton")
 public class TableColumns {
 
     private TableColumns(){}

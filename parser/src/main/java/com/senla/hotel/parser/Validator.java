@@ -1,17 +1,18 @@
 package com.senla.hotel.parser;
 
-import com.senla.hotel.annotation.Log;
 import com.senla.hotel.exception.ValidatorException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope(value = "singleton")
+@Log4j2
 public class Validator {
 
     private static final String REGEX_PHONE = "\\d{7}";
     private static final String REGEX_PRICE = "\\d+[.]\\d{2}";
     private static final String REGEX_DATE = "\\d{2}+[.]\\d{2}+[.]\\d{2}";
-
-    @Log
-    private static Logger log;
 
     private Validator() {
     }

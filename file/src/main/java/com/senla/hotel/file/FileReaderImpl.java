@@ -1,9 +1,9 @@
 package com.senla.hotel.file;
 
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.FileException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,11 +19,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class FileReaderImpl implements FileReader {
-
-    @Log
-    private Logger log;
 
     @Override
     public List<String> readResourceFileLines(String path) {

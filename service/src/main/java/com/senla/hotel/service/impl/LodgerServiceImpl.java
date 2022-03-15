@@ -1,23 +1,24 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.dao.EntityDao;
 import com.senla.hotel.dao.LodgerDao;
+import com.senla.hotel.dao.ReservationDao;
+import com.senla.hotel.dao.ServiceOrderDao;
 import com.senla.hotel.domain.*;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.file.FileReader;
 import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
-import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.exception.ServiceException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,32 +26,32 @@ import java.time.Period;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class LodgerServiceImpl implements LodgerService {
 
     private static final String LODGERS_PATH = "csv/lodgers.csv";
     private static final String RESERVATIONS_PATH = "csv/reservations.csv";
     private static final String SERVICE_ORDERS_PATH = "csv/service_orders.csv";
 
-    @Log
-    private Logger log;
-    @InjectByType
+    @Autowired
     private FileReader fileReader;
-    @InjectByType
+    @Autowired
     private CsvParser csvParser;
-    @InjectByType
+    @Autowired
     private FileWriter fileWriter;
-    @InjectByType
+    @Autowired
     private ServiceService serviceService;
-    @InjectByType
+    @Autowired
     private RoomService roomService;
-    @InjectByType(clazz = LodgerDao.class)
-    private EntityDao<Lodger, Long> lodgerDao;
-    @InjectByType(clazz = LodgerDao.class)
-    private EntityDao<ServiceOrder, Long> serviceOrderDao;
-    @InjectByType(clazz = LodgerDao.class)
-    private EntityDao<Reservation, Long> reservationDao;
-    @InjectByType
+    @Autowired
+    private LodgerDao lodgerDao;
+    @Autowired
+    private ServiceOrderDao serviceOrderDao;
+    @Autowired
+    private ReservationDao reservationDao;
+    @Autowired
     private HibernateUtil hibernateUtil;
     private List<Lodger> csvLodgers = new ArrayList<>();
     private List<Reservation> csvReservations = new ArrayList<>();

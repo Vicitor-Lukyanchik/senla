@@ -1,8 +1,8 @@
 package com.senla.hotel.parser;
 
-
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.*;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,7 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Component
+@Scope("singleton")
 public class CsvParserImpl implements CsvParser {
 
     private static final String NEXT_COLUMN = ";";

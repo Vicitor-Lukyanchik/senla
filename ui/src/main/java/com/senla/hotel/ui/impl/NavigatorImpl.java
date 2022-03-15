@@ -1,7 +1,5 @@
 package com.senla.hotel.ui.impl;
 
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.exception.DAOException;
 import com.senla.hotel.exception.FileException;
 import com.senla.hotel.exception.ValidatorException;
@@ -9,18 +7,20 @@ import com.senla.hotel.service.exception.ServiceException;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.Map;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class NavigatorImpl implements Navigator {
 
     private Menu currentMenu;
-    @Log
-    private Logger log;
 
     @Override
     public void printMenu() {

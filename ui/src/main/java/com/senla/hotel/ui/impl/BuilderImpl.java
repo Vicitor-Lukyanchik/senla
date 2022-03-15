@@ -1,39 +1,45 @@
 package com.senla.hotel.ui.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.ui.Builder;
 import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class BuilderImpl implements Builder {
 
     private Menu rootMenu = null;
-    @Log
-    private Logger log;
-    @InjectByType
+    @Autowired
     private Menu roomMenu;
-    @InjectByType
+    @Autowired
     private Menu serviceMenu;
-    @InjectByType
+    @Autowired
     private Menu lodgerMenu;
-    @InjectByType
-    private Menu exitMenu;
-    @InjectByType
+    @Autowired
     private RoomItemsBuilder roomItemsBuilder;
-    @InjectByType
+    @Autowired
     private ServiceItemsBuilder serviceItemsBuilder;
-    @InjectByType
+    @Autowired
     private LodgerItemsBuilder lodgerItemsBuilder;
+
+    @Override
+    public Menu getRootMenu() {
+        if (rootMenu == null) {
+            buildMenu();
+        }
+        return rootMenu;
+    }
 
     private void buildMenu() {
         buildRootMenu();
@@ -74,13 +80,5 @@ public class BuilderImpl implements Builder {
     private void buildLodgerMenu() {
         lodgerMenu.setName("Lodger menu");
         lodgerMenu.setMenuItems(lodgerItemsBuilder.buildLodgerItems(rootMenu));
-    }
-
-    @Override
-    public Menu getRootMenu() {
-        if (rootMenu == null) {
-            buildMenu();
-        }
-        return rootMenu;
     }
 }

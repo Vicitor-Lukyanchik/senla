@@ -1,7 +1,5 @@
 package com.senla.hotel.ui.itembuilder.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.service.LodgerService;
@@ -11,19 +9,23 @@ import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Singleton
+@Component
+@Scope("singleton")
 public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
     private static final boolean START_RESERVED = true;
 
-    @InjectByType
+    @Autowired
     private HotelFormatter hotelFormatter;
-    @InjectByType
+    @Autowired
     private LodgerService lodgerService;
     private Integer commandNumber = 1;
 

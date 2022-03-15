@@ -1,8 +1,5 @@
 package com.senla.hotel.ui.itembuilder.impl;
 
-import com.senla.hotel.annotation.ConfigProperty;
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.service.LodgerService;
@@ -13,28 +10,42 @@ import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Singleton
+@Component
+@Scope("singleton")
 public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private static final boolean DEFAULT_REPAIRED = false;
+    private static final String DATE_PATTERN = "d.MM.yyyy";
 
-    @InjectByType
+    @Autowired
     private HotelFormatter hotelFormatter;
-    @InjectByType
+    @Autowired
     private RoomService roomService;
-    @InjectByType
+    @Autowired
     private LodgerService lodgerService;
-    @ConfigProperty(propertyName = "date.now", type = "date")
-    private LocalDate LOCAL_DATE_NOW;
-    @ConfigProperty
+    @Value("${date.now}")
+    private String date_now;
+    private LocalDate localDateNow;
+    @Value("${RoomItemsBuilderImpl.limitRoomLodgers}")
     private int limitRoomLodgers;
     private Integer commandNumber = 1;
+
+    @PostConstruct
+    private void parseDate() {
+        localDateNow = LocalDate.parse(date_now, DateTimeFormatter.ofPattern(DATE_PATTERN));
+    }
 
     public Map<Integer, MenuItem> buildRoomItems(Menu rootMenu) {
         Map<Integer, MenuItem> result = new LinkedHashMap<>();
@@ -92,7 +103,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action findCountNotSettledRooms = () -> System.out
-            .println("\nCount not settled rooms : " + lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW).size());
+            .println("\nCount not settled rooms : " + lodgerService.findAllNotSettledRoomOnDate(localDateNow).size());
 
     private Action findLastLodgers = () -> {
         System.out.print("\nInput room id : ");
@@ -102,7 +113,7 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action findNotSettledRooms = () -> {
-        List<Room> rooms = lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW);
+        List<Room> rooms = lodgerService.findAllNotSettledRoomOnDate(localDateNow);
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
@@ -146,17 +157,17 @@ public class RoomItemsBuilderImpl implements RoomItemsBuilder {
     };
 
     private Action sortNotSettledRoomsByCapacity = () -> {
-        List<Room> rooms = sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
+        List<Room> rooms = sortRoomsByCapacity(lodgerService.findAllNotSettledRoomOnDate(localDateNow));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
     private Action sortNotSettledRoomsByCost = () -> {
-        List<Room> rooms = sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
+        List<Room> rooms = sortRoomsByCost(lodgerService.findAllNotSettledRoomOnDate(localDateNow));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 
     private Action sortNotSettledRoomsByStars = () -> {
-        List<Room> rooms = sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(LOCAL_DATE_NOW));
+        List<Room> rooms = sortRoomsByStars(lodgerService.findAllNotSettledRoomOnDate(localDateNow));
         System.out.println(hotelFormatter.formatRooms(rooms));
     };
 

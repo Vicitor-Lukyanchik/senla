@@ -1,9 +1,5 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.dao.EntityDao;
 import com.senla.hotel.dao.RoomDao;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.exception.DAOException;
@@ -13,30 +9,33 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class RoomServiceImpl implements RoomService {
 
     private static final String ROOMS_PATH = "csv/rooms.csv";
 
-    @Log
-    private Logger log;
-    @InjectByType
+    @Autowired
     private FileReader fileReader;
-    @InjectByType
+    @Autowired
     private CsvParser csvParser;
-    @InjectByType
+    @Autowired
     private FileWriter fileWriter;
-    @InjectByType(clazz = RoomDao.class)
-    private EntityDao<Room, Long> roomDao;
-    @InjectByType
+    @Autowired
+    private RoomDao roomDao;
+    @Autowired
     private HibernateUtil hibernateUtil;
     private List<Room> csvRooms = new ArrayList<>();
 

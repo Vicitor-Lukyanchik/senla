@@ -1,13 +1,17 @@
 package com.senla.hotel.service.connection.hibernate;
 
-import com.senla.hotel.annotation.PostConstruct;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.service.exception.ServiceException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Singleton
+import javax.annotation.PostConstruct;
+
+
+@Component
+@Scope("singleton")
 public class HibernateUtil {
     private SessionFactory sessionFactory;
 

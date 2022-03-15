@@ -1,9 +1,5 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Log;
-import com.senla.hotel.annotation.Singleton;
-import com.senla.hotel.dao.EntityDao;
 import com.senla.hotel.dao.ServiceDao;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
@@ -13,31 +9,34 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Component
+@Scope("singleton")
+@Log4j2
 public class ServiceServiceImpl implements ServiceService {
 
     private static final String SERVICES_PATH = "csv/services.csv";
     private static final String EMPTY_LINE = "";
 
-    @Log
-    private Logger log;
-    @InjectByType
+    @Autowired
     private FileReader fileReader;
-    @InjectByType
+    @Autowired
     private CsvParser csvParser;
-    @InjectByType
+    @Autowired
     private FileWriter fileWriter;
-    @InjectByType(clazz = ServiceDao.class)
-    private EntityDao<Service, Long> serviceDao;
-    @InjectByType
+    @Autowired
+    private ServiceDao serviceDao;
+    @Autowired
     private HibernateUtil hibernateUtil;
     private List<Service> csvServices = new ArrayList<>();
 

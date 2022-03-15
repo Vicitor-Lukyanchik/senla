@@ -1,7 +1,5 @@
 package com.senla.hotel.ui.itembuilder.impl;
 
-import com.senla.hotel.annotation.InjectByType;
-import com.senla.hotel.annotation.Singleton;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.ui.Action;
@@ -10,18 +8,22 @@ import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.ServiceItemsBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Singleton
+@Component
+@Scope("singleton")
 public class ServiceItemsBuilderImpl implements ServiceItemsBuilder {
 
-    @InjectByType
+    @Autowired
     private HotelFormatter hotelFormatter;
-    @InjectByType
+    @Autowired
     private ServiceService serviceService;
     private Integer commandNumber = 1;
 

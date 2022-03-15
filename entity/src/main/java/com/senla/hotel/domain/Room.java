@@ -6,7 +6,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
-
 @Entity
 @Table(name="rooms")
 public class Room {

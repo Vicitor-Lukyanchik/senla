@@ -14,6 +14,7 @@
         <module>dao</module>
         <module>service</module>
         <module>ui</module>
+        <module>log</module>
     </modules>
 
     <properties>
@@ -22,36 +23,9 @@
         <configuration.release>11</configuration.release>
         <checkstyle.version>3.1.2</checkstyle.version>
         <checkstyle.location>src/main/resources/checkstyle.xml</checkstyle.location>
+        <log4j.version>2.17.1</log4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.senla.hotel</groupId>
-            <artifactId>configurator</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.senla.hotel</groupId>
-            <artifactId>entity</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.senla.hotel</groupId>
-            <artifactId>service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.senla.hotel</groupId>
-            <artifactId>ui</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -85,7 +59,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.version}</version>
                 <configuration>
-                    <configLocation>src/main/resources/checkstyle.xml</configLocation>
+                    <configLocation>ui/src/main/resources/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
         </plugins>

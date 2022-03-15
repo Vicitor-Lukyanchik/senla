@@ -6,7 +6,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
 
-
 @Entity
 @Table(name = "reservations")
 public class Reservation {
