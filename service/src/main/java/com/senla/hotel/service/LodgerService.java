@@ -29,7 +29,7 @@ public interface LodgerService {
 
     Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit);
 
-    Map<Lodger, Room> findAllNowLodgersRooms();
+    Map<Lodger, Room> findAllLodgersRooms();
 
     List<Room> findAllNotSettledRoomOnDate(LocalDate date);
 

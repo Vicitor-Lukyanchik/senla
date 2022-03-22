@@ -16,24 +16,4 @@ import static com.senla.hotel.dao.constant.TableColumns.*;
 @Scope("singleton")
 public class RoomDaoImpl extends EntityDao<Room, Long> implements RoomDao {
 
-    private static final String ROOM_TABLE = "rooms";
-    private static final String ROOM_SEQUENCE = "nextval('rooms_id_seq')";
-    private static final String INSERT_ROOM = "INSERT INTO " + ROOM_TABLE +
-            "(" + ROOM_ID + "," + ROOM_NUMBER + "," + ROOM_COST + "," + ROOM_CAPACITY +
-            "," + ROOM_STARS + ") " +
-            "VALUES (" + ROOM_SEQUENCE + ", :number, :cost, :capacity, :stars)";
-
-    @Override
-    public void create(Room room, Session session) {
-        try {
-            Query query = session.createSQLQuery(INSERT_ROOM)
-                    .setParameter("number", room.getNumber())
-                    .setParameter("cost", room.getCost())
-                    .setParameter("capacity", room.getCapacity())
-                    .setParameter("stars", room.getStars());
-            query.executeUpdate();
-        } catch (Exception e) {
-            throw new DAOException("Can not create room");
-        }
-    }
 }

@@ -96,10 +96,12 @@ public class CsvParserImpl implements CsvParser {
         LocalDate startDate = LocalDate.parse(reservation[1], DateTimeFormatter.ofPattern("d.MM.yyyy"));
         Validator.validateDate(reservation[2]);
         LocalDate endDate = LocalDate.parse(reservation[2], DateTimeFormatter.ofPattern("d.MM.yyyy"));
-        Long lodgerId = Long.parseLong(reservation[3]);
-        Long roomId = Long.parseLong(reservation[4]);
+        Lodger lodger = new Lodger();
+        lodger.setId(Long.parseLong(reservation[3]));
+        Room room = new Room();
+        room.setId(Long.parseLong(reservation[4]));
         Boolean reserved = reservation[5].equals("true");
-        return new Reservation(id, startDate, endDate, lodgerId, roomId, reserved);
+        return new Reservation(id, startDate, endDate, lodger, room, reserved);
     }
 
     @Override
@@ -117,7 +119,7 @@ public class CsvParserImpl implements CsvParser {
             isRepaired = "true";
         }
         return reservation.getId() + NEXT_COLUMN + reservation.getStartDate() + NEXT_COLUMN + reservation.getEndDate()
-                + reservation.getLodgerId() + NEXT_COLUMN + reservation.getRoomId() + NEXT_COLUMN;
+                + reservation.getLodger().getId() + NEXT_COLUMN + reservation.getRoom().getId() + NEXT_COLUMN;
     }
 
     @Override
@@ -133,9 +135,11 @@ public class CsvParserImpl implements CsvParser {
         Long id = Long.parseLong(serviceOrder[0]);
         Validator.validateDate(serviceOrder[1]);
         LocalDate date = LocalDate.parse(serviceOrder[1], DateTimeFormatter.ofPattern("d.MM.yyyy"));
-        Long lodgerId = Long.parseLong(serviceOrder[2]);
-        Long serviceId = Long.parseLong(serviceOrder[3]);
-        return new ServiceOrder(id, date, lodgerId, serviceId);
+        Lodger lodger = new Lodger();
+        Service service = new Service();
+        lodger.setId(Long.parseLong(serviceOrder[2]));
+        service.setId(Long.parseLong(serviceOrder[3]));
+        return new ServiceOrder(id, date, lodger, service);
     }
 
     @Override
@@ -148,8 +152,8 @@ public class CsvParserImpl implements CsvParser {
     }
 
     private String parseLine(ServiceOrder serviceOrder) {
-        return serviceOrder.getId() + NEXT_COLUMN + serviceOrder.getDate() + NEXT_COLUMN + serviceOrder.getLodgerId()
-                + NEXT_COLUMN + serviceOrder.getServiceId();
+        return serviceOrder.getId() + NEXT_COLUMN + serviceOrder.getDate() + NEXT_COLUMN + serviceOrder.getLodger()
+                + NEXT_COLUMN + serviceOrder.getService();
     }
 
     @Override

@@ -73,7 +73,7 @@ public class RoomServiceImpl implements RoomService {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
-            roomDao.createWithId(importRoom, session);
+            roomDao.create(importRoom, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();

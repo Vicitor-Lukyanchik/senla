@@ -1,38 +1,42 @@
 package com.senla.hotel.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name="service_orders")
+@SequenceGenerator(
+        name = "lodger-gen",
+        sequenceName = "lodgers_id_seq",
+        initialValue = 1, allocationSize = 1)
 public class ServiceOrder {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lodger-gen")
     private Long id;
     @Column(name="date")
     private LocalDate date;
-    @Column(name="lodger_id")
-    private Long lodgerId;
-    @Column(name="service_id")
-    private Long serviceId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lodger_id")
+    private Lodger lodger;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id")
+    private Service service;
 
     public ServiceOrder() {
     }
 
-    public ServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
+    public ServiceOrder(LocalDate date, Lodger lodger, Service service) {
         this.date = date;
-        this.lodgerId = lodgerId;
-        this.serviceId = serviceId;
+        this.lodger = lodger;
+        this.service = service;
     }
 
-    public ServiceOrder(Long id, LocalDate date, Long lodgerId, Long serviceId) {
+    public ServiceOrder(Long id, LocalDate date, Lodger lodger, Service service) {
         this.id = id;
         this.date = date;
-        this.lodgerId = lodgerId;
-        this.serviceId = serviceId;
+        this.lodger = lodger;
+        this.service = service;
     }
 
     public Long getId() {
@@ -51,19 +55,19 @@ public class ServiceOrder {
         this.date = date;
     }
 
-    public Long getLodgerId() {
-        return lodgerId;
+    public Lodger getLodger() {
+        return lodger;
     }
 
-    public void setLodgerId(Long lodgerId) {
-        this.lodgerId = lodgerId;
+    public void setLodger(Lodger lodger) {
+        this.lodger = lodger;
     }
 
-    public Long getServiceId() {
-        return serviceId;
+    public Service getService() {
+        return service;
     }
 
-    public void setServiceId(Long serviceId) {
-        this.serviceId = serviceId;
+    public void setService(Service serviceId) {
+        this.service = serviceId;
     }
 }

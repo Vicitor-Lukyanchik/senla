@@ -12,7 +12,7 @@ public class Validator {
 
     private static final String REGEX_PHONE = "\\d{7}";
     private static final String REGEX_PRICE = "\\d+[.]\\d{2}";
-    private static final String REGEX_DATE = "\\d{2}+[.]\\d{2}+[.]\\d{2}";
+    private static final String REGEX_DATE = "\\d{2}+[.]\\d{2}+[.]\\d{4}";
 
     private Validator() {
     }

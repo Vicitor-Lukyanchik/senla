@@ -75,7 +75,7 @@ public class ServiceServiceImpl implements ServiceService {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
-            serviceDao.createWithId(importService, session);
+            serviceDao.create(importService, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();

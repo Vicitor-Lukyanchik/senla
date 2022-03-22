@@ -1,5 +1,6 @@
 package com.senla.hotel.dao;
 
+import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
 import org.hibernate.Session;
 
@@ -12,10 +13,6 @@ public abstract class EntityDao<T, PK extends Serializable> implements GenericDa
 
     @Override
     public void create(T entity, Session session) {
-    }
-
-    @Override
-    public void createWithId(T entity, Session session) {
         try {
             session.save(entity);
         } catch (Exception e) {

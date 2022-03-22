@@ -81,7 +81,7 @@ public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
     };
 
     private Action findLodgersRooms = () -> {
-        Map<Lodger, Room> lodgersRooms = lodgerService.findAllNowLodgersRooms();
+        Map<Lodger, Room> lodgersRooms = lodgerService.findAllLodgersRooms();
         System.out.println(hotelFormatter.formatLodgersRooms(lodgersRooms));
     };
 

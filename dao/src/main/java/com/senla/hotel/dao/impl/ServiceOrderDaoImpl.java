@@ -17,22 +17,4 @@ import static com.senla.hotel.dao.constant.TableColumns.*;
 @Scope("singleton")
 public class ServiceOrderDaoImpl extends EntityDao<ServiceOrder, Long> implements ServiceOrderDao {
 
-    private static final String SERVICE_ORDER_TABLE = "service_orders";
-    private static final String SERVICE_ORDER_SEQUENCE = "nextval('service_orders_id_seq')";
-    private static final String INSERT_SERVICE_ORDER = "INSERT INTO " + SERVICE_ORDER_TABLE +
-            "(" + SERVICE_ORDER_ID + ", " + SERVICE_ORDER_DATE +
-            ", " + SERVICE_ORDER_LODGER_ID + ", " + SERVICE_ORDER_SERVICE_ID + ") " +
-            "VALUES (" + SERVICE_ORDER_SEQUENCE + ", :date, :lodger_id, :service_id)";
-
-    public void create(ServiceOrder serviceOrder, Session session) {
-        try {
-            Query query = session.createSQLQuery(INSERT_SERVICE_ORDER)
-                    .setParameter("date", Date.valueOf(serviceOrder.getDate()))
-                    .setParameter("lodger_id", serviceOrder.getLodgerId())
-                    .setParameter("service_id", serviceOrder.getServiceId());
-            query.executeUpdate();
-        } finally {
-            throw new DAOException("Can not create service order");
-        }
-    }
 }

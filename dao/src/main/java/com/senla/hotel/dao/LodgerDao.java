@@ -5,10 +5,8 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-public interface LodgerDao {
+public interface LodgerDao extends GenericDao<Lodger, Long> {
     void create(Lodger entity, Session session);
-
-    void createWithId(Lodger entity, Session session);
 
     void update(Lodger entity, Session session);
 

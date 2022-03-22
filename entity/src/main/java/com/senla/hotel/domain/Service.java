@@ -1,16 +1,18 @@
 package com.senla.hotel.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "services")
+@SequenceGenerator(
+        name = "lodger-gen",
+        sequenceName = "lodgers_id_seq",
+        initialValue = 1, allocationSize = 1)
 public class Service {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lodger-gen")
     private Long id;
     @Column(name = "name")
     private String name;
