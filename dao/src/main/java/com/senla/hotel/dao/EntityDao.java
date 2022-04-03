@@ -1,6 +1,5 @@
 package com.senla.hotel.dao;
 
-import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
 import org.hibernate.Session;
 
