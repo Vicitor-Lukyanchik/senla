@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class FileWriterImpl implements FileWriter {
 

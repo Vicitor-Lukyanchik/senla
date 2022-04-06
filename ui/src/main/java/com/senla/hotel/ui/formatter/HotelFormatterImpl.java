@@ -3,7 +3,6 @@ package com.senla.hotel.ui.formatter;
 import com.senla.hotel.domain.Lodger;
 import com.senla.hotel.domain.Room;
 import com.senla.hotel.domain.Service;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Scope("singleton")
 public class HotelFormatterImpl implements HotelFormatter {
 
     public static final String SPASE = " ";

@@ -17,7 +17,6 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -27,7 +26,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class LodgerServiceImpl implements LodgerService {
 
@@ -364,18 +362,20 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public Reservation findReservationById(Long id) {
-        for (Reservation reservation : findAllReservations()) {
-            if (reservation.getId().equals(id)) {
-                return reservation;
-            }
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        Reservation reservation = reservationDao.findById(session, id);
+        if (reservation == null){
+            throw new ServiceException("There is not reservation with this id " + id);
         }
-        throw new ServiceException("There is not reservation with this id " + id);
+        return reservation;
     }
 
     private List<Reservation> findAllReservations() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        List<Reservation> result = reservationDao.findAll(session, Reservation.class);
+        reservationDao.setType(Reservation.class);
+        List<Reservation> result = reservationDao.findAll(session);
         session.close();
         return result;
     }
@@ -473,12 +473,13 @@ public class LodgerServiceImpl implements LodgerService {
 
     @Override
     public ServiceOrder findServiceOrderById(Long id) {
-        for (ServiceOrder ServiceOrder : findAllServiceOrders()) {
-            if (ServiceOrder.getId().equals(id)) {
-                return ServiceOrder;
-            }
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        ServiceOrder serviceOrder = serviceOrderDao.findById(session, id);
+        if (serviceOrder == null){
+            throw new ServiceException("There is not service order with this id " + id);
         }
-        throw new ServiceException("There is not service order with this id " + id);
+        return serviceOrder;
     }
 
     @Override
@@ -497,26 +498,29 @@ public class LodgerServiceImpl implements LodgerService {
     public List<ServiceOrder> findAllServiceOrders() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        List<ServiceOrder> result = serviceOrderDao.findAll(session, ServiceOrder.class);
+        serviceOrderDao.setType(ServiceOrder.class);
+        List<ServiceOrder> result = serviceOrderDao.findAll(session);
         session.close();
         return result;
     }
 
     @Override
     public Lodger findById(Long id) {
-        for (Lodger lodger : findAll()) {
-            if (lodger.getId().equals(id)) {
-                return lodger;
-            }
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        Lodger lodger = lodgerDao.findById(session, id);
+        if (lodger == null){
+            throw new ServiceException("There is not lodger with this id " + id);
         }
-        throw new ServiceException("There is not lodger with this id " + id);
+        return lodger;
     }
 
     @Override
     public List<Lodger> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        List<Lodger> result = lodgerDao.findAll(session, Lodger.class);
+        lodgerDao.setType(Lodger.class);
+        List<Lodger> result = lodgerDao.findAll(session);
         session.close();
         return result;
     }

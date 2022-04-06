@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Scope("singleton")
 public class CsvParserImpl implements CsvParser {
 
     private static final String NEXT_COLUMN = ";";

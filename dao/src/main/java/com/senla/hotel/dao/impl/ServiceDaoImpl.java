@@ -7,13 +7,13 @@ import com.senla.hotel.exception.DAOException;
 import org.hibernate.Session;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
 
 import static com.senla.hotel.dao.constant.TableColumns.*;
 
-@Component
-@Scope("singleton")
+@Repository
 public class ServiceDaoImpl extends EntityDao<Service, Long> implements ServiceDao {
 
 }

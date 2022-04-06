@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class FileReaderImpl implements FileReader {
 

@@ -10,7 +10,6 @@ import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.LodgerItemsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -18,7 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
-@Scope("singleton")
 public class LodgerItemsBuilderImpl implements LodgerItemsBuilder {
 
     private static final boolean START_RESERVED = true;

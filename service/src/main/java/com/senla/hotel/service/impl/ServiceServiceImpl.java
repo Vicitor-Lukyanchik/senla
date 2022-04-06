@@ -13,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class ServiceServiceImpl implements ServiceService {
 
@@ -137,19 +135,21 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public Service findById(Long id) {
-        for (Service service : findAll()) {
-            if (service.getId().equals(id)) {
-                return service;
-            }
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        Service service = serviceDao.findById(session, id);
+        if (service == null) {
+            throw new ServiceException("There is not service with this id " + id);
         }
-        throw new ServiceException("There is not service with this id " + id);
+        return service;
     }
 
     @Override
     public List<Service> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        List<Service> result = serviceDao.findAll(session, Service.class);
+        serviceDao.setType(Service.class);
+        List<Service> result = serviceDao.findAll(session);
         session.close();
         return result;
     }

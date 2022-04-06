@@ -10,5 +10,9 @@ public interface GenericDao <T, PK extends Serializable>{
 
     void update(T entity, Session session);
 
-    List<T> findAll(Session session, Class<T> type);
+    List<T> findAll(Session session);
+
+    T findById(Session session, Long id);
+
+    void setType(Class<T> type);
 }

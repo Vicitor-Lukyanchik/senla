@@ -13,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class RoomServiceImpl implements RoomService {
 
@@ -141,19 +139,21 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room findById(Long id) {
-        for (Room room : findAll()) {
-            if (room.getId().equals(id)) {
-                return room;
-            }
+        Session session = hibernateUtil.getSession();
+        session.beginTransaction();
+        Room room = roomDao.findById(session, id);
+        if (room == null){
+            throw new ServiceException("There is not room with this id " + id);
         }
-        throw new ServiceException("There is not room with this id " + id);
+        return room;
     }
 
     @Override
     public List<Room> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        List<Room> result = roomDao.findAll(session, Room.class);
+        roomDao.setType(Room.class);
+        List<Room> result = roomDao.findAll(session);
         session.close();
         return result;
     }

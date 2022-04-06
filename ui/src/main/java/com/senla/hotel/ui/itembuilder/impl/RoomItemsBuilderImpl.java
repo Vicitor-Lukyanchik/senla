@@ -12,7 +12,6 @@ import com.senla.hotel.ui.formatter.HotelFormatter;
 import com.senla.hotel.ui.itembuilder.RoomItemsBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-@Scope("singleton")
 public class RoomItemsBuilderImpl implements RoomItemsBuilder {
 
     private static final boolean DEFAULT_REPAIRED = false;

@@ -8,7 +8,6 @@ import com.senla.hotel.ui.Menu;
 import com.senla.hotel.ui.MenuItem;
 import com.senla.hotel.ui.Navigator;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeParseException;
@@ -16,7 +15,6 @@ import java.util.InputMismatchException;
 import java.util.Map;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class NavigatorImpl implements Navigator {
 

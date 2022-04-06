@@ -3,11 +3,9 @@ package com.senla.hotel.ui.impl;
 import com.senla.hotel.ui.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("singleton")
 @Log4j2
 public class MenuControllerImpl implements MenuController {
 
