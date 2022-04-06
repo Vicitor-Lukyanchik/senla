@@ -13,14 +13,13 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 @Log4j2
+@org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
 
     private static final String SERVICES_PATH = "csv/services.csv";
