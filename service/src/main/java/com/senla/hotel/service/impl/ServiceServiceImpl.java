@@ -3,8 +3,9 @@ package com.senla.hotel.service.impl;
 import com.senla.hotel.dao.ServiceDao;
 import com.senla.hotel.domain.Service;
 import com.senla.hotel.exception.DAOException;
-import com.senla.hotel.file.FileReader;
-import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.exception.FileException;
+import com.senla.hotel.file.CsvFileReader;
+import com.senla.hotel.file.CsvFileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
@@ -22,15 +23,15 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
 
-    private static final String SERVICES_PATH = "csv/services.csv";
+    private static final String SERVICES_PATH = "services.csv";
     private static final String EMPTY_LINE = "";
 
     @Autowired
-    private FileReader fileReader;
+    private CsvFileReader fileReader;
     @Autowired
     private CsvParser csvParser;
     @Autowired
-    private FileWriter fileWriter;
+    private CsvFileWriter fileWriter;
     @Autowired
     private ServiceDao serviceDao;
     @Autowired
@@ -38,12 +39,13 @@ public class ServiceServiceImpl implements ServiceService {
     private List<Service> csvServices = new ArrayList<>();
 
     @Override
-    public void create(String name, BigDecimal cost) {
-        validateService(name);
+    public void create(Service service) {
+        validateService(service.getName());
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        serviceDao.setType(Service.class);
         try {
-            serviceDao.create(new Service(name, cost), session);
+            serviceDao.create(service, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
@@ -71,6 +73,7 @@ public class ServiceServiceImpl implements ServiceService {
     private void createWithId(Service importService) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        serviceDao.setType(Service.class);
         try {
             serviceDao.create(importService, session);
             transaction.commit();
@@ -120,6 +123,7 @@ public class ServiceServiceImpl implements ServiceService {
     private void update(Service service) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        serviceDao.setType(Service.class);
         try {
             serviceDao.update(service, session);
             transaction.commit();
@@ -136,6 +140,7 @@ public class ServiceServiceImpl implements ServiceService {
     public Service findById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
+        serviceDao.setType(Service.class);
         Service service = serviceDao.findById(session, id);
         if (service == null) {
             throw new ServiceException("There is not service with this id " + id);

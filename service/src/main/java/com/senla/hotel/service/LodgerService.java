@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface LodgerService {
 
-    void create(String firstName, String lastName, String phone);
+    void create(Lodger lodger);
 
     void importLodgers();
 
@@ -17,7 +17,7 @@ public interface LodgerService {
 
     List<Lodger> findAll();
 
-    void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId, Boolean reserved);
+    void createReservation(Reservation reservation);
 
     void importReservations();
 
@@ -25,17 +25,19 @@ public interface LodgerService {
 
     void updateReservationReserved(Long lodgerId, Long roomId);
 
-    Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId);
+    Map<Long, BigDecimal> findReservationCostByLodgerId(Long lodgerId);
 
-    Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit);
+    Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId);
 
     Map<Lodger, Room> findAllLodgersRooms();
 
-    List<Room> findAllNotSettledRoomOnDate(LocalDate date);
+    Integer findAllNotSettledRooms();
+
+    List<Room> findAllNotSettledRoomOnDate(String data);
 
     Reservation findReservationById(Long id);
 
-    void createServiceOrder(LocalDate startDate, Long lodgerId, Long serviceId);
+    void createServiceOrder(ServiceOrder serviceOrder);
 
     void importServiceOrders();
 

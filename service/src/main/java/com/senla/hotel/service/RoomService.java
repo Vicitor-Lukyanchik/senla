@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface RoomService {
-    void create(int number, BigDecimal cost, int capacity, int stars, boolean isRepaired);
+    void create(Room room);
 
     void importRooms();
 

@@ -1,0 +1,52 @@
+package com.senla.hotel.file;
+
+import com.senla.hotel.exception.FileException;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+@Component
+@Log4j2
+public class CsvFileWriterImpl implements CsvFileWriter {
+
+    @Override
+    public void writeResourceFileLines(String path, List<String> lines) {
+        try (FileWriter fileWriter = new FileWriter(new ClassPathResource(path).getPath());
+             PrintWriter printWriter = new PrintWriter(fileWriter)) {
+            printWriter.print(lines);
+        } catch (Exception e) {
+            String message = "File does not exist: " + path;
+            log.error(message);
+            throw new FileException(message, e);
+        }
+    }
+
+    private Path findResourcePath(String path) {
+        URL resource = getClass().getClassLoader().getResource(path);
+        if (resource == null) {
+            String message = "Failed to get URL resource: " + path;
+            log.error(message);
+            throw new FileException(message);
+        }
+        return Paths.get(convertURLResourceToURI(resource));
+    }
+
+    private URI convertURLResourceToURI(URL resource) {
+        try {
+            return resource.toURI();
+        } catch (URISyntaxException e) {
+            String message = "Failed to convert URL resource to URI";
+            log.error(message);
+            throw new FileException(message, e);
+        }
+    }
+}

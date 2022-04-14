@@ -7,6 +7,7 @@
         <groupId>com.senla.hotel</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+        <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>configurator</artifactId>
@@ -16,9 +17,22 @@
         <maven.compiler.target>11</maven.compiler.target>
         <spring.version>5.3.16</spring.version>
         <annotation.version>1.3.2</annotation.version>
+        <lombok.version>1.18.22</lombok.version>
+        <javax.servler.version>4.0.1</javax.servler.version>
+        <modelmapper.version>2.4.5</modelmapper.version>
+        <jackson.version>2.13.1</jackson.version>
+        <jsr.version>2.13.1</jsr.version>
+        <c3p0.version>0.9.1.2</c3p0.version>
+        <hibernate.version>5.6.5.Final</hibernate.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -32,9 +46,59 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${javax.servler.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>${modelmapper.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
             <version>${annotation.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jsr.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>c3p0</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>${c3p0.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
         </dependency>
     </dependencies>
 </project>

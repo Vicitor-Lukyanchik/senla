@@ -1,18 +1,25 @@
 package com.senla.hotel.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="rooms")
 @SequenceGenerator(
-        name = "lodger-gen",
-        sequenceName = "lodgers_id_seq",
+        name = "reservations-gen",
+        sequenceName = "reservations_id_seq",
         initialValue = 1, allocationSize = 1)
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "lodger-gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservations-gen")
     private Long id;
     @Column(name = "number")
     private int number;
@@ -23,9 +30,6 @@ public class Room {
     @Column(name="stars")
     private int stars;
 
-    public Room() {
-    }
-
     public Room(int number, BigDecimal cost, int capacity, int star) {
         this.number = number;
         this.cost = cost;
@@ -33,51 +37,4 @@ public class Room {
         this.stars = star;
     }
 
-    public Room(Long id, int number, BigDecimal cost, int capacity, int star) {
-        this.id = id;
-        this.number = number;
-        this.cost = cost;
-        this.capacity = capacity;
-        this.stars = star;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public BigDecimal getCost() {
-        return cost;
-    }
-
-    public void setCost(BigDecimal cost) {
-        this.cost = cost;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public int getStars() {
-        return stars;
-    }
-
-    public void setStars(int star) {
-        this.stars = star;
-    }
 }

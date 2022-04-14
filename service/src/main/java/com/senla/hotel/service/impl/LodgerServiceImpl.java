@@ -5,8 +5,8 @@ import com.senla.hotel.dao.ReservationDao;
 import com.senla.hotel.dao.ServiceOrderDao;
 import com.senla.hotel.domain.*;
 import com.senla.hotel.exception.DAOException;
-import com.senla.hotel.file.FileReader;
-import com.senla.hotel.file.FileWriter;
+import com.senla.hotel.file.CsvFileReader;
+import com.senla.hotel.file.CsvFileWriter;
 import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,16 +29,19 @@ import java.util.stream.Collectors;
 @Log4j2
 public class LodgerServiceImpl implements LodgerService {
 
-    private static final String LODGERS_PATH = "csv/lodgers.csv";
-    private static final String RESERVATIONS_PATH = "csv/reservations.csv";
-    private static final String SERVICE_ORDERS_PATH = "csv/service_orders.csv";
+    private static final int LIMIT = 3;
+    private static final String LODGERS_PATH = "lodgers.csv";
+    private static final String RESERVATIONS_PATH = "reservations.csv";
+    private static final String SERVICE_ORDERS_PATH = "service_orders.csv";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d.MM.yyyy");
+    private static final LocalDate LOCAL_DATE_NOW = LocalDate.parse("07.02.2022", DATE_TIME_FORMATTER);
 
     @Autowired
-    private FileReader fileReader;
+    private CsvFileReader fileReader;
     @Autowired
     private CsvParser csvParser;
     @Autowired
-    private FileWriter fileWriter;
+    private CsvFileWriter fileWriter;
     @Autowired
     private ServiceService serviceService;
     @Autowired
@@ -55,12 +59,13 @@ public class LodgerServiceImpl implements LodgerService {
     private List<ServiceOrder> csvServiceOrders = new ArrayList<>();
 
     @Override
-    public void create(String firstName, String lastName, String phone) {
-        validateLodger(firstName, lastName, phone);
+    public void create(Lodger lodger) {
+        validateLodger(lodger.getFirstName(), lodger.getLastName(), lodger.getPhoneNumber());
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        lodgerDao.setType(Lodger.class);
         try {
-            lodgerDao.create(new Lodger(firstName, lastName, phone), session);
+            lodgerDao.create(lodger, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
@@ -116,6 +121,7 @@ public class LodgerServiceImpl implements LodgerService {
     private void update(Lodger lodger) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        lodgerDao.setType(Lodger.class);
         try {
             lodgerDao.update(lodger, session);
             transaction.commit();
@@ -159,16 +165,18 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void createReservation(LocalDate startDate, LocalDate endDate, Long lodgerId, Long roomId, Boolean reserved) {
+    public void createReservation(Reservation reservation) {
         Lodger lodger = new Lodger();
         Room room = new Room();
-        lodger.setId(lodgerId);
-        room.setId(roomId);
-        validateReservation(startDate, endDate, lodger, room);
+        lodger.setId(reservation.getLodger().getId());
+        room.setId(reservation.getRoom().getId());
+        validateReservation(reservation.getStartDate(), reservation.getEndDate(), lodger, room);
+
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        reservationDao.setType(Reservation.class);
         try {
-            reservationDao.create(new Reservation(startDate, endDate, lodger, room, reserved), session);
+            reservationDao.create(reservation, session);
             transaction.commit();
         } catch (DAOException e) {
             transaction.rollback();
@@ -220,6 +228,7 @@ public class LodgerServiceImpl implements LodgerService {
     private void createReservationWithId(Reservation importReservation) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        reservationDao.setType(Reservation.class);
         try {
             reservationDao.create(importReservation, session);
             transaction.commit();
@@ -279,6 +288,7 @@ public class LodgerServiceImpl implements LodgerService {
     private void updateReservation(Reservation reservation) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
+        reservationDao.setType(Reservation.class);
         try {
             reservationDao.update(reservation, session);
             transaction.commit();
@@ -297,20 +307,20 @@ public class LodgerServiceImpl implements LodgerService {
         List<Reservation> reservations = findAllReservations();
 
         for (Reservation reservation : reservations) {
-                Lodger lodger = findById(reservation.getLodger().getId());
-                Room room = roomService.findById(reservation.getRoom().getId());
-                result.put(lodger, room);
+            Lodger lodger = findById(reservation.getLodger().getId());
+            Room room = roomService.findById(reservation.getRoom().getId());
+            result.put(lodger, room);
 
         }
         return result;
     }
 
     @Override
-    public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId, int limit) {
+    public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
         List<Reservation> reservations = findAllReservations().stream()
                 .filter(r -> roomId.equals(r.getRoom().getId()))
-                .sorted(Comparator.comparing(Reservation::getStartDate).reversed()).limit(limit)
+                .sorted(Comparator.comparing(Reservation::getStartDate).reversed()).limit(LIMIT)
                 .collect(Collectors.toList());
 
         for (Reservation reservation : reservations) {
@@ -320,38 +330,53 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public Map<Integer, BigDecimal> findReservationCostByLodgerId(Long lodgerId) {
+    public Map<Long, BigDecimal> findReservationCostByLodgerId(Long lodgerId) {
         findById(lodgerId);
         List<Reservation> reservations = findAllReservations().stream()
                 .filter(r -> lodgerId.equals(r.getLodger().getId()) && r.isReserved()).collect(Collectors.toList());
-        Map<Integer, BigDecimal> result = new LinkedHashMap<>();
+        Map<Long, BigDecimal> result = new LinkedHashMap<>();
 
         for (Reservation reservation : reservations) {
             Room room = roomService.findById(reservation.getRoom().getId());
             Period period = Period.between(reservation.getStartDate(), reservation.getEndDate());
             BigDecimal cost = new BigDecimal(room.getCost().intValue() * period.getDays());
-            result.put(room.getNumber(), cost);
+            result.put(room.getId(), cost);
         }
         return result;
     }
 
     @Override
-    public List<Room> findAllNotSettledRoomOnDate(LocalDate date) {
+    public List<Room> findAllNotSettledRoomOnDate(String data) {
         List<Room> result = new LinkedList<>();
         for (Room room : roomService.findAll()) {
             List<Reservation> roomReservations = findAllReservations().stream().filter(r -> room.getId().equals(r.getRoom().getId()))
                     .collect(Collectors.toList());
-            if (isRoomNotSettledOnDate(roomReservations, date)) {
+            if (isRoomNotSettledOnDate(roomReservations, LocalDate.parse(data, DATE_TIME_FORMATTER))) {
                 result.add(room);
             }
         }
         return result;
     }
 
-    private boolean isRoomNotSettledOnDate(List<Reservation> roomReservations, LocalDate date) {
-        if (!roomReservations.isEmpty()) {
-            for (Reservation reservation : roomReservations) {
-                if (reservation.getStartDate().isBefore(date) && reservation.getEndDate().isAfter(date)) {
+ @Override
+    public Integer findAllNotSettledRooms() {
+        List<Room> result = new LinkedList<>();
+        for (Room room : roomService.findAll()) {
+            List<Reservation> roomReservations = findAllReservations().stream().filter(r -> room.getId().equals(r.getRoom().getId()))
+                    .collect(Collectors.toList());
+            if (isRoomNotSettledOnDate(roomReservations, LOCAL_DATE_NOW)) {
+                result.add(room);
+            }
+        }
+        return result.size();
+    }
+
+    private boolean isRoomNotSettledOnDate(List<Reservation> reservations, LocalDate date) {
+        if (!reservations.isEmpty()) {
+            for (Reservation reservation : reservations) {
+                if (reservation.getStartDate().isBefore(date) && reservation.getEndDate().isAfter(date) ||
+                        reservation.getStartDate().equals(date) ||
+                        reservation.getEndDate().equals(date)) {
                     return false;
                 }
             }
@@ -363,8 +388,9 @@ public class LodgerServiceImpl implements LodgerService {
     public Reservation findReservationById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
+        reservationDao.setType(Reservation.class);
         Reservation reservation = reservationDao.findById(session, id);
-        if (reservation == null){
+        if (reservation == null) {
             throw new ServiceException("There is not reservation with this id " + id);
         }
         return reservation;
@@ -380,16 +406,17 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void createServiceOrder(LocalDate date, Long lodgerId, Long serviceId) {
+    public void createServiceOrder(ServiceOrder serviceOrder) {
         Lodger lodger = new Lodger();
         Service service = new Service();
-        lodger.setId(lodgerId);
-        service.setId(serviceId);
+        lodger.setId(serviceOrder.getLodger().getId());
+        service.setId(serviceOrder.getService().getId());
         validateServiceOrder(lodger, service);
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
-            serviceOrderDao.create(new ServiceOrder(date, lodger, service), session);
+            serviceOrderDao.setType(ServiceOrder.class);
+            serviceOrderDao.create(serviceOrder, session);
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
@@ -443,6 +470,7 @@ public class LodgerServiceImpl implements LodgerService {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
+            serviceOrderDao.setType(ServiceOrder.class);
             serviceOrderDao.update(serviceOrder, session);
             transaction.commit();
         } catch (DAOException e) {
@@ -474,8 +502,9 @@ public class LodgerServiceImpl implements LodgerService {
     public ServiceOrder findServiceOrderById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
+        serviceOrderDao.setType(ServiceOrder.class);
         ServiceOrder serviceOrder = serviceOrderDao.findById(session, id);
-        if (serviceOrder == null){
+        if (serviceOrder == null) {
             throw new ServiceException("There is not service order with this id " + id);
         }
         return serviceOrder;
@@ -507,8 +536,9 @@ public class LodgerServiceImpl implements LodgerService {
     public Lodger findById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
+        lodgerDao.setType(Lodger.class);
         Lodger lodger = lodgerDao.findById(session, id);
-        if (lodger == null){
+        if (lodger == null) {
             throw new ServiceException("There is not lodger with this id " + id);
         }
         return lodger;

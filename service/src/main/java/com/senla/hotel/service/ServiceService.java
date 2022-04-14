@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ServiceService {
 
-    void create(String name, BigDecimal cost);
+    void create(Service service);
 
     void importServices();
 

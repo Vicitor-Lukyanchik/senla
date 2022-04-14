@@ -1,8 +1,7 @@
 package com.senla.hotel.parser;
 
-import com.senla.hotel.exception.ValidatorException;
+import com.senla.hotel.exception.ValidatorParserException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +19,7 @@ public class Validator {
         if (!price.matches(REGEX_PRICE)) {
             String message = "Price should be this format : D.CC";
             log.error(message);
-            throw new ValidatorException(message);
+            throw new ValidatorParserException(message);
         }
     }
 
@@ -28,7 +27,7 @@ public class Validator {
         if (!date.matches(REGEX_DATE)) {
             String message = "Date should be this format : DD.MM.YYYY";
             log.error(message);
-            throw new ValidatorException(message);
+            throw new ValidatorParserException(message);
         }
     }
 
@@ -36,7 +35,7 @@ public class Validator {
         if (!phone.matches(REGEX_PHONE)) {
             String message = "Phone number should be this format : DDDDDDD";
             log.error(message);
-            throw new ValidatorException(message);
+            throw new ValidatorParserException(message);
         }
     }
 }
