@@ -9,40 +9,43 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @Log4j2
 public class RoomServiceImpl implements RoomService {
 
     private static final String ROOMS_PATH = "rooms.csv";
 
-    @Autowired
-    private CsvFileReader fileReader;
-    @Autowired
-    private CsvParser csvParser;
-    @Autowired
-    private CsvFileWriter fileWriter;
-    @Autowired
-    private RoomDao roomDao;
-    @Autowired
-    private HibernateUtil hibernateUtil;
+    private final CsvFileReader fileReader;
+    private final CsvParser csvParser;
+    private final CsvFileWriter fileWriter;
+    private final RoomDao roomDao;
+    private final HibernateUtil hibernateUtil;
+
     private List<Room> csvRooms = new ArrayList<>();
+
+    @PostConstruct
+    private void setRepositoryType() {
+        roomDao.setType(Room.class);
+    }
 
     @Override
     public void create(Room room) {
         validateStars(room.getStars());
             Session session = hibernateUtil.getSession();
             Transaction transaction = session.beginTransaction();
-            roomDao.setType(Room.class);
         try {
             roomDao.create(room, session);
             transaction.commit();
@@ -71,7 +74,6 @@ public class RoomServiceImpl implements RoomService {
     private void createWithId(Room importRoom) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        roomDao.setType(Room.class);
         try {
             roomDao.create(importRoom, session);
             transaction.commit();
@@ -127,7 +129,6 @@ public class RoomServiceImpl implements RoomService {
     private void update(Room room){
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        roomDao.setType(Room.class);
         try {
             roomDao.update(room, session);
             transaction.commit();
@@ -144,7 +145,6 @@ public class RoomServiceImpl implements RoomService {
     public Room findById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        roomDao.setType(Room.class);
         Room room = roomDao.findById(session, id);
         if (room == null){
             throw new ServiceException("There is not room with this id " + id);
@@ -156,7 +156,6 @@ public class RoomServiceImpl implements RoomService {
     public List<Room> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        roomDao.setType(Room.class);
         List<Room> result = roomDao.findAll(session);
         session.close();
         return result;

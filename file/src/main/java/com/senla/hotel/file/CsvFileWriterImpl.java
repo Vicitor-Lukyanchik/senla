@@ -29,24 +29,4 @@ public class CsvFileWriterImpl implements CsvFileWriter {
             throw new FileException(message, e);
         }
     }
-
-    private Path findResourcePath(String path) {
-        URL resource = getClass().getClassLoader().getResource(path);
-        if (resource == null) {
-            String message = "Failed to get URL resource: " + path;
-            log.error(message);
-            throw new FileException(message);
-        }
-        return Paths.get(convertURLResourceToURI(resource));
-    }
-
-    private URI convertURLResourceToURI(URL resource) {
-        try {
-            return resource.toURI();
-        } catch (URISyntaxException e) {
-            String message = "Failed to convert URL resource to URI";
-            log.error(message);
-            throw new FileException(message, e);
-        }
-    }
 }

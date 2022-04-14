@@ -13,11 +13,13 @@ import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
@@ -26,6 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
+@RequiredArgsConstructor
 @Log4j2
 public class LodgerServiceImpl implements LodgerService {
 
@@ -36,34 +39,32 @@ public class LodgerServiceImpl implements LodgerService {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("d.MM.yyyy");
     private static final LocalDate LOCAL_DATE_NOW = LocalDate.parse("07.02.2022", DATE_TIME_FORMATTER);
 
-    @Autowired
-    private CsvFileReader fileReader;
-    @Autowired
-    private CsvParser csvParser;
-    @Autowired
-    private CsvFileWriter fileWriter;
-    @Autowired
-    private ServiceService serviceService;
-    @Autowired
-    private RoomService roomService;
-    @Autowired
-    private LodgerDao lodgerDao;
-    @Autowired
-    private ServiceOrderDao serviceOrderDao;
-    @Autowired
-    private ReservationDao reservationDao;
-    @Autowired
-    private HibernateUtil hibernateUtil;
+    private final CsvFileReader fileReader;
+    private final CsvParser csvParser;
+    private final CsvFileWriter fileWriter;
+    private final ServiceService serviceService;
+    private final RoomService roomService;
+    private final LodgerDao lodgerDao;
+    private final ServiceOrderDao serviceOrderDao;
+    private final ReservationDao reservationDao;
+    private final HibernateUtil hibernateUtil;
+
     private List<Lodger> csvLodgers = new ArrayList<>();
     private List<Reservation> csvReservations = new ArrayList<>();
     private List<ServiceOrder> csvServiceOrders = new ArrayList<>();
+
+    @PostConstruct
+    private void setRepositoryType() {
+        lodgerDao.setType(Lodger.class);
+        serviceOrderDao.setType(ServiceOrder.class);
+        reservationDao.setType(Reservation.class);
+    }
 
     @Override
     public void create(Lodger lodger) {
         validateLodger(lodger.getFirstName(), lodger.getLastName(), lodger.getPhoneNumber());
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        lodgerDao.setType(Lodger.class);
         try {
             lodgerDao.create(lodger, session);
             transaction.commit();
@@ -121,7 +122,6 @@ public class LodgerServiceImpl implements LodgerService {
     private void update(Lodger lodger) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        lodgerDao.setType(Lodger.class);
         try {
             lodgerDao.update(lodger, session);
             transaction.commit();
@@ -174,7 +174,6 @@ public class LodgerServiceImpl implements LodgerService {
 
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        reservationDao.setType(Reservation.class);
         try {
             reservationDao.create(reservation, session);
             transaction.commit();
@@ -228,7 +227,6 @@ public class LodgerServiceImpl implements LodgerService {
     private void createReservationWithId(Reservation importReservation) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        reservationDao.setType(Reservation.class);
         try {
             reservationDao.create(importReservation, session);
             transaction.commit();
@@ -288,7 +286,6 @@ public class LodgerServiceImpl implements LodgerService {
     private void updateReservation(Reservation reservation) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        reservationDao.setType(Reservation.class);
         try {
             reservationDao.update(reservation, session);
             transaction.commit();
@@ -388,7 +385,6 @@ public class LodgerServiceImpl implements LodgerService {
     public Reservation findReservationById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        reservationDao.setType(Reservation.class);
         Reservation reservation = reservationDao.findById(session, id);
         if (reservation == null) {
             throw new ServiceException("There is not reservation with this id " + id);
@@ -399,7 +395,6 @@ public class LodgerServiceImpl implements LodgerService {
     private List<Reservation> findAllReservations() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        reservationDao.setType(Reservation.class);
         List<Reservation> result = reservationDao.findAll(session);
         session.close();
         return result;
@@ -415,7 +410,6 @@ public class LodgerServiceImpl implements LodgerService {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
-            serviceOrderDao.setType(ServiceOrder.class);
             serviceOrderDao.create(serviceOrder, session);
             transaction.commit();
         } catch (Exception e) {
@@ -470,7 +464,6 @@ public class LodgerServiceImpl implements LodgerService {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try {
-            serviceOrderDao.setType(ServiceOrder.class);
             serviceOrderDao.update(serviceOrder, session);
             transaction.commit();
         } catch (DAOException e) {
@@ -485,8 +478,7 @@ public class LodgerServiceImpl implements LodgerService {
     @Override
     public void exportServiceOrder(Long id) {
         ServiceOrder serviceOrder = findServiceOrderById(id);
-        ServiceOrder exportServiceOrder = csvServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst()
-                .orElse(null);
+        ServiceOrder exportServiceOrder = csvServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
         if (exportServiceOrder == null) {
             csvServiceOrders.add(serviceOrder);
         } else {
@@ -502,7 +494,6 @@ public class LodgerServiceImpl implements LodgerService {
     public ServiceOrder findServiceOrderById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        serviceOrderDao.setType(ServiceOrder.class);
         ServiceOrder serviceOrder = serviceOrderDao.findById(session, id);
         if (serviceOrder == null) {
             throw new ServiceException("There is not service order with this id " + id);
@@ -526,7 +517,6 @@ public class LodgerServiceImpl implements LodgerService {
     public List<ServiceOrder> findAllServiceOrders() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        serviceOrderDao.setType(ServiceOrder.class);
         List<ServiceOrder> result = serviceOrderDao.findAll(session);
         session.close();
         return result;
@@ -536,7 +526,6 @@ public class LodgerServiceImpl implements LodgerService {
     public Lodger findById(Long id) {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        lodgerDao.setType(Lodger.class);
         Lodger lodger = lodgerDao.findById(session, id);
         if (lodger == null) {
             throw new ServiceException("There is not lodger with this id " + id);
@@ -548,7 +537,6 @@ public class LodgerServiceImpl implements LodgerService {
     public List<Lodger> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        lodgerDao.setType(Lodger.class);
         List<Lodger> result = lodgerDao.findAll(session);
         session.close();
         return result;

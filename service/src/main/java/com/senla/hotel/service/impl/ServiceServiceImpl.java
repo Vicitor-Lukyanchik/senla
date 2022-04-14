@@ -10,40 +10,43 @@ import com.senla.hotel.parser.CsvParser;
 import com.senla.hotel.service.ServiceService;
 import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
+@RequiredArgsConstructor
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
 
     private static final String SERVICES_PATH = "services.csv";
     private static final String EMPTY_LINE = "";
 
-    @Autowired
-    private CsvFileReader fileReader;
-    @Autowired
-    private CsvParser csvParser;
-    @Autowired
-    private CsvFileWriter fileWriter;
-    @Autowired
-    private ServiceDao serviceDao;
-    @Autowired
-    private HibernateUtil hibernateUtil;
+    private final CsvFileReader fileReader;
+    private final CsvParser csvParser;
+    private final CsvFileWriter fileWriter;
+    private final ServiceDao serviceDao;
+    private final HibernateUtil hibernateUtil;
+
     private List<Service> csvServices = new ArrayList<>();
+
+    @PostConstruct
+    private void setRepositoryType() {
+        serviceDao.setType(Service.class);
+    }
 
     @Override
     public void create(Service service) {
         validateService(service.getName());
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        serviceDao.setType(Service.class);
         try {
             serviceDao.create(service, session);
             transaction.commit();
@@ -73,7 +76,6 @@ public class ServiceServiceImpl implements ServiceService {
     private void createWithId(Service importService) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        serviceDao.setType(Service.class);
         try {
             serviceDao.create(importService, session);
             transaction.commit();
@@ -123,7 +125,6 @@ public class ServiceServiceImpl implements ServiceService {
     private void update(Service service) {
         Session session = hibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
-        serviceDao.setType(Service.class);
         try {
             serviceDao.update(service, session);
             transaction.commit();
@@ -152,7 +153,6 @@ public class ServiceServiceImpl implements ServiceService {
     public List<Service> findAll() {
         Session session = hibernateUtil.getSession();
         session.beginTransaction();
-        serviceDao.setType(Service.class);
         List<Service> result = serviceDao.findAll(session);
         session.close();
         return result;
