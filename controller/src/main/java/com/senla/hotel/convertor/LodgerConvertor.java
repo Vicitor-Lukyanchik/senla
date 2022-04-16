@@ -1,6 +1,6 @@
 package com.senla.hotel.convertor;
 
-import com.senla.hotel.domain.Lodger;
+import com.senla.hotel.entity.Lodger;
 import com.senla.hotel.dto.lodger.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

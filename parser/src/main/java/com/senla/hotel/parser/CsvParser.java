@@ -1,6 +1,6 @@
 package com.senla.hotel.parser;
 
-import com.senla.hotel.domain.*;
+import com.senla.hotel.entity.*;
 
 import java.util.List;
 

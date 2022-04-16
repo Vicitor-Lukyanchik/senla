@@ -1,6 +1,6 @@
 package com.senla.hotel.service;
 
-import com.senla.hotel.domain.Service;
+import com.senla.hotel.entity.Service;
 
 import java.math.BigDecimal;
 import java.util.List;

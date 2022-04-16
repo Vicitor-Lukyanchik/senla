@@ -1,9 +1,8 @@
 package com.senla.hotel.convertor;
 
-import com.senla.hotel.domain.Lodger;
-import com.senla.hotel.domain.Reservation;
-import com.senla.hotel.domain.Room;
-import com.senla.hotel.dto.lodger.SaveLodgerRequestDto;
+import com.senla.hotel.entity.Lodger;
+import com.senla.hotel.entity.Reservation;
+import com.senla.hotel.entity.Room;
 import com.senla.hotel.dto.reservation.ReservationResponseDto;
 import com.senla.hotel.dto.reservation.SaveReservationRequestDto;
 import org.modelmapper.ModelMapper;

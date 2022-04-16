@@ -1,7 +1,6 @@
 package com.senla.hotel.parser;
 
-import com.senla.hotel.domain.*;
-import org.springframework.context.annotation.Scope;
+import com.senla.hotel.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;

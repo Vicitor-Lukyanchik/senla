@@ -36,13 +36,6 @@
 
         <dependency>
             <groupId>com.senla.hotel</groupId>
-            <artifactId>dao</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.senla.hotel</groupId>
             <artifactId>parser</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
@@ -72,6 +65,13 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>5.6.5.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.senla.hotel</groupId>
+            <artifactId>dao</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

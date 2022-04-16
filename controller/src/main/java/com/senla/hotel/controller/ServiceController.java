@@ -1,11 +1,10 @@
 package com.senla.hotel.controller;
 
 import com.senla.hotel.convertor.ServiceConvertor;
-import com.senla.hotel.domain.Service;
+import com.senla.hotel.entity.Service;
 import com.senla.hotel.dto.service.SaveServiceRequestDto;
 import com.senla.hotel.dto.service.ServiceResponseDto;
 import com.senla.hotel.dto.service.UpdateServiceRequestDto;
-import com.senla.hotel.exception.FileException;
 import com.senla.hotel.service.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

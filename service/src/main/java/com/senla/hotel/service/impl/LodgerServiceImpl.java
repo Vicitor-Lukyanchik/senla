@@ -1,25 +1,20 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.dao.LodgerDao;
-import com.senla.hotel.dao.ReservationDao;
-import com.senla.hotel.dao.ServiceOrderDao;
-import com.senla.hotel.domain.*;
-import com.senla.hotel.exception.DAOException;
+import com.senla.hotel.entity.*;
 import com.senla.hotel.file.CsvFileReader;
 import com.senla.hotel.file.CsvFileWriter;
 import com.senla.hotel.parser.CsvParser;
+import com.senla.hotel.repository.LodgerRepository;
+import com.senla.hotel.repository.ReservationRepository;
+import com.senla.hotel.repository.ServiceOrderRepository;
 import com.senla.hotel.service.LodgerService;
 import com.senla.hotel.service.RoomService;
 import com.senla.hotel.service.ServiceService;
-import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
@@ -44,40 +39,16 @@ public class LodgerServiceImpl implements LodgerService {
     private final CsvFileWriter fileWriter;
     private final ServiceService serviceService;
     private final RoomService roomService;
-    private final LodgerDao lodgerDao;
-    private final ServiceOrderDao serviceOrderDao;
-    private final ReservationDao reservationDao;
-    private final HibernateUtil hibernateUtil;
+    private final LodgerRepository lodgerRepository;
+    private final ServiceOrderRepository serviceOrderRepository;
+    private final ReservationRepository reservationRepository;
 
     private List<Lodger> csvLodgers = new ArrayList<>();
     private List<Reservation> csvReservations = new ArrayList<>();
     private List<ServiceOrder> csvServiceOrders = new ArrayList<>();
 
-    @PostConstruct
-    private void setRepositoryType() {
-        lodgerDao.setType(Lodger.class);
-        serviceOrderDao.setType(ServiceOrder.class);
-        reservationDao.setType(Reservation.class);
-    }
-
     @Override
-    public void create(Lodger lodger) {
-        validateLodger(lodger.getFirstName(), lodger.getLastName(), lodger.getPhoneNumber());
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            lodgerDao.create(lodger, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    @Override
+    @Transactional
     public void importLodgers() {
         csvLodgers = getLodgersFromFile();
         for (Lodger importLodger : csvLodgers) {
@@ -86,7 +57,7 @@ public class LodgerServiceImpl implements LodgerService {
                 findById(importLodger.getId());
                 update(importLodger);
             } catch (ServiceException e) {
-                createWithId(importLodger);
+                create(importLodger);
             }
         }
     }
@@ -119,37 +90,20 @@ public class LodgerServiceImpl implements LodgerService {
         }
     }
 
-    private void update(Lodger lodger) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            lodgerDao.update(lodger, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    private void createWithId(Lodger importLodger) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            lodgerDao.create(importLodger, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Transactional
+    public void update(Lodger lodger) {
+        lodgerRepository.update(lodger);
     }
 
     @Override
+    @Transactional
+    public void create(Lodger lodger) {
+        validateLodger(lodger.getFirstName(), lodger.getLastName(), lodger.getPhoneNumber());
+        lodgerRepository.create(lodger);
+    }
+
+    @Override
+    @Transactional
     public void exportLodger(Long id) {
         Lodger lodger = findById(id);
         Lodger importLodger = csvLodgers.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
@@ -165,28 +119,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
-    public void createReservation(Reservation reservation) {
-        Lodger lodger = new Lodger();
-        Room room = new Room();
-        lodger.setId(reservation.getLodger().getId());
-        room.setId(reservation.getRoom().getId());
-        validateReservation(reservation.getStartDate(), reservation.getEndDate(), lodger, room);
-
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            reservationDao.create(reservation, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    @Override
+    @Transactional
     public void importReservations() {
         csvReservations = getReservationsFromFile();
         for (Reservation importReservation : csvReservations) {
@@ -196,9 +129,21 @@ public class LodgerServiceImpl implements LodgerService {
                 findReservationById(importReservation.getId());
                 updateReservation(importReservation);
             } catch (ServiceException e) {
-                createReservationWithId(importReservation);
+                createReservation(importReservation);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void createReservation(Reservation reservation) {
+        Lodger lodger = new Lodger();
+        Room room = new Room();
+        lodger.setId(reservation.getLodger().getId());
+        room.setId(reservation.getRoom().getId());
+        validateReservation(reservation.getStartDate(), reservation.getEndDate(), lodger, room);
+
+        reservationRepository.create(reservation);
     }
 
     private List<Reservation> getReservationsFromFile() {
@@ -206,7 +151,8 @@ public class LodgerServiceImpl implements LodgerService {
         return csvParser.parseReservations(lines);
     }
 
-    private void validateReservation(LocalDate startDate, LocalDate endDate, Lodger lodger, Room room) {
+    @Transactional
+    public void validateReservation(LocalDate startDate, LocalDate endDate, Lodger lodger, Room room) {
         findById(lodger.getId());
         if (startDate.isAfter(endDate)) {
             String message = "Start date can not be after than end date";
@@ -224,22 +170,8 @@ public class LodgerServiceImpl implements LodgerService {
         }
     }
 
-    private void createReservationWithId(Reservation importReservation) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            reservationDao.create(importReservation, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
     @Override
+    @Transactional
     public void exportReservation(Long id) {
         Reservation reservation = findReservationById(id);
         Reservation exportReservation = csvReservations.stream().filter(r -> r.getId().equals(id)).findFirst()
@@ -270,6 +202,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public void updateReservationReserved(Long lodgerId, Long roomId) {
         Reservation reservation = findAllReservations().stream().filter(
                         lodgerRoom -> roomId.equals(lodgerRoom.getRoom().getId()) && lodgerId.equals(lodgerRoom.getLodger().getId()))
@@ -283,22 +216,13 @@ public class LodgerServiceImpl implements LodgerService {
         }
     }
 
-    private void updateReservation(Reservation reservation) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            reservationDao.update(reservation, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Transactional
+    public void updateReservation(Reservation reservation) {
+        reservationRepository.update(reservation);
     }
 
     @Override
+    @Transactional
     public Map<Lodger, Room> findAllLodgersRooms() {
         Map<Lodger, Room> result = new LinkedHashMap<>();
         List<Reservation> reservations = findAllReservations();
@@ -313,6 +237,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public Map<LocalDate, Lodger> findLastReservationsByRoomId(Long roomId) {
         Map<LocalDate, Lodger> result = new LinkedHashMap<>();
         List<Reservation> reservations = findAllReservations().stream()
@@ -327,6 +252,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public Map<Long, BigDecimal> findReservationCostByLodgerId(Long lodgerId) {
         findById(lodgerId);
         List<Reservation> reservations = findAllReservations().stream()
@@ -343,6 +269,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public List<Room> findAllNotSettledRoomOnDate(String data) {
         List<Room> result = new LinkedList<>();
         for (Room room : roomService.findAll()) {
@@ -355,7 +282,8 @@ public class LodgerServiceImpl implements LodgerService {
         return result;
     }
 
- @Override
+    @Override
+    @Transactional
     public Integer findAllNotSettledRooms() {
         List<Room> result = new LinkedList<>();
         for (Room room : roomService.findAll()) {
@@ -382,46 +310,22 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public Reservation findReservationById(Long id) {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        Reservation reservation = reservationDao.findById(session, id);
+        Reservation reservation = reservationRepository.findById(Reservation.class, id);
         if (reservation == null) {
             throw new ServiceException("There is not reservation with this id " + id);
         }
         return reservation;
     }
 
-    private List<Reservation> findAllReservations() {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        List<Reservation> result = reservationDao.findAll(session);
-        session.close();
-        return result;
+    @Transactional
+    public List<Reservation> findAllReservations() {
+        return reservationRepository.findAll(Reservation.class);
     }
 
     @Override
-    public void createServiceOrder(ServiceOrder serviceOrder) {
-        Lodger lodger = new Lodger();
-        Service service = new Service();
-        lodger.setId(serviceOrder.getLodger().getId());
-        service.setId(serviceOrder.getService().getId());
-        validateServiceOrder(lodger, service);
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceOrderDao.create(serviceOrder, session);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    @Override
+    @Transactional
     public void importServiceOrders() {
         csvServiceOrders = getServiceOrdersFromFile();
         for (ServiceOrder importServiceOrder : csvServiceOrders) {
@@ -430,9 +334,21 @@ public class LodgerServiceImpl implements LodgerService {
                 findServiceOrderById(importServiceOrder.getId());
                 updateServiceOrder(importServiceOrder);
             } catch (ServiceException ex) {
-                createServiceOrderWithId(importServiceOrder);
+                createServiceOrder(importServiceOrder);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public void createServiceOrder(ServiceOrder serviceOrder) {
+        Lodger lodger = new Lodger();
+        Service service = new Service();
+        lodger.setId(serviceOrder.getLodger().getId());
+        service.setId(serviceOrder.getService().getId());
+        validateServiceOrder(lodger, service);
+
+        serviceOrderRepository.create(serviceOrder);
     }
 
     private List<ServiceOrder> getServiceOrdersFromFile() {
@@ -445,37 +361,13 @@ public class LodgerServiceImpl implements LodgerService {
         findById(lodger.getId());
     }
 
-    private void createServiceOrderWithId(ServiceOrder importServiceOrder) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceOrderDao.create(importServiceOrder, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    private void updateServiceOrder(ServiceOrder serviceOrder) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceOrderDao.update(serviceOrder, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Transactional
+    public void updateServiceOrder(ServiceOrder serviceOrder) {
+        serviceOrderRepository.update(serviceOrder);
     }
 
     @Override
+    @Transactional
     public void exportServiceOrder(Long id) {
         ServiceOrder serviceOrder = findServiceOrderById(id);
         ServiceOrder exportServiceOrder = csvServiceOrders.stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
@@ -491,10 +383,9 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public ServiceOrder findServiceOrderById(Long id) {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        ServiceOrder serviceOrder = serviceOrderDao.findById(session, id);
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(ServiceOrder.class, id);
         if (serviceOrder == null) {
             throw new ServiceException("There is not service order with this id " + id);
         }
@@ -502,6 +393,7 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public List<Service> findServiceOrderByLodgerId(Long lodgerId) {
         findById(lodgerId);
         List<ServiceOrder> serviceOrders = findAllServiceOrders().stream()
@@ -514,19 +406,15 @@ public class LodgerServiceImpl implements LodgerService {
         return result;
     }
 
+    @Transactional
     public List<ServiceOrder> findAllServiceOrders() {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        List<ServiceOrder> result = serviceOrderDao.findAll(session);
-        session.close();
-        return result;
+        return serviceOrderRepository.findAll(ServiceOrder.class);
     }
 
     @Override
+    @Transactional
     public Lodger findById(Long id) {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        Lodger lodger = lodgerDao.findById(session, id);
+        Lodger lodger = lodgerRepository.findById(Lodger.class, id);
         if (lodger == null) {
             throw new ServiceException("There is not lodger with this id " + id);
         }
@@ -534,11 +422,8 @@ public class LodgerServiceImpl implements LodgerService {
     }
 
     @Override
+    @Transactional
     public List<Lodger> findAll() {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        List<Lodger> result = lodgerDao.findAll(session);
-        session.close();
-        return result;
+        return lodgerRepository.findAll(Lodger.class);
     }
 }

@@ -1,9 +1,6 @@
 package com.senla.hotel.convertor;
 
-import com.senla.hotel.domain.Room;
-import com.senla.hotel.domain.Service;
-import com.senla.hotel.dto.room.SaveRoomRequestDto;
-import com.senla.hotel.dto.room.UpdateRoomRequestDto;
+import com.senla.hotel.entity.Service;
 import com.senla.hotel.dto.service.SaveServiceRequestDto;
 import com.senla.hotel.dto.service.ServiceResponseDto;
 import com.senla.hotel.dto.service.UpdateServiceRequestDto;

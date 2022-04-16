@@ -1,6 +1,6 @@
 package com.senla.hotel.convertor;
 
-import com.senla.hotel.domain.*;
+import com.senla.hotel.entity.*;
 import com.senla.hotel.dto.serviceorder.SaveServiceOrderRequestDto;
 import com.senla.hotel.dto.serviceorder.ServiceOrderResponseDto;
 import org.modelmapper.ModelMapper;

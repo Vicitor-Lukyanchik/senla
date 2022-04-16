@@ -1,4 +1,4 @@
-package com.senla.hotel.domain;
+package com.senla.hotel.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.senla.hotel.convertor;
 
-import com.senla.hotel.domain.Room;
+import com.senla.hotel.entity.Room;
 import com.senla.hotel.dto.room.RoomCostsResponseDto;
 import com.senla.hotel.dto.room.RoomResponseDto;
 import com.senla.hotel.dto.room.SaveRoomRequestDto;

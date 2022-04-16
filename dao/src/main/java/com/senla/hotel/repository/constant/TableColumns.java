@@ -1,4 +1,4 @@
-package com.senla.hotel.dao.constant;
+package com.senla.hotel.repository.constant;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

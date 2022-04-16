@@ -8,11 +8,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +20,7 @@ public class CsvFileReaderImpl implements CsvFileReader {
     @Override
     public List<String> readResourceFileLines(String path) {
         try (InputStream inputStream = getClass().getResourceAsStream(SLASH + path);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return reader.lines().collect(Collectors.toList());
         } catch (IOException e) {
             String message = "File does not exist: " + path;

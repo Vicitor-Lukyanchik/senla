@@ -2,8 +2,8 @@ package com.senla.hotel.controller;
 
 import com.senla.hotel.convertor.LodgerConvertor;
 import com.senla.hotel.convertor.RoomConvertor;
-import com.senla.hotel.domain.Lodger;
-import com.senla.hotel.domain.Room;
+import com.senla.hotel.entity.Lodger;
+import com.senla.hotel.entity.Room;
 import com.senla.hotel.dto.lodger.LastLodgerResponseDto;
 import com.senla.hotel.dto.room.RoomCostsResponseDto;
 import com.senla.hotel.dto.room.RoomResponseDto;

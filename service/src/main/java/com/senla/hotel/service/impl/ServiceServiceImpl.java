@@ -1,22 +1,16 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.dao.ServiceDao;
-import com.senla.hotel.domain.Service;
-import com.senla.hotel.exception.DAOException;
-import com.senla.hotel.exception.FileException;
+import com.senla.hotel.entity.Service;
 import com.senla.hotel.file.CsvFileReader;
 import com.senla.hotel.file.CsvFileWriter;
 import com.senla.hotel.parser.CsvParser;
+import com.senla.hotel.repository.ServiceRepository;
 import com.senla.hotel.service.ServiceService;
-import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,34 +26,12 @@ public class ServiceServiceImpl implements ServiceService {
     private final CsvFileReader fileReader;
     private final CsvParser csvParser;
     private final CsvFileWriter fileWriter;
-    private final ServiceDao serviceDao;
-    private final HibernateUtil hibernateUtil;
+    private final ServiceRepository serviceRepository;
 
     private List<Service> csvServices = new ArrayList<>();
 
-    @PostConstruct
-    private void setRepositoryType() {
-        serviceDao.setType(Service.class);
-    }
-
     @Override
-    public void create(Service service) {
-        validateService(service.getName());
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceDao.create(service, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    @Override
+    @Transactional
     public void importServices() {
         csvServices = getServicesFromFile();
         for (Service importService : csvServices) {
@@ -68,23 +40,8 @@ public class ServiceServiceImpl implements ServiceService {
                 findById(importService.getId());
                 update(importService);
             } catch (ServiceException ex) {
-                createWithId(importService);
+                create(importService);
             }
-        }
-    }
-
-    private void createWithId(Service importService) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceDao.create(importService, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
         }
     }
 
@@ -94,6 +51,22 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    @Transactional
+    public void create(Service service) {
+        validateService(service.getName());
+        serviceRepository.create(service);
+    }
+
+    private void validateService(String name) {
+        if (name.equals(EMPTY_LINE)) {
+            String message = "Service name can not be empty";
+            log.error(message);
+            throw new ServiceException(message);
+        }
+    }
+
+    @Override
+    @Transactional
     public void exportService(Long id) {
         Service service = findById(id);
         Service exportService = csvServices.stream().filter(s -> s.getId().equals(id)).findFirst().orElse(null);
@@ -107,42 +80,23 @@ public class ServiceServiceImpl implements ServiceService {
         fileWriter.writeResourceFileLines(SERVICES_PATH, lines);
     }
 
-    private void validateService(String name) {
-        if (name.equals(EMPTY_LINE)) {
-            String message = "Service name can not be empty";
-            log.error(message);
-            throw new ServiceException(message);
-        }
-    }
-
     @Override
+    @Transactional
     public void updateCost(Long id, BigDecimal cost) {
         Service service = findById(id);
         service.setCost(cost);
         update(service);
     }
 
-    private void update(Service service) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            serviceDao.update(service, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Transactional
+    public void update(Service service) {
+        serviceRepository.update(service);
     }
 
     @Override
+    @Transactional
     public Service findById(Long id) {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        serviceDao.setType(Service.class);
-        Service service = serviceDao.findById(session, id);
+        Service service = serviceRepository.findById(Service.class, id);
         if (service == null) {
             throw new ServiceException("There is not service with this id " + id);
         }
@@ -150,11 +104,8 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    @Transactional
     public List<Service> findAll() {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        List<Service> result = serviceDao.findAll(session);
-        session.close();
-        return result;
+        return serviceRepository.findAll(Service.class);
     }
 }

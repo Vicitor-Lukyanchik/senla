@@ -1,22 +1,19 @@
 package com.senla.hotel.service.impl;
 
-import com.senla.hotel.dao.RoomDao;
-import com.senla.hotel.domain.Room;
-import com.senla.hotel.exception.DAOException;
+import com.senla.hotel.entity.Room;
 import com.senla.hotel.file.CsvFileReader;
 import com.senla.hotel.file.CsvFileWriter;
 import com.senla.hotel.parser.CsvParser;
+import com.senla.hotel.repository.RoomRepository;
 import com.senla.hotel.service.RoomService;
-import com.senla.hotel.service.connection.hibernate.HibernateUtil;
 import com.senla.hotel.service.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,33 +28,15 @@ public class RoomServiceImpl implements RoomService {
     private final CsvFileReader fileReader;
     private final CsvParser csvParser;
     private final CsvFileWriter fileWriter;
-    private final RoomDao roomDao;
-    private final HibernateUtil hibernateUtil;
+    private final RoomRepository roomRepository;
 
     private List<Room> csvRooms = new ArrayList<>();
 
-    @PostConstruct
-    private void setRepositoryType() {
-        roomDao.setType(Room.class);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public void create(Room room) {
-        validateStars(room.getStars());
-            Session session = hibernateUtil.getSession();
-            Transaction transaction = session.beginTransaction();
-        try {
-            roomDao.create(room, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
-    }
-
-    @Override
+    @Transactional
     public void importRooms() {
         csvRooms = getRoomsFromFile();
         for (Room importRoom : csvRooms) {
@@ -66,24 +45,16 @@ public class RoomServiceImpl implements RoomService {
                 findById(importRoom.getId());
                 update(importRoom);
             } catch (ServiceException e) {
-                createWithId(importRoom);
+                create(importRoom);
             }
         }
     }
 
-    private void createWithId(Room importRoom) {
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            roomDao.create(importRoom, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Override
+    @Transactional
+    public void create(Room room) {
+        validateStars(room.getStars());
+        roomRepository.create(room);
     }
 
     private List<Room> getRoomsFromFile() {
@@ -92,6 +63,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void exportRoom(Long id) {
         Room room = findById(id);
         Room exportRoom = csvRooms.stream().filter(r -> r.getId().equals(id)).findFirst().orElse(null);
@@ -120,44 +92,32 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void updateCost(Long id, BigDecimal cost) {
         Room room = findById(id);
         room.setCost(cost);
         update(room);
     }
 
-    private void update(Room room){
-        Session session = hibernateUtil.getSession();
-        Transaction transaction = session.beginTransaction();
-        try {
-            roomDao.update(room, session);
-            transaction.commit();
-        } catch (DAOException e) {
-            transaction.rollback();
-            log.error(e.getMessage());
-            throw new ServiceException(e.getMessage());
-        } finally {
-            session.close();
-        }
+    @Transactional
+    public void update(Room room) {
+        roomRepository.update(room);
     }
 
     @Override
+    @Transactional
     public Room findById(Long id) {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        Room room = roomDao.findById(session, id);
-        if (room == null){
+        Room room = roomRepository.findById(Room.class, id);
+        if (room == null) {
             throw new ServiceException("There is not room with this id " + id);
         }
         return room;
     }
 
     @Override
+    @Transactional
     public List<Room> findAll() {
-        Session session = hibernateUtil.getSession();
-        session.beginTransaction();
-        List<Room> result = roomDao.findAll(session);
-        session.close();
+        List<Room> result = roomRepository.findAll(Room.class);
         return result;
     }
 }
