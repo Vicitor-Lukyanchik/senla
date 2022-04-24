@@ -9,6 +9,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +25,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<ErrorObject> handleFileExceptionException(FileException fileException) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setMessage(fileException.getMessage());
+        errorObject.setTimestamp(System.currentTimeMillis());
+        return new ResponseEntity<>(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorObject> handleFileExceptionException(BadCredentialsException fileException) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setMessage(fileException.getMessage());
         errorObject.setTimestamp(System.currentTimeMillis());

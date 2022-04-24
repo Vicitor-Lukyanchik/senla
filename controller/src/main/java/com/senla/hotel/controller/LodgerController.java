@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/lodger")
+@RequestMapping("api/lodger")
 public class LodgerController {
 
     private final LodgerService lodgerService;

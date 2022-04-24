@@ -36,5 +36,4 @@ public class Room {
         this.capacity = capacity;
         this.stars = star;
     }
-
 }

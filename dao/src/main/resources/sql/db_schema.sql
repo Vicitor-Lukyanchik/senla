@@ -8,6 +8,9 @@ DROP TABLE IF EXISTS service_orders;
 DROP TABLE IF EXISTS lodgers;
 DROP TABLE IF EXISTS rooms;
 DROP TABLE IF EXISTS services;
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS roles;
 
 CREATE TABLE lodgers(
                         id SERIAL PRIMARY KEY NOT NULL,
@@ -44,4 +47,25 @@ CREATE TABLE service_orders(
                                date DATE NOT NULL,
                                lodger_id BIGINT NOT NULL REFERENCES lodgers(id),
                                service_id BIGINT NOT NULL REFERENCES services(id)
+);
+
+CREATE TABLE users(
+    id SERIAL PRIMARY KEY NOT NULL,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    firstname VARCHAR(100) NOT NULL,
+    lastname VARCHAR(100) NOT NULL,
+    password VARCHAR (255) NOT NULL,
+    status VARCHAR (25) NOT NULL DEFAULT 'ACTIVE'
+);
+
+CREATE TABLE roles(
+    id SERIAL PRIMARY KEY NOT NULL,
+    name VARCHAR (100),
+    status VARCHAR (25) NOT NULL DEFAULT 'ACTIVE'
+);
+
+CREATE TABLE user_roles(
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    role_id BIGINT NOT NULL REFERENCES roles(id)
 );

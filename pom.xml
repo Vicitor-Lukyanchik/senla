@@ -15,6 +15,7 @@
         <module>service</module>
         <module>log</module>
         <module>controller</module>
+        <module>security</module>
     </modules>
 
     <properties>

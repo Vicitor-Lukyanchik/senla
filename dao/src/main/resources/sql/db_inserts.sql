@@ -43,3 +43,7 @@ INSERT INTO service_orders (date, lodger_id, service_id) VALUES
 ('09.02.2022', 3, 4),
 ('18.03.2022', 4, 5),
 ('01.03.2022', 6, 2);
+
+INSERT INTO roles (name) values
+('ROLE_USER'),
+('ROLE_ADMIN');
